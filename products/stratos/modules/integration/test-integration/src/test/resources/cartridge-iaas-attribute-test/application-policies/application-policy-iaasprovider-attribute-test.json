@@ -1,0 +1,17 @@
+{
+  "id": "application-policy-iaasprovider-attribute-test",
+  "algorithm": "one-after-another",
+  "networkPartitions": [
+    "network-partition-iaasprovider-attribute-test"
+  ],
+  "properties": [
+    {
+      "name": "networkPartitionGroups",
+      "value": "network-partition-iaasprovider-attribute-test"
+    },
+    {
+      "name": "key-2",
+      "value": "value-2"
+    }
+  ]
+}

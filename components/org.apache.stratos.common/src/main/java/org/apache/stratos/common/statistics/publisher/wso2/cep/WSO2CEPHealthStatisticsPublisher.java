@@ -22,7 +22,6 @@ package org.apache.stratos.common.statistics.publisher.wso2.cep;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.statistics.publisher.HealthStatisticsPublisher;
-import org.apache.stratos.common.statistics.publisher.ThriftStatisticsPublisher;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
@@ -33,16 +32,27 @@ import java.util.List;
 /**
  * Health statistics publisher for publishing statistics to WSO2 CEP.
  */
-public class WSO2CEPHealthStatisticsPublisher extends ThriftStatisticsPublisher implements HealthStatisticsPublisher {
+public class WSO2CEPHealthStatisticsPublisher extends HealthStatisticsPublisher {
 
     private static final Log log = LogFactory.getLog(WSO2CEPHealthStatisticsPublisher.class);
-
+    private static volatile WSO2CEPHealthStatisticsPublisher wso2CEPHealthStatisticsPublisher;
     private static final String DATA_STREAM_NAME = "cartridge_agent_health_stats";
     private static final String VERSION = "1.0.0";
     private static final String CEP_THRIFT_CLIENT_NAME = "cep";
 
-    public WSO2CEPHealthStatisticsPublisher() {
+    private WSO2CEPHealthStatisticsPublisher() {
         super(createStreamDefinition(), CEP_THRIFT_CLIENT_NAME);
+    }
+
+    public static WSO2CEPHealthStatisticsPublisher getInstance() {
+        if (wso2CEPHealthStatisticsPublisher == null) {
+            synchronized (WSO2CEPHealthStatisticsPublisher.class) {
+                if (wso2CEPHealthStatisticsPublisher == null) {
+                    wso2CEPHealthStatisticsPublisher = new WSO2CEPHealthStatisticsPublisher();
+                }
+            }
+        }
+        return wso2CEPHealthStatisticsPublisher;
     }
 
     private static StreamDefinition createStreamDefinition() {
@@ -98,6 +108,6 @@ public class WSO2CEPHealthStatisticsPublisher extends ThriftStatisticsPublisher 
         payload.add(health);
         payload.add(value);
 
-        super.publish(payload.toArray());
+        publish(payload.toArray());
     }
 }

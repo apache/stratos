@@ -1,0 +1,17 @@
+{
+    "id": "application-policy-git-hook-test",
+    "algorithm": "one-after-another",
+    "networkPartitions": [
+        "network-partition-git-hook-test"
+    ],
+    "properties": [
+        {
+            "name": "key-1",
+            "value": "value-1"
+        },
+        {
+            "name": "key-2",
+            "value": "value-2"
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "id": "application-policy-stratos-server-restart-test",
+    "algorithm": "one-after-another",
+    "networkPartitions": [
+        "network-partition-stratos-server-restart-test"
+    ],
+    "properties": [
+        {
+            "name": "networkPartitionGroups",
+            "value": "network-partition-stratos-server-restart-test"
+        },
+        {
+            "name": "key-2",
+            "value": "value-2"
+        }
+    ]
+}

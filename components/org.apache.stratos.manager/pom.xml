@@ -34,14 +34,64 @@
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.user.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.user.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ntask.core</artifactId>
-            <version>${carbon.kernel.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.utils</artifactId>
-            <version>${carbon.kernel.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.databridge.agent.thrift</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.databridge.commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.stratos.common</artifactId>
+        </dependency>
+
+        <!-- Stratos components -->
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.messaging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.cloud.controller.service.stub</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.autoscaler.service.stub</artifactId>
+        </dependency>
+
+        <!-- Misc -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -52,24 +102,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.messaging</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.tenant.mgt</artifactId>
-            <version>2.2.2</version>
+            <groupId>commons-lang.wso2</groupId>
+            <artifactId>commons-lang</artifactId>
         </dependency>
     </dependencies>
 
@@ -89,20 +123,36 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Private-Package>org.apache.stratos.manager.internal.*</Private-Package>
                         <Export-Package>
-                            org.apache.stratos.manager.domain.*,
-                            org.apache.stratos.manager.utils.*,
-                            org.apache.stratos.manager.service.*,
+                            !org.apache.stratos.manager.internal.*,
+                            !org.apache.stratos.manager.service.stub.*,
                             org.apache.stratos.manager.*
                         </Export-Package>
                         <Import-Package>
-                            org.apache.stratos.cloud.controller.registry.*; version="${project.version}",
-                            org.apache.axis2.*; version="1.6.1-wso2v10",
-                            org.apache.axiom.*; version="${axiom.osgi.version.range}",
-                            org.apache.stratos.autoscaler.stub; version="${project.version}",
-                            org.apache.neethi.*; version="2.0.4.wso2v4",
-                            javax.xml.stream.*; version="1.0.1",
-                            javax.wsdl.*; version="1.6.2",
-                            org.osgi.framework.*,
+                            org.wso2.carbon.utils.*;version="${carbon.platform.imp.pkg.version.range}",
+                            org.wso2.carbon.base.*;version="${carbon.base.imp.pkg.version.range}",
+                            org.wso2.carbon.user.core.*;version="${carbon.platform.imp.pkg.version.range}",
+                            org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version.range}",
+                            org.wso2.carbon.ntask.core.*;version="0.0.0",
+                            org.wso2.carbon.databridge.commons.*;version="${carbon.platform.imp.pkg.version.range}",
+                            org.wso2.carbon.databridge.agent.thrift.*;version="${carbon.platform.imp.pkg.version.range}",
+                            org.wso2.carbon.user.api.*;version="${carbon.user.api.imp.pkg.version.range}",
+
+                            org.apache.stratos.common.*;version="${project.version}",
+                            org.apache.stratos.messaging.*;version="${project.version}",
+                            org.apache.stratos.cloud.controller.stub.*;version="${project.version}",
+                            org.apache.stratos.autoscaler.stub;version="${project.version}",
+
+                            org.wso2.carbon.stratos.common.*;version="${wso2.carbon.stratos.common.version}",
+
+                            org.apache.commons.logging.*;version="${commons.logging.imp.pkg.version.range}",
+                            org.apache.commons.lang.*;version="${commons.lang.imp.pkg.version.range}",
+                            com.google.gson.*;version="${gson.imp.pkg.version.range}",
+                            org.apache.axis2.*; version="${axis2.imp.pkg.version.range}",
+                            org.apache.axiom.*; version="${axiom.imp.pkg.version.range}",
+                            org.apache.neethi.*; version="${neethi.wso2.version}",
+                            javax.wsdl.*; version="${wsdl4j.wso2.version}",
+                            org.osgi.framework; version="${osgi.framework.imp.pkg.version.range}",
+                            org.osgi.service.component; version="${osgi.service.component.imp.pkg.version.range}",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

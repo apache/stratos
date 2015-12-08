@@ -19,10 +19,16 @@
 
 package org.apache.stratos.common.statistics.publisher;
 
+import org.wso2.carbon.databridge.commons.StreamDefinition;
+
 /**
  * In-flight request publisher interface.
  */
-public interface InFlightRequestPublisher extends StatisticsPublisher {
+public abstract class InFlightRequestPublisher extends ThriftStatisticsPublisher {
+
+    public InFlightRequestPublisher(StreamDefinition streamDefinition, String thriftClientName) {
+        super(streamDefinition, thriftClientName);
+    }
 
     /**
      * Publish in-flight request count.
@@ -32,5 +38,6 @@ public interface InFlightRequestPublisher extends StatisticsPublisher {
      * @param networkPartitionId   Network partition id of the cluster
      * @param inFlightRequestCount In-flight request count of the cluster
      */
-    void publish(String clusterId, String clusterInstanceId, String networkPartitionId, int inFlightRequestCount);
+    public abstract void publish(String clusterId, String clusterInstanceId, String networkPartitionId,
+                                 int inFlightRequestCount);
 }

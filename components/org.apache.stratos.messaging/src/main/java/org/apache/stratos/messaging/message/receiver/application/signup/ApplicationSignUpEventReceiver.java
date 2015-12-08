@@ -21,7 +21,10 @@ package org.apache.stratos.messaging.message.receiver.application.signup;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
+import org.apache.stratos.messaging.event.initializer.CompleteApplicationSignUpsRequestEvent;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
@@ -49,14 +52,13 @@ public class ApplicationSignUpEventReceiver {
         messageDelegator.addEventListener(eventListener);
     }
 
-
     public void execute() {
         try {
             // Start topic subscriber thread
-            eventSubscriber = new EventSubscriber(MessagingUtil.Topics.APPLICATION_SIGNUP_TOPIC.getTopicName(), messageListener);
+            eventSubscriber = new EventSubscriber(MessagingUtil.Topics.APPLICATION_SIGNUP_TOPIC.getTopicName(),
+                    messageListener);
             // subscriber.setMessageListener(messageListener);
             executorService.execute(eventSubscriber);
-
 
             if (log.isDebugEnabled()) {
                 log.debug("Application signup event message receiver thread started");
@@ -68,12 +70,32 @@ public class ApplicationSignUpEventReceiver {
                 log.debug("Application signup event message delegator thread started");
             }
 
-
+            initializeCompleteApplicationSignUps();
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Application signup receiver failed", e);
             }
         }
+    }
+
+    public void initializeCompleteApplicationSignUps() {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                while (!eventSubscriber.isSubscribed()) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignore) {
+                    }
+                }
+
+                CompleteApplicationSignUpsRequestEvent completeApplicationSignUpsRequestEvent
+                        = new CompleteApplicationSignUpsRequestEvent();
+                String topic = MessagingUtil.getMessageTopicName(completeApplicationSignUpsRequestEvent);
+                EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
+                eventPublisher.publish(completeApplicationSignUpsRequestEvent);
+            }
+        });
     }
 
     public void terminate() {

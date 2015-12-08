@@ -120,40 +120,51 @@ public class ArtifactDistributionCoordinator {
         try {
             List<ApplicationSignUp> applicationSignUps = applicationSignUpManager.getApplicationSignUpsForRepository(repoUrl);
             if ((applicationSignUps == null) || (applicationSignUps.size() == 0)) {
-                if (log.isWarnEnabled()) {
-                    log.warn(String.format("Artifact updated event not sent, " +
-                            "application signups not found for repository: [repo-url] %s", repoUrl));
-                    return;
-                }
+	            if (log.isWarnEnabled()) {
+		            log.warn(String.format("Artifact updated event not sent, " +
+		                                   "application signups not found for repository: [repo-url] %s", repoUrl));
+		            return;
+	            }
+            } else {
+	            for (ApplicationSignUp applicationSignUp : applicationSignUps) {
+		            if (applicationSignUp.getArtifactRepositories() != null) {
+			            for (ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
+				            if ((artifactRepository != null) && (artifactRepository.getRepoUrl().equals(repoUrl))) {
 
-                for (ApplicationSignUp applicationSignUp : applicationSignUps) {
-                    if (applicationSignUp.getArtifactRepositories() != null) {
-                        for (ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
-                            if ((artifactRepository != null) && (artifactRepository.getRepoUrl().equals(repoUrl))) {
+					            String applicationId = applicationSignUp.getApplicationId();
+					            int tenantId = applicationSignUp.getTenantId();
+					            String clusterId = findClusterId(applicationId, artifactRepository.getAlias());
 
-                                String applicationId = applicationSignUp.getApplicationId();
-                                int tenantId = applicationSignUp.getTenantId();
-                                String clusterId = findClusterId(applicationId, artifactRepository.getAlias());
+					            publisher.publishArtifactUpdatedEvent(clusterId,
+					                                                  String.valueOf(
+							                                                  applicationSignUp.getTenantId()),
+					                                                  artifactRepository.getRepoUrl(),
+					                                                  artifactRepository.getRepoUsername(),
+					                                                  artifactRepository.getRepoPassword(), false);
 
-                                publisher.publishArtifactUpdatedEvent(clusterId,
-                                        String.valueOf(applicationSignUp.getTenantId()),
-                                        artifactRepository.getRepoUrl(),
-                                        artifactRepository.getRepoUsername(),
-                                        artifactRepository.getRepoPassword(), false);
+					            if (log.isInfoEnabled()) {
+						            log.info(
+								            String.format("Artifact updated event published: [application-id] %s" +
+								                          " " +
+								                          "[tenant-id] %d [cartridge-type] %s [alias] %s [repo-url" +
+								                          "] %s",
+								                          applicationId,
+								                          tenantId,
+								                          artifactRepository.getCartridgeType(),
+								                          artifactRepository.getAlias(),
+								                          artifactRepository.getRepoUrl()));
+					            }
+				            }
+			            }
+		            } else {
+			            if (log.isWarnEnabled()) {
+				            log.warn(String.format("Application signUp artifact repositories are empty for %s",
+				                                   repoUrl));
+				            return;
+			            }
+		            }
+	            }
 
-                                if (log.isInfoEnabled()) {
-                                    log.info(String.format("Artifact updated event published: [application-id] %s " +
-                                                    "[tenant-id] %d [cartridge-type] %s [alias] %s [repo-url] %s",
-                                            applicationId,
-                                            tenantId,
-                                            artifactRepository.getCartridgeType(),
-                                            artifactRepository.getAlias(),
-                                            artifactRepository.getRepoUrl()));
-                                }
-                            }
-                        }
-                    }
-                }
             }
         } catch (Exception e) {
             String message = "Could not notify artifact updated event";

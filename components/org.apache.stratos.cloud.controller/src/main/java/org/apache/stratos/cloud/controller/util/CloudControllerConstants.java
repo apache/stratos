@@ -162,6 +162,8 @@ public final class CloudControllerConstants {
     public static final String TIMESTAMP_COL = "timestamp";
     public static final String SCALING_DECISION_ID_COL = "scaling_decision_id";
 
+    public static final String STATS_PUBLISHER_THREAD_POOL_ID = "cloud.controller.stats.publisher.thread.pool";
+    public static final int STATS_PUBLISHER_THREAD_POOL_SIZE = 10;
 
     /**
      * Properties
@@ -344,4 +346,7 @@ public final class CloudControllerConstants {
     public static final String PORT_NAME_LABEL = "portName";
     public static final String LOAD_BALANCER_IPS = "LOAD_BALANCER_IPS";
     public static final String NETWORK_PARTITION_ID_LIST = "NETWORK_PARTITION_ID_LIST";
+    public static final String IAAS_TYPE_EC2 = "ec2";
+    public static final String INSTANCE_CTXT_EC2_REGION = "EC2_REGION";
+    public static final String INSTANCE_CTXT_EC2_AVAILABILITY_ZONE = "EC2_AVAILABILITY_ZONE";
 }

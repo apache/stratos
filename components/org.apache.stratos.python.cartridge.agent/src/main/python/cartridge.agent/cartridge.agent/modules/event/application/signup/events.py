@@ -27,7 +27,6 @@ class ApplicationSignUpAddedEvent:
         self.clusterIds = None
         """ :type : list[str]  """
 
-
     @staticmethod
     def create_from_json(json_str):
         json_obj = json.loads(json_str)
@@ -49,7 +48,6 @@ class ApplicationSignUpRemovedEvent:
         self.clusterIds = None
         """ :type : list[str]  """
 
-
     @staticmethod
     def create_from_json(json_str):
         json_obj = json.loads(json_str)
@@ -59,4 +57,3 @@ class ApplicationSignUpRemovedEvent:
         app_signup_removed.tenantId = json_obj["tenantId"] if "tenantId" in json_obj else None
 
         return app_signup_removed
-

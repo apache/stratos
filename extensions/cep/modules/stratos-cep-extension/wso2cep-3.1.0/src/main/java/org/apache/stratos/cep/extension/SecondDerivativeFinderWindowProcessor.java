@@ -226,7 +226,7 @@ public class SecondDerivativeFinderWindowProcessor extends WindowProcessor imple
 
     @Override
     protected void restoreState(Object[] data) {
-        window.restoreState(data);
+		window.restoreState((Object[]) data[0]);
         oldEventList = ((ArrayList<RemoveEvent>) data[1]);
         newEventList = ((ArrayList<InEvent>) data[2]);
         window.reSchedule();

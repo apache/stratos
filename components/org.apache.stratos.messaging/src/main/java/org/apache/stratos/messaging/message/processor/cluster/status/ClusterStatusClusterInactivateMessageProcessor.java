@@ -24,7 +24,6 @@ import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterIna
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-
 public class ClusterStatusClusterInactivateMessageProcessor extends MessageProcessor {
     private static final Log log = LogFactory.getLog(ClusterStatusClusterInactivateMessageProcessor.class);
     private MessageProcessor nextProcessor;
@@ -42,7 +41,10 @@ public class ClusterStatusClusterInactivateMessageProcessor extends MessageProce
                     jsonToObject(message, ClusterStatusClusterInactivateEvent.class);
 
             if (log.isDebugEnabled()) {
-                log.debug("Received ClusterStatusClusterInactivateEvent: " + event.toString());
+                log.debug(String.format(
+                        "Received ClusterStatusClusterInactivateEvent: [application-id] %s, [cluster-id] %s, "
+                                + "[cluster-instance-id] %s", event.getAppId(), event.getClusterId(),
+                        event.getInstanceId()));
             }
             // Notify event listeners
             notifyEventListeners(event);
@@ -51,7 +53,9 @@ public class ClusterStatusClusterInactivateMessageProcessor extends MessageProce
             if (nextProcessor != null) {
                 return nextProcessor.process(type, message, object);
             } else {
-                throw new RuntimeException(String.format("Failed to process cluster activated message using available message processors: [type] %s [body] %s", type, message));
+                throw new RuntimeException(String.format(
+                        "Failed to process cluster activated message using available message processors: [type] %s "
+                                + "[body] %s", type, message));
             }
         }
     }

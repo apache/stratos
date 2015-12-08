@@ -23,12 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.concurrent.locks.ReadWriteLock;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.application.ApplicationCreatedEvent;
-import org.apache.stratos.messaging.event.application.ApplicationDeletedEvent;
 import org.apache.stratos.messaging.event.topology.ApplicationClustersCreatedEvent;
 import org.apache.stratos.messaging.event.topology.ApplicationClustersRemovedEvent;
-import org.apache.stratos.messaging.listener.application.ApplicationCreatedEventListener;
-import org.apache.stratos.messaging.listener.application.ApplicationDeletedEventListener;
 import org.apache.stratos.messaging.listener.topology.ApplicationClustersCreatedEventListener;
 import org.apache.stratos.messaging.listener.topology.ApplicationClustersRemovedEventListener;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
@@ -41,14 +37,12 @@ import java.util.concurrent.ExecutorService;
  */
 public class MetadataTopologyEventReceiver {
     private static final Log log = LogFactory.getLog(MetadataTopologyEventReceiver.class);
-
     private TopologyEventReceiver topologyEventReceiver;
     private ExecutorService executorService;
-    public static final String METADATA_SERVICE_THREAD_POOL_ID = "metadata.service.thread.pool.";
 
     public MetadataTopologyEventReceiver() {
         this.topologyEventReceiver = new TopologyEventReceiver();
-        executorService = StratosThreadPool.getExecutorService(METADATA_SERVICE_THREAD_POOL_ID, 10);
+        executorService = StratosThreadPool.getExecutorService(Constants.METADATA_SERVICE_THREAD_POOL_ID, 20);
         addEventListeners();
     }
 
@@ -58,8 +52,8 @@ public class MetadataTopologyEventReceiver {
             protected void onEvent(Event event) {
                 ApplicationClustersCreatedEvent appClustersCreatedEvent = (ApplicationClustersCreatedEvent) event;
                 String applicationId = appClustersCreatedEvent.getAppId();
-                MetadataApiRegistry.getApplicationIdToReadWriteLockMap()
-                        .put(applicationId, new ReadWriteLock(METADATA_SERVICE_THREAD_POOL_ID.concat(applicationId)));
+                MetadataApiRegistry.getApplicationIdToReadWriteLockMap().put(applicationId,
+                        new ReadWriteLock(Constants.METADATA_SERVICE_THREAD_POOL_ID.concat(applicationId)));
             }
         });
 

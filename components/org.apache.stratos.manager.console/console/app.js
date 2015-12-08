@@ -19,7 +19,12 @@
  *
  */
 
-var caramel = require('caramel');
+var caramel = require('caramel'),
+    carbon = require('carbon'),
+    server = new carbon.server.Server(),
+    conf = carbon.server.loadConfig('thrift-client-config.xml'),
+    dasConfig = conf. *::['config']. *::['das'],
+    dasStatsPublisherEnabled = false;
 
 caramel.configs({
     context: '/console',
@@ -29,3 +34,22 @@ caramel.configs({
         return 'theme0';
     }
 });
+
+//checking whether das stats publisher is enabled
+for (var i = 0; i < dasConfig.node.length(); i++) {
+    dasStatsPublisherEnabled = dasConfig.node[i].statsPublisherEnabled.text();
+    if (dasStatsPublisherEnabled == true) {
+        break;
+    }
+}
+application.put("dasStatsPublisherEnabled", dasStatsPublisherEnabled);
+
+//reading metering and monitoring dashboard urls from cartridge-config.properties file
+var cartridgeConfig = carbon.server.loadConfig("cartridge-config.properties");
+var prop = new java.util.Properties();
+var inputStream = new java.io.ByteArrayInputStream(new java.lang.String(cartridgeConfig).getBytes());
+prop.load(inputStream);
+application.put("meteringDashboardUrl", prop.getProperty("das.metering.dashboard.url"));
+application.put("monitoringDashboardUrl", prop.getProperty("das.monitoring.dashboard.url"));
+
+

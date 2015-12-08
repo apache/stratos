@@ -26,7 +26,6 @@ import org.apache.stratos.integration.common.RestConstants;
 import org.apache.stratos.integration.common.TopologyHandler;
 import org.apache.stratos.integration.tests.StratosIntegrationTest;
 import org.apache.stratos.messaging.domain.application.Application;
-import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -34,73 +33,74 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.*;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.assertTrue;
 
 /**
  * This will handle the scale-up and scale-down of a particular cluster bursting test cases
  */
+@Test(groups = { "application", "failed" })
 public class PartitionOneAfterAnotherClusterTestCase extends StratosIntegrationTest {
     private static final Log log = LogFactory.getLog(PartitionOneAfterAnotherClusterTestCase.class);
     private static final String RESOURCES_PATH = "/partition-round-robin-cluster-test";
+    private TopologyHandler topologyHandler = TopologyHandler.getInstance();
 
-    @Test(timeOut = APPLICATION_TEST_TIMEOUT, groups = {"stratos.application.deployment", "failed"})
+    @Test(timeOut = DEFAULT_APPLICATION_TEST_TIMEOUT)
     public void testDeployApplication() throws Exception {
-        TopologyHandler topologyHandler = TopologyHandler.getInstance();
+        log.info("Running PartitionOneAfterAnotherClusterTestCase.testDeployApplication test method...");
+        long startTime = System.currentTimeMillis();
+
         String autoscalingPolicyId = "autoscaling-policy-3";
-
-        boolean addedScalingPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH
-                        + "/" + autoscalingPolicyId + ".json",
+        boolean addedScalingPolicy = restClient.addEntity(
+                RESOURCES_PATH + RestConstants.AUTOSCALING_POLICIES_PATH + "/" + autoscalingPolicyId + ".json",
                 RestConstants.AUTOSCALING_POLICIES, RestConstants.AUTOSCALING_POLICIES_NAME);
-        assertEquals(addedScalingPolicy, true);
+        Assert.assertTrue(addedScalingPolicy, "Could not add autoscaling policy");
 
-        boolean addedC1 = restClient.addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c7.json",
-                RestConstants.CARTRIDGES, RestConstants.CARTRIDGES_NAME);
-        assertEquals(addedC1, true);
+        boolean addedC1 = restClient
+                .addEntity(RESOURCES_PATH + RestConstants.CARTRIDGES_PATH + "/" + "c7.json", RestConstants.CARTRIDGES,
+                        RestConstants.CARTRIDGES_NAME);
+        Assert.assertTrue(addedC1, "Could not add cartridge");
 
         boolean addedN1 = restClient.addEntity(RESOURCES_PATH + RestConstants.NETWORK_PARTITIONS_PATH + "/" +
-                        "network-partition-11.json",
-                RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
-        assertEquals(addedN1, true);
+                "network-partition-11.json", RestConstants.NETWORK_PARTITIONS, RestConstants.NETWORK_PARTITIONS_NAME);
+        Assert.assertTrue(addedN1, "Could not add network partition");
 
         boolean addedDep = restClient.addEntity(RESOURCES_PATH + RestConstants.DEPLOYMENT_POLICIES_PATH + "/" +
-                        "deployment-policy-5.json",
-                RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
-        assertEquals(addedDep, true);
+                "deployment-policy-5.json", RestConstants.DEPLOYMENT_POLICIES, RestConstants.DEPLOYMENT_POLICIES_NAME);
+        Assert.assertTrue(addedDep, "Could not add deployment policy");
 
         boolean added = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATIONS_PATH + "/" +
-                        "single-cluster-scaling-test.json", RestConstants.APPLICATIONS,
-                RestConstants.APPLICATIONS_NAME);
-        assertEquals(added, true);
+                "single-cluster-scaling-test.json", RestConstants.APPLICATIONS, RestConstants.APPLICATIONS_NAME);
+        Assert.assertTrue(added, "Could not add application");
 
-        ApplicationBean bean = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                "single-cluster-scaling-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        ApplicationBean bean = (ApplicationBean) restClient
+                .getEntity(RestConstants.APPLICATIONS, "single-cluster-scaling-test", ApplicationBean.class,
+                        RestConstants.APPLICATIONS_NAME);
         assertEquals(bean.getApplicationId(), "single-cluster-scaling-test");
 
         boolean addAppPolicy = restClient.addEntity(RESOURCES_PATH + RestConstants.APPLICATION_POLICIES_PATH + "/" +
                         "application-policy-4.json", RestConstants.APPLICATION_POLICIES,
                 RestConstants.APPLICATION_POLICIES_NAME);
-        assertEquals(addAppPolicy, true);
+        Assert.assertTrue(addAppPolicy, "Could not add application policy");
 
-        ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClient.getEntity(
-                RestConstants.APPLICATION_POLICIES,
-                "application-policy-4", ApplicationPolicyBean.class,
-                RestConstants.APPLICATION_POLICIES_NAME);
+        ApplicationPolicyBean policyBean = (ApplicationPolicyBean) restClient
+                .getEntity(RestConstants.APPLICATION_POLICIES, "application-policy-4", ApplicationPolicyBean.class,
+                        RestConstants.APPLICATION_POLICIES_NAME);
 
         //deploy the application
         String resourcePath = RestConstants.APPLICATIONS + "/" + "single-cluster-scaling-test" +
                 RestConstants.APPLICATIONS_DEPLOY + "/" + "application-policy-4";
-        boolean deployed = restClient.deployEntity(resourcePath,
-                RestConstants.APPLICATIONS_NAME);
-        assertEquals(deployed, true);
+        boolean deployed = restClient.deployEntity(resourcePath, RestConstants.APPLICATIONS_NAME);
+        Assert.assertTrue(deployed, "Could not deploy app");
 
         //Application active handling
-        topologyHandler.assertApplicationStatus(bean.getApplicationId(),
-                ApplicationStatus.Active);
+        TopologyHandler.getInstance().assertApplicationActiveStatus(bean.getApplicationId());
 
         //Cluster active handling
         topologyHandler.assertClusterActivation(bean.getApplicationId());
@@ -110,28 +110,25 @@ public class PartitionOneAfterAnotherClusterTestCase extends StratosIntegrationT
 
         //Removing one member from cluster and check for auto healing
 
+        boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
+                RestConstants.AUTOSCALING_POLICIES_NAME);
+        Assert.assertTrue(removedAuto, "Could not remove autoscaling policy");
 
-        boolean removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
-                autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-        assertEquals(removedAuto, false);
-
-        boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-11",
+        boolean removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-11",
                 RestConstants.NETWORK_PARTITIONS_NAME);
         //Trying to remove the used network partition
-        assertEquals(removedNet, false);
+        Assert.assertTrue(removedNet, "Could not remove network partition");
 
-        boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-5", RestConstants.DEPLOYMENT_POLICIES_NAME);
-        assertEquals(removedDep, false);
+        boolean removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES, "deployment-policy-5",
+                RestConstants.DEPLOYMENT_POLICIES_NAME);
+        Assert.assertTrue(removedDep, "Could not remove deployment policy");
 
         //Un-deploying the application
         String resourcePathUndeploy = RestConstants.APPLICATIONS + "/" + "single-cluster-scaling-test" +
                 RestConstants.APPLICATIONS_UNDEPLOY;
 
-        boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy,
-                RestConstants.APPLICATIONS_NAME);
-        assertEquals(unDeployed, true);
+        boolean unDeployed = restClient.undeployEntity(resourcePathUndeploy, RestConstants.APPLICATIONS_NAME);
+        Assert.assertTrue(unDeployed, "Could not undeploy app");
 
         boolean undeploy = topologyHandler.assertApplicationUndeploy("single-cluster-scaling-test");
         if (!undeploy) {
@@ -142,44 +139,45 @@ public class PartitionOneAfterAnotherClusterTestCase extends StratosIntegrationT
                     RestConstants.APPLICATIONS_UNDEPLOY + "?force=true", RestConstants.APPLICATIONS);
 
             boolean forceUndeployed = topologyHandler.assertApplicationUndeploy("single-cluster-scaling-test");
-            assertEquals(forceUndeployed, true, String.format("Forceful undeployment failed for the application %s",
-                    "single-cluster-scaling-test"));
+            assertTrue(
+                    String.format("Forceful undeployment failed for the application %s", "single-cluster-scaling-test"),
+                    forceUndeployed);
 
         }
 
         boolean removed = restClient.removeEntity(RestConstants.APPLICATIONS, "single-cluster-scaling-test",
                 RestConstants.APPLICATIONS_NAME);
-        assertEquals(removed, true);
+        Assert.assertTrue(removed, "Could not remomve application");
 
-        ApplicationBean beanRemoved = (ApplicationBean) restClient.getEntity(RestConstants.APPLICATIONS,
-                "single-cluster-scaling-test", ApplicationBean.class, RestConstants.APPLICATIONS_NAME);
+        ApplicationBean beanRemoved = (ApplicationBean) restClient
+                .getEntity(RestConstants.APPLICATIONS, "single-cluster-scaling-test", ApplicationBean.class,
+                        RestConstants.APPLICATIONS_NAME);
         assertEquals(beanRemoved, null);
 
-        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c7",
-                RestConstants.CARTRIDGES_NAME);
-        assertEquals(removedC1, true);
+        boolean removedC1 = restClient.removeEntity(RestConstants.CARTRIDGES, "c7", RestConstants.CARTRIDGES_NAME);
+        Assert.assertTrue(removedC1, "Could not remove cartridge");
 
+        removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES, autoscalingPolicyId,
+                RestConstants.AUTOSCALING_POLICIES_NAME);
+        Assert.assertTrue(removedAuto, "Could not remove autoscaling policy");
 
-        removedAuto = restClient.removeEntity(RestConstants.AUTOSCALING_POLICIES,
-                autoscalingPolicyId, RestConstants.AUTOSCALING_POLICIES_NAME);
-        assertEquals(removedAuto, true);
+        removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES, "deployment-policy-5",
+                RestConstants.DEPLOYMENT_POLICIES_NAME);
+        Assert.assertTrue(removedDep, "Could not remomve deployment policy");
 
-        removedDep = restClient.removeEntity(RestConstants.DEPLOYMENT_POLICIES,
-                "deployment-policy-5", RestConstants.DEPLOYMENT_POLICIES_NAME);
-        assertEquals(removedDep, true);
+        removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-11",
+                RestConstants.NETWORK_PARTITIONS_NAME);
+        Assert.assertTrue(removedNet, "Could not remove network partition");
 
-        removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-11", RestConstants.NETWORK_PARTITIONS_NAME);
-        assertEquals(removedNet, false);
+        boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES, "application-policy-4",
+                RestConstants.APPLICATION_POLICIES_NAME);
+        Assert.assertTrue(removeAppPolicy, "Could not remove application policy");
 
-
-        boolean removeAppPolicy = restClient.removeEntity(RestConstants.APPLICATION_POLICIES,
-                "application-policy-4", RestConstants.APPLICATION_POLICIES_NAME);
-        assertEquals(removeAppPolicy, true);
-
-        removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS,
-                "network-partition-11", RestConstants.NETWORK_PARTITIONS_NAME);
-        assertEquals(removedNet, true);
+        removedNet = restClient.removeEntity(RestConstants.NETWORK_PARTITIONS, "network-partition-11",
+                RestConstants.NETWORK_PARTITIONS_NAME);
+        Assert.assertTrue(removedNet, "Could not remove network partition");
+        long duration = System.currentTimeMillis() - startTime;
+        log.info(String.format("PartitionOneAfterAnotherClusterTestCase completed in [duration] %s ms", duration));
     }
 
     /**
@@ -189,16 +187,15 @@ public class PartitionOneAfterAnotherClusterTestCase extends StratosIntegrationT
      */
     private void assertClusterWithRoundRobinAlgorithm(String applicationName) {
         Application application = ApplicationManager.getApplications().getApplication(applicationName);
-        assertNotNull(String.format("Application is not found: [application-id] %s",
-                applicationName), application);
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
 
         Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
         for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
             String serviceName = clusterDataHolder.getServiceType();
             String clusterId = clusterDataHolder.getClusterId();
             Service service = TopologyManager.getTopology().getService(serviceName);
-            assertNotNull(String.format("Service is not found: [application-id] %s [service] %s",
-                    applicationName, serviceName), service);
+            assertNotNull(String.format("Service is not found: [application-id] %s [service] %s", applicationName,
+                    serviceName), service);
 
             Cluster cluster = service.getCluster(clusterId);
             assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
@@ -261,8 +258,8 @@ public class PartitionOneAfterAnotherClusterTestCase extends StratosIntegrationT
                     } else {
                         p1Index++;
                         previousPartition = p1;
-                        assertEquals(allInitTime.get(i), p1InitTime.get(p1Index), "Partition-1 doesn't not contain " +
-                                "correct values in current iteration");
+                        assertEquals(allInitTime.get(i), p1InitTime.get(p1Index),
+                                "Partition-1 doesn't not contain " + "correct values in current iteration");
                         if (p2Index >= 0) {
                             assertEquals(allInitTime.get(i - 1), p2InitTime.get(p2Index),
                                     "Partition-2 doesn't not contain correct values in the previous iteration");

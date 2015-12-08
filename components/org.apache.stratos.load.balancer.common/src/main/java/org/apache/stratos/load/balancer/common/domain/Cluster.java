@@ -40,6 +40,7 @@ public class Cluster {
     private Map<String, Member> memberMap;
     private Map<String, String> hostNameToContextPathMap;
     private String loadBalanceAlgorithmName;
+    private Properties properties;
 
     public Cluster(String serviceName, String clusterId) {
         this.serviceName = serviceName;
@@ -148,5 +149,13 @@ public class Cluster {
     public void removeHostName(String hostName) {
         hostNames.remove(hostName);
         hostNameToContextPathMap.remove(hostName);
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

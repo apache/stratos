@@ -108,6 +108,22 @@ class InstanceReadyToShutdownEvent:
         return to_json(self)
 
 
+class CompleteTopologyRequestEvent:
+    def __init__(self):
+        pass
+
+    def to_json(self):
+        return to_json(self)
+
+
+class CompleteTenantRequestEvent:
+    def __init__(self):
+        pass
+
+    def to_json(self):
+        return to_json(self)
+
+
 def to_json(instance):
     """
     common function to serialize status event object

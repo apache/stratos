@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.applications.topic;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.application.Application;
@@ -40,7 +41,15 @@ public class ApplicationsEventPublisher {
     private static final Log log = LogFactory.getLog(ApplicationsEventPublisher.class);
 
     public static void sendCompleteApplicationsEvent(Applications completeApplications) {
-        publishEvent(new CompleteApplicationsEvent(completeApplications));
+        ApplicationHolder.acquireReadLock();
+        try{
+            if (log.isDebugEnabled()) {
+                log.debug("Publishing complete applications event...");
+            }
+            publishEvent(new CompleteApplicationsEvent(completeApplications));
+        }finally {
+            ApplicationHolder.releaseReadLock();
+        }
     }
 
     public static void sendApplicationCreatedEvent(Application application) {

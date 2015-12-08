@@ -67,25 +67,18 @@ if (!user) {
         <div class="collapse navbar-collapse horizontal-bar">
             <ul class="nav navbar-nav">
 
-                <% if (dashboard.pages.length >= 2) { %>
+                <% if(dashboard.pages.length >= 2) { %>
                     <li
-                        <%
-    if (dashboard.landing === pageId) { %>
+                        <% if(dashboard.landing === pageId) { %>
                             class="active"
-                        <%
-    }
-    %>>
-                               <a href="<%=dbRoot%>?isAnonView=<%=isAnonView
-    %>"><%=
-    i18n.localize("home")
-    %></a>
-                        </li>
-                    <%
-} %>
+                        <% } %>>
+                            <a href="<%=dbRoot%>?isAnonView=<%=isAnonView%>"><%= i18n.localize("home")%></a>
+                    </li>
+                <% } %>
 
                 <%
 pages.forEach(function (page) {
-    if (isAnonView || !user) {
+    if(isAnonView || !user) {
         if (page.isanon) {
             // Anonymous viewing. So render only anonymous pages links.
             renderPageLink(page);
@@ -98,79 +91,53 @@ pages.forEach(function (page) {
 function renderPageLink(page) {
     if (dashboard.landing !== page.id) { %>
                         <li
-                            <%
-        if (page.id === pageId) { %>
+                            <% if (page.id === pageId) { %>
                                 class="active"
-                            <%
-        }
-        %>>
-                                   <a href="<%=dbRoot%><%=page.id%>?isAnonView=<%=isAnonView%>"> <%=page.title
-        %></a>
-                                </li>
-                            <%
-    }
+                            <% } %>>
+                            <a href="<%=dbRoot%><%=page.id%>?isAnonView=<%=isAnonView%>"> <%=page.title%></a>
+                        </li>
+                    <% }
 };%>
             </ul>
             <ul class="nav navbar-nav navbar-right">
             <% if (user) {
-    if (user.isEditor) {
-        %>
-                               <li>
-                                   <a class="ues-copy" href="<%=dbRoot
-        %>?editor=true">
-                                        <span class="fw-stack">
-                                            <i class="fw fw-ring fw-stack-2x"></i>
-                                            <i class="fw fw-settings fw-stack-1x"></i>
-                                        </span>
-                                         <%=
-        i18n.localize("edit.button")
-        %>
-                                    </a>
-                                </li>
-                            <%
-    } else {
-        %>
-                                    <li>
-                                        <a class="ues-copy" href="<%=dbRoot
-        %>?custom=true">
-                                            <span class="fw-stack">
-                                                <i class="fw fw-ring fw-stack-2x"></i>
-                                                <i class="fw fw-settings fw-stack-1x"></i>
-                                            </span>
-                                             <%=
-        i18n.localize("personalize")
-        %>
-                                        </a>
-                                    </li>
-                                <%
-    }
-    %>
-                   <li>
-                       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                                  <%=
-    user ? user.username : "anon"
-    %> <span class="caret"></span>
-                       </a>
-                       <ul class="dropdown-menu" role="menu">
-                           <li><a href="<%=urlPrefix%>logout?destination=<%=dest
-    %>">
-                                    <%=
-    i18n.localize("logout.lable")
-    %>
-                                </a></li>
-                        </ul>
-                    </li>
-                <%
-} else {
-    %>
-                   <li><a href="<%=urlPrefix%>login-controller?destination=<%=dest
-    %>">
-                                <%=
-    i18n.localize("login.lable")
-    %>
+    if (user.isEditor) { %>
+                        <li>
+                            <a class="ues-copy" href="<%=dbRoot%>?editor=true">
+                                <span class="fw-stack">
+                                    <i class="fw fw-ring fw-stack-2x"></i>
+                                    <i class="fw fw-settings fw-stack-1x"></i>
+                                </span>
+                                 <%= i18n.localize("edit.button")%>
+                            </a>
+                        </li>
+                    <% } else
+    {%>
+                            <li>
+                                <a class="ues-copy" href="<%=dbRoot%>?custom=true">
+                                    <span class="fw-stack">
+                                        <i class="fw fw-ring fw-stack-2x"></i>
+                                        <i class="fw fw-settings fw-stack-1x"></i>
+                                    </span>
+                                     <%= i18n.localize("personalize")%>
+                                </a>
+                            </li>
+                        <% } %>
+                <li>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                               <%= user? user.username : "anon" %> <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="<%=urlPrefix%>logout?destination=<%=dest%>">
+                                <%= i18n.localize("logout.lable")%>
                             </a></li>
-                    <%
-} %>
+                    </ul>
+                </li>
+            <% } else { %>
+                <li><a href="<%=urlPrefix%>login-controller?destination=<%=dest%>">
+                            <%= i18n.localize("login.lable")%>
+                        </a></li>
+                <% } %>
             </ul>
         </div>
            <!--/.nav-collapse -->

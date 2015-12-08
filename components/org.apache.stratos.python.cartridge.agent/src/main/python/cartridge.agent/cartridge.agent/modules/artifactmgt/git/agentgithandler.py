@@ -15,22 +15,22 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from threading import current_thread
-import subprocess
 import shutil
-import time
-import os
+import subprocess
 import tempfile
-from git import *
 import urllib
+import os
+from distutils.dir_util import copy_tree
+from threading import current_thread
 
 import constants
+import time
 from config import Config
-from ...util.log import LogFactory
-from ...util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
-from ...artifactmgt.repository import Repository
 from exception import GitRepositorySynchronizationException
-from distutils.dir_util import copy_tree
+from git import *
+
+from ...util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
+from ...util.log import LogFactory
 
 
 class AgentGitHandler:
@@ -44,6 +44,7 @@ class AgentGitHandler:
     log = LogFactory().get_log(__name__)
 
     __git_repositories = {}
+
     # (tenant_id => GitRepository)
 
     @staticmethod
@@ -143,12 +144,15 @@ class AgentGitHandler:
     def clone(git_repo):
         try:
             # create a temporary location to clone
-            temp_repo_path = os.path.join(tempfile.gettempdir(), "pca-temp-" + git_repo.tenant_id)
+            temp_repo_path = os.path.join(tempfile.gettempdir(), "pca_temp_" + git_repo.tenant_id)
             if os.path.isdir(temp_repo_path) and os.listdir(temp_repo_path) != []:
                 GitUtils.delete_folder_tree(temp_repo_path)
                 GitUtils.create_dir(temp_repo_path)
+
             # clone the repo to a temporary location first to avoid conflicts
-            Repo.clone_from(git_repo.repo_url, temp_repo_path)
+            AgentGitHandler.log.debug(
+                "Cloning artifacts from URL: %s to temp location: %s" % (git_repo.repo_url, temp_repo_path))
+            Repo.clone_from(git_repo.auth_url, temp_repo_path)
 
             # move the cloned dir to application path
             copy_tree(temp_repo_path, git_repo.local_repo_path)
@@ -164,8 +168,8 @@ class AgentGitHandler:
         """
         git_clone_successful = False
         # Read properties from agent.conf
-        max_retry_attempts = int(Config.read_property(constants.ARTIFACT_CLONE_RETRIES, 5))
-        retry_interval = int(Config.read_property(constants.ARTIFACT_CLONE_INTERVAL, 10))
+        max_retry_attempts = int(Config.artifact_clone_retry_count)
+        retry_interval = int(Config.artifact_clone_retry_interval)
         retry_attempts = 0
 
         # Iterate until git clone is successful or reaches max retry attempts
@@ -212,7 +216,8 @@ class AgentGitHandler:
         git_repo = GitRepository()
         git_repo.tenant_id = repo_info.tenant_id
         git_repo.local_repo_path = repo_info.repo_path
-        git_repo.repo_url = AgentGitHandler.create_auth_url(repo_info)
+        git_repo.repo_url = repo_info.repo_url
+        git_repo.auth_url = AgentGitHandler.create_auth_url(repo_info)
         git_repo.repo_username = repo_info.repo_username
         git_repo.repo_password = repo_info.repo_password
         git_repo.commit_enabled = repo_info.commit_enabled
@@ -374,6 +379,8 @@ class GitRepository:
     def __init__(self):
         self.repo_url = None
         """ :type : str  """
+        self.auth_url = None
+        """ :type : str """
         self.local_repo_path = None
         """ :type : str  """
         self.cloned = False

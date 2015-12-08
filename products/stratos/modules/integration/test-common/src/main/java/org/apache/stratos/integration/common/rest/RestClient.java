@@ -17,6 +17,7 @@
 package org.apache.stratos.integration.common.rest;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,13 +28,9 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.stratos.integration.common.RestConstants;
 import org.apache.stratos.metadata.client.beans.PropertyBean;
-import org.apache.stratos.metadata.client.exception.RestClientException;
 import org.apache.stratos.metadata.client.rest.HTTPConnectionManager;
 
 import java.io.File;
@@ -41,9 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.net.URI;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -168,9 +163,10 @@ public class RestClient {
     }
 
     public boolean addEntity(String filePath, String resourcePath, String entityName) throws Exception {
+        log.info(String.format("Adding [entity] %s, [resource-path] %s, [file-path] %s", entityName, resourcePath,
+                filePath));
         String content = getJsonStringFromFile(filePath);
         URI uri = new URIBuilder(this.endPoint + resourcePath).build();
-
         HttpResponse response = doPost(uri, content);
         if (response != null) {
             if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
@@ -183,8 +179,8 @@ public class RestClient {
     }
 
     public boolean deployEntity(String resourcePath, String entityName) throws Exception {
+        log.info(String.format("Deploying [entity] %s, [resource-path] %s", entityName, resourcePath));
         URI uri = new URIBuilder(this.endPoint + resourcePath).build();
-
         HttpResponse response = doPost(uri, "");
         if (response != null) {
             if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
@@ -197,8 +193,8 @@ public class RestClient {
     }
 
     public boolean undeployEntity(String resourcePath, String entityName) throws Exception {
+        log.info(String.format("Undeploying [entity] %s, [resource-path] %s", entityName, resourcePath));
         URI uri = new URIBuilder(this.endPoint + resourcePath).build();
-
         HttpResponse response = doPost(uri, "");
         if (response != null) {
             if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
@@ -212,6 +208,8 @@ public class RestClient {
 
     public Object getEntity(String resourcePath, String identifier, Class responseJsonClass, String entityName)
             throws Exception {
+        log.info(String.format("Retrieving [entity] %s, [resource-path] %s, [identifier] %s, [response-class] %s",
+                entityName, resourcePath, identifier, responseJsonClass.getSimpleName()));
         URI uri = new URIBuilder(this.endPoint + resourcePath + "/" + identifier).build();
         HttpResponse response = doGet(uri);
         if (response != null) {
@@ -227,6 +225,7 @@ public class RestClient {
     }
 
     public Object listEntity(String resourcePath, Type type, String entityName) throws Exception {
+        log.info(String.format("Listing [entity] %s, [resource-path] %s, [type] %s", entityName, resourcePath, type));
         URI uri = new URIBuilder(this.endPoint + resourcePath).build();
         HttpResponse response = doGet(uri);
         if (response != null) {
@@ -242,6 +241,8 @@ public class RestClient {
     }
 
     public boolean removeEntity(String resourcePath, String identifier, String entityName) throws Exception {
+        log.info(String.format("Removing [entity] %s, [resource-path] %s, [identifier] %s", entityName, resourcePath,
+                identifier));
         URI uri = new URIBuilder(this.endPoint + "/" + resourcePath + "/" + identifier).build();
         HttpResponse response = doDelete(uri);
         if (response != null) {
@@ -249,9 +250,9 @@ public class RestClient {
                 return true;
             } else {
                 ErrorResponse errorResponse = gson.fromJson(response.getContent(), ErrorResponse.class);
-                log.error("Error response while removing entity [identifier] " + identifier + ", [entity name] " +
-                        entityName + ", [error] " + errorResponse.getErrorMessage() + ", [error code] " + errorResponse
-                        .getErrorCode());
+                log.error(String.format(
+                        "Error response while removing entity [identifier] %s, [entity name] %s, [error] %s, [code] %s",
+                        identifier, entityName, errorResponse.getErrorMessage(), errorResponse.getErrorCode()));
                 return false;
             }
         }
@@ -259,9 +260,10 @@ public class RestClient {
     }
 
     public boolean updateEntity(String filePath, String resourcePath, String entityName) throws Exception {
+        log.info(String.format("Updating [entity] %s, [resource-path] %s, [file-path] %s", entityName, resourcePath,
+                filePath));
         String content = getJsonStringFromFile(filePath);
         URI uri = new URIBuilder(this.endPoint + resourcePath).build();
-
         HttpResponse response = doPut(uri, content);
         if (response != null) {
             if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
@@ -278,9 +280,10 @@ public class RestClient {
 
     public boolean addPropertyToApplication(String appId, String propertyKey, String propertyValue, String accessToken)
             throws Exception {
+        log.info(String.format("Adding property to application [application-id] %s, [key] %s, [value] %s, [token] %s",
+                appId, propertyKey, propertyValue, accessToken));
         URI uri = new URIBuilder(
                 this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/properties").build();
-        log.info("Metadata endpoint resource: " + uri.toString());
         PropertyBean property = new PropertyBean(propertyKey, propertyValue);
         HttpResponse response;
         HttpPost postRequest = null;
@@ -296,7 +299,6 @@ public class RestClient {
         } finally {
             releaseConnection(postRequest);
         }
-
         if (response != null) {
             if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
                 return true;
@@ -309,6 +311,9 @@ public class RestClient {
 
     public boolean addPropertyToCluster(String appId, String clusterId, String propertyKey, String propertyValue,
             String accessToken) throws Exception {
+        log.info(String.format(
+                "Adding property to cluster [application-id] %s, [cluster-id] %s, [key] %s, [value] %s, [token] %s",
+                appId, clusterId, propertyKey, propertyValue, accessToken));
         URI uri = new URIBuilder(
                 this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/clusters/" + clusterId
                         + "/properties").build();
@@ -338,11 +343,13 @@ public class RestClient {
         throw new Exception("Null response received. Could not add property to cluster: " + clusterId);
     }
 
-    public PropertyBean getClusterProperty(String appId, String clusterId, String propertyName, String accessToken)
+    public PropertyBean getClusterProperty(String appId, String clusterId, String propertyKey, String accessToken)
             throws Exception {
+        log.info(String.format("Retrieving cluster property [application-id] %s, [cluster-id] %s, [key] %s, [token] %s",
+                appId, clusterId, propertyKey, accessToken));
         URI uri = new URIBuilder(
                 this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/cluster/" + clusterId
-                        + "/properties/" + propertyName).build();
+                        + "/properties/" + propertyKey).build();
         HttpResponse response;
         HttpGet getRequest = null;
         try {
@@ -354,50 +361,38 @@ public class RestClient {
         } finally {
             releaseConnection(getRequest);
         }
-        Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new JsonSerializer<List<?>>() {
-            @Override
-            public JsonElement serialize(List<?> list, Type t, JsonSerializationContext jsc) {
-                if (list.size() == 1) {
-                    // Don't put single element lists in a json array
-                    return new Gson().toJsonTree(list.get(0));
-                } else {
-                    return new Gson().toJsonTree(list);
-                }
-            }
-        }).create();
-        return gson.fromJson(response.getContent(), PropertyBean.class);
+        Gson gson = new GsonBuilder().registerTypeAdapter(PropertyBean.class, new PropertyBeanDeserializer()).create();
+        return gson.fromJson(response.getContent(), new TypeToken<PropertyBean>() {
+        }.getType());
     }
 
-    public PropertyBean getApplicationProperty(String appId, String propertyName, String accessToken) throws Exception {
+    public PropertyBean getApplicationProperty(String appId, String propertyKey, String accessToken) throws Exception {
+        log.info(String.format("Retrieving application property [application-id] %s, [key] %s, [token] %s", appId,
+                propertyKey, accessToken));
         URI uri = new URIBuilder(
                 this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/properties/"
-                        + propertyName).build();
+                        + propertyKey).build();
         HttpResponse response;
         HttpGet getRequest = null;
         try {
             getRequest = new HttpGet(uri);
             getRequest.addHeader("Content-Type", "application/json");
-            String bearerAuth = "Bearer " + accessToken;
-            getRequest.addHeader("Authorization", bearerAuth);
+            if (StringUtils.isNotEmpty(accessToken)) {
+                String bearerAuth = "Bearer " + accessToken;
+                getRequest.addHeader("Authorization", bearerAuth);
+            }
             response = httpClient.execute(getRequest, new HttpResponseHandler());
         } finally {
             releaseConnection(getRequest);
         }
-        Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new JsonSerializer<List<?>>() {
-            @Override
-            public JsonElement serialize(List<?> list, Type t, JsonSerializationContext jsc) {
-                if (list.size() == 1) {
-                    // Don't put single element lists in a json array
-                    return new Gson().toJsonTree(list.get(0));
-                } else {
-                    return new Gson().toJsonTree(list);
-                }
-            }
-        }).create();
-        return gson.fromJson(response.getContent(), PropertyBean.class);
+        Gson gson = new GsonBuilder().registerTypeAdapter(PropertyBean.class, new PropertyBeanDeserializer()).create();
+        return gson.fromJson(response.getContent(), new TypeToken<PropertyBean>() {
+        }.getType());
     }
 
     public boolean deleteApplicationProperties(String appId, String accessToken) throws Exception {
+        log.info(String.format("Deleting application properties in [application-id] %s, [token] %s", appId,
+                accessToken));
         URI uri = new URIBuilder(
                 this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/properties").build();
         HttpResponse response;
@@ -419,7 +414,70 @@ public class RestClient {
                 throw new RuntimeException(response.getContent());
             }
         }
-        throw new Exception("Null response received. Could not delete properties for application: " + appId);
+        throw new Exception(
+                String.format("Null response received. Could not delete properties for [application] %s", appId));
+    }
+
+    public boolean deleteApplicationProperty(String appId, String propertyKey, String accessToken) throws Exception {
+        log.info(String.format("Deleting application property in [application-id] %s, [key] %s, [token] %s", appId,
+                propertyKey, accessToken));
+        URI uri = new URIBuilder(
+                this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/properties/"
+                        + propertyKey).build();
+        HttpResponse response;
+        HttpDelete httpDelete = null;
+        try {
+            httpDelete = new HttpDelete(uri);
+            httpDelete.addHeader("Content-Type", "application/json");
+            String bearerAuth = "Bearer " + accessToken;
+            httpDelete.addHeader("Authorization", bearerAuth);
+            response = httpClient.execute(httpDelete, new HttpResponseHandler());
+        } finally {
+            releaseConnection(httpDelete);
+        }
+
+        if (response != null) {
+            if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                return true;
+            } else {
+                throw new RuntimeException(response.getContent());
+            }
+        }
+        throw new Exception(
+                String.format("Null response received. Could not delete [property] %s in [application] %s", propertyKey,
+                        appId));
+    }
+
+    public boolean deleteApplicationPropertyValue(String appId, String propertyKey, String value, String accessToken)
+            throws Exception {
+        log.info(String.format(
+                "Deleting application property value in [application-id] %s, [key] %s, [value] %s, [token] %s", appId,
+                propertyKey, value, accessToken));
+        URI uri = new URIBuilder(
+                this.securedEndpoint + RestConstants.METADATA_API + "/applications/" + appId + "/properties/"
+                        + propertyKey + "/value/" + value).build();
+        HttpResponse response;
+        HttpDelete httpDelete = null;
+        try {
+            httpDelete = new HttpDelete(uri);
+            httpDelete.addHeader("Content-Type", "application/json");
+            String bearerAuth = "Bearer " + accessToken;
+            httpDelete.addHeader("Authorization", bearerAuth);
+            response = httpClient.execute(httpDelete, new HttpResponseHandler());
+        } finally {
+            releaseConnection(httpDelete);
+        }
+
+        if (response != null) {
+            if ((response.getStatusCode() >= 200) && (response.getStatusCode() < 300)) {
+                return true;
+            } else {
+                throw new RuntimeException(response.getContent());
+            }
+        }
+        throw new Exception(
+                String.format("Null response received. Could not delete [value] %s, [property] %s in [application] %s",
+                        value, propertyKey, appId));
     }
 
     /**
@@ -454,5 +512,30 @@ public class RestClient {
      */
     private String getUsernamePassword() {
         return this.userName + ":" + this.password;
+    }
+
+    class PropertyBeanDeserializer implements JsonDeserializer<PropertyBean> {
+        @Override
+        public PropertyBean deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
+            JsonObject responseJsonObject = json.getAsJsonObject();
+            JsonElement valuesJsonEl = responseJsonObject.get(RestConstants.METADATA_RESPONSE_ATTRIBUTE_VALUES);
+            JsonPrimitive keyJsonPrimitive = responseJsonObject
+                    .getAsJsonPrimitive(RestConstants.METADATA_RESPONSE_ATTRIBUTE_KEY);
+            List<String> tags = new ArrayList<>();
+
+            // Json structure is invalid
+            if (keyJsonPrimitive == null || valuesJsonEl == null) {
+                return null;
+            }
+            String metadataKey = keyJsonPrimitive.getAsString();
+            if (valuesJsonEl.isJsonArray()) {
+                tags = context.deserialize(valuesJsonEl.getAsJsonArray(), new TypeToken<List<String>>() {
+                }.getType());
+            } else {
+                tags.add(valuesJsonEl.getAsString());
+            }
+            return new PropertyBean(metadataKey, tags);
+        }
     }
 }

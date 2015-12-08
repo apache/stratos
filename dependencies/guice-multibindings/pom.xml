@@ -36,9 +36,9 @@
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-multibindings</artifactId>
-            <version>${guice.multibindings.version}</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>

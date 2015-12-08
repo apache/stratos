@@ -21,7 +21,10 @@ package org.apache.stratos.messaging.message.receiver.tenant;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
+import org.apache.stratos.messaging.event.initializer.CompleteTenantRequestEvent;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
@@ -68,12 +71,31 @@ public class TenantEventReceiver {
                 log.debug("Tenant event message delegator thread started");
             }
 
-
+            initializeCompleteTenant();
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Tenant receiver failed", e);
             }
         }
+    }
+
+    public void initializeCompleteTenant() {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                while (!eventSubscriber.isSubscribed()) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignore) {
+                    }
+                }
+
+                CompleteTenantRequestEvent completeTenantRequestEvent = new CompleteTenantRequestEvent();
+                String topic = MessagingUtil.getMessageTopicName(completeTenantRequestEvent);
+                EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
+                eventPublisher.publish(completeTenantRequestEvent);
+            }
+        });
     }
 
     public void terminate() {

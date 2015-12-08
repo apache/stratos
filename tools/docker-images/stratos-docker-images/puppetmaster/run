@@ -51,8 +51,7 @@ sed -i -E "s:(\s*[$]java_name.*=).*$:\1 \"jdk1.7.0_80\":g" $PUPPET_FILE
 sed -i -E "s:(\s*[$]java_distribution.*=).*$:\1 \"jdk-7u80-linux-x64.tar.gz\":g" $PUPPET_FILE
 
 sed -i -E "s:(\s*[$]local_package_dir.*=).*$:\1 \"/mnt/packs\":g" $PUPPET_FILE
-sed -i -E "s:(\s*[$]mb_ip.*=).*$:\1 \"$MB_HOSTNAME\":g" $PUPPET_FILE
-sed -i -E "s:(\s*[$]mb_port.*=).*$:\1 \"$MB_PORT\":g" $PUPPET_FILE
+sed -i -E "s:(\s*[$]mb_url.*=).*$:\1 \"$MB_HOSTNAME:$MB_PORT\":g" $PUPPET_FILE
 sed -i -E "s:(\s*[$]truststore_password.*=).*$:\1 \"$TRUSTSTORE_PASSWORD\":g" $PUPPET_FILE
 
 puppet master --no-daemonize --logdest console

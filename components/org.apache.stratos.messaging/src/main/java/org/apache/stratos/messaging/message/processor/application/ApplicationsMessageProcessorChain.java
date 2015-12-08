@@ -101,7 +101,6 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
     }
 
     public void addEventListener(EventListener eventListener) {
-
         if (eventListener instanceof GroupInstanceCreatedEventListener) {
             groupCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof GroupInstanceInactivateEventListener) {
@@ -132,6 +131,43 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
             completeApplicationsMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof GroupMaintenanceModeEventListener){
             groupMaintenanceModeProcessor.addEventListener(eventListener);
+        } else {
+            throw new RuntimeException("Unknown event listener " + eventListener.toString());
+        }
+    }
+
+
+    public void removeEventListener(EventListener eventListener) {
+        if (eventListener instanceof GroupInstanceCreatedEventListener) {
+            groupCreatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof GroupInstanceInactivateEventListener) {
+            groupInactivateMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof GroupInstanceActivatedEventListener) {
+            groupActivatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof GroupInstanceTerminatingEventListener) {
+            groupTerminatingProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof GroupInstanceTerminatedEventListener) {
+            groupTerminatedProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationInstanceCreatedEventListener) {
+            applicationInstanceCreatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationCreatedEventListener) {
+            applicationCreatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationUndeployedEventListener) {
+            applicationUpdatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationDeletedEventListener) {
+            applicationDeletedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationInstanceActivatedEventListener) {
+            applicationActivatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationInstanceInactivatedEventListener) {
+            applicationInactivatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationInstanceTerminatingEventListener) {
+            applicationTerminatingMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationInstanceTerminatedEventListener) {
+            applicationTerminatedMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof CompleteApplicationsEventListener) {
+            completeApplicationsMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof GroupMaintenanceModeEventListener){
+            groupMaintenanceModeProcessor.removeEventListener(eventListener);
         } else {
             throw new RuntimeException("Unknown event listener " + eventListener.toString());
         }

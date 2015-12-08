@@ -21,6 +21,8 @@ package org.apache.stratos.mock.iaas.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.Component;
+import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
 import org.apache.stratos.mock.iaas.api.exception.MockIaasApiException;
 import org.apache.stratos.mock.iaas.config.MockIaasConfig;
 import org.apache.stratos.mock.iaas.domain.MockInstanceContext;
@@ -47,6 +49,24 @@ public class MockIaasApi {
     private MockIaasService mockIaasService;
 
     public MockIaasApi() {
+    }
+
+    @GET
+    @Path("/status")
+    @Produces("application/json")
+    public Response init() throws MockIaasApiException {
+
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        Object serviceObj = carbonContext.getOSGiService(ComponentStartUpSynchronizer.class);
+        if (serviceObj == null || !(serviceObj instanceof ComponentStartUpSynchronizer)) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
+
+        ComponentStartUpSynchronizer componentStartUpSynchronizer = (ComponentStartUpSynchronizer) serviceObj;
+        if (!componentStartUpSynchronizer.isComponentActive(Component.MockIaaS)) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
+        return Response.status(Response.Status.OK).build();
     }
 
     @POST

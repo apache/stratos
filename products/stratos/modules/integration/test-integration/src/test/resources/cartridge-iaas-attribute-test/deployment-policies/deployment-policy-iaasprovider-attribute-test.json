@@ -1,0 +1,15 @@
+{
+  "id": "deployment-policy-iaasprovider-attribute-test",
+  "networkPartitions": [
+    {
+      "id": "network-partition-iaasprovider-attribute-test",
+      "partitionAlgo": "one-after-another",
+      "partitions": [
+        {
+          "id": "partition-1",
+          "partitionMax": 20
+        }
+      ]
+    }
+  ]
+}

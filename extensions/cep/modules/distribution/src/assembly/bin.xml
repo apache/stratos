@@ -56,4 +56,29 @@
             <fileMode>644</fileMode>
         </file>
     </files>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>${project.artifactId}-${project.version}/lib</outputDirectory>
+            <includes>
+                <include>org.apache.activemq:activemq-client:jar</include>
+                <include>org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:jar</include>
+                <include>org.fusesource.hawtbuf:hawtbuf:jar</include>
+                <include>org.apache.commons:commons-lang3:jar</include>
+                <include>org.apache.stratos:org.apache.stratos.messaging:jar</include>
+                <include>org.apache.stratos:org.apache.stratos.common:jar</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>${project.artifactId}-${project.version}/wso2cep-3.0.0/lib</outputDirectory>
+            <includes>
+                <include>org.apache.stratos:org.apache.stratos.cep300.extension:jar</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>${project.artifactId}-${project.version}/wso2cep-3.1.0/lib</outputDirectory>
+            <includes>
+                <include>org.apache.stratos:org.apache.stratos.cep310.extension:jar</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
 </assembly>

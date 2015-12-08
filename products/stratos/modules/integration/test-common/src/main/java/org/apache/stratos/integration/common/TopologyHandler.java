@@ -30,11 +30,18 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.application.*;
+import org.apache.stratos.messaging.event.health.stat.MemberFaultEvent;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.listener.application.*;
+import org.apache.stratos.messaging.listener.health.stat.MemberFaultEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
+import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpEventReceiver;
+import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpManager;
+import org.apache.stratos.messaging.message.receiver.health.stat.HealthStatEventReceiver;
+import org.apache.stratos.messaging.message.receiver.tenant.TenantEventReceiver;
+import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.mock.iaas.client.MockIaasApiClient;
@@ -43,6 +50,7 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import static org.testng.AssertJUnit.*;
 
@@ -50,28 +58,40 @@ import static org.testng.AssertJUnit.*;
  * To start the Topology receivers
  */
 public class TopologyHandler {
-    private static final Log log = LogFactory.getLog(TopologyHandler.class);
-
-    public static final int APPLICATION_ACTIVATION_TIMEOUT = 500000;
-    public static final int APPLICATION_UNDEPLOYMENT_TIMEOUT = 500000;
-    public static final int MEMBER_TERMINATION_TIMEOUT = 500000;
-    public static final int APPLICATION_TOPOLOGY_TIMEOUT = 120000;
+    public static final int APPLICATION_ACTIVATION_TIMEOUT = 300000;
+    public static final int APPLICATION_INACTIVATION_TIMEOUT = 120000;
+    public static final int APPLICATION_UNDEPLOYMENT_TIMEOUT = 30000;
+    public static final int MEMBER_TERMINATION_TIMEOUT = 120000;
+    public static final int APPLICATION_TOPOLOGY_INIT_TIMEOUT = 20000;
+    public static final int TENANT_INIT_TIMEOUT = 20000;
+    public static final int APPLICATION_SIGNUP_INIT_TIMEOUT = 20000;
+    public static final int TOPOLOGY_INIT_TIMEOUT = 20000;
     public static final String APPLICATION_STATUS_CREATED = "Created";
     public static final String APPLICATION_STATUS_UNDEPLOYING = "Undeploying";
+    private static final Log log = LogFactory.getLog(TopologyHandler.class);
+    public static TopologyHandler topologyHandler;
+    private HealthStatEventReceiver healthStatEventReceiver;
     private ApplicationsEventReceiver applicationsEventReceiver;
     private TopologyEventReceiver topologyEventReceiver;
-    public static TopologyHandler topologyHandler;
-    private Map<String, Long> terminatedMembers = new ConcurrentHashMap<String, Long>();
-    private Map<String, Long> terminatingMembers = new ConcurrentHashMap<String, Long>();
+    private TenantEventReceiver tenantEventReceiver;
+    private ApplicationSignUpEventReceiver applicationSignUpEventReceiver;
+    private ExecutorService executorService = StratosThreadPool.getExecutorService("stratos.integration.test.pool", 30);
+    private Map<String, Long> terminatedMembers = new ConcurrentHashMap<>();
+    private Map<String, Long> terminatingMembers = new ConcurrentHashMap<>();
     private Map<String, Long> createdMembers = new ConcurrentHashMap<String, Long>();
     private Map<String, Long> inActiveMembers = new ConcurrentHashMap<String, Long>();
     private Map<String, Long> activateddMembers = new ConcurrentHashMap<String, Long>();
 
     private TopologyHandler() {
+        initializeHealthStatsEventReceiver();
         initializeApplicationEventReceiver();
         initializeTopologyEventReceiver();
+        initializeTenantEventReceiver();
+        initializeApplicationSignUpEventReceiver();
         assertApplicationTopologyInitialized();
         assertTopologyInitialized();
+        assertTenantInitialized();
+        assertApplicationSignUpInitialized();
         addTopologyEventListeners();
         addApplicationEventListeners();
     }
@@ -87,101 +107,338 @@ public class TopologyHandler {
         return topologyHandler;
     }
 
+    private void initializeApplicationSignUpEventReceiver() {
+        applicationSignUpEventReceiver = new ApplicationSignUpEventReceiver();
+        applicationSignUpEventReceiver.setExecutorService(executorService);
+        applicationSignUpEventReceiver.execute();
+    }
+
+    private void initializeTenantEventReceiver() {
+        tenantEventReceiver = new TenantEventReceiver();
+        tenantEventReceiver.setExecutorService(executorService);
+        tenantEventReceiver.execute();
+    }
+
+    /**
+     * Initialize application event receiver
+     */
+    private void initializeHealthStatsEventReceiver() {
+        healthStatEventReceiver = new HealthStatEventReceiver();
+        healthStatEventReceiver.setExecutorService(executorService);
+        healthStatEventReceiver.addEventListener(new MemberFaultEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                MemberFaultEvent memberFaultEvent = (MemberFaultEvent) event;
+                log.info(String.format("MemberFaultEvent received for member [member-id] %s",
+                        memberFaultEvent.getMemberId()));
+            }
+        });
+        healthStatEventReceiver.execute();
+    }
+
     /**
      * Initialize application event receiver
      */
     private void initializeApplicationEventReceiver() {
-        if (applicationsEventReceiver == null) {
-            applicationsEventReceiver = new ApplicationsEventReceiver();
-            ExecutorService executorService = StratosThreadPool.getExecutorService("STRATOS_TEST_SERVER", 1);
-            applicationsEventReceiver.setExecutorService(executorService);
-            applicationsEventReceiver.execute();
-        }
+        applicationsEventReceiver = new ApplicationsEventReceiver();
+        applicationsEventReceiver.setExecutorService(executorService);
+        applicationsEventReceiver.addEventListener(new ApplicationInstanceActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                ApplicationInstanceActivatedEvent appInstanceActivatedEvent = (ApplicationInstanceActivatedEvent) event;
+                log.info(String.format(
+                        "ApplicationInstanceActivatedEvent received for application [application-id] %s [instance-id]"
+                                + " %s", appInstanceActivatedEvent.getAppId(),
+                        appInstanceActivatedEvent.getInstanceId()));
+            }
+        });
+
+        applicationsEventReceiver.addEventListener(new ApplicationInstanceInactivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                ApplicationInstanceInactivatedEvent appInstanceInactivatedEvent
+                        = (ApplicationInstanceInactivatedEvent) event;
+                log.info(String.format(
+                        "ApplicationInstanceInactivatedEvent received for application [application-id] %s "
+                                + "[instance-id] %s", appInstanceInactivatedEvent.getAppId(),
+                        appInstanceInactivatedEvent.getInstanceId()));
+            }
+        });
+        applicationsEventReceiver.execute();
     }
 
     /**
      * Initialize Topology event receiver
      */
     private void initializeTopologyEventReceiver() {
-        if (topologyEventReceiver == null) {
-            topologyEventReceiver = new TopologyEventReceiver();
-            ExecutorService executorService = StratosThreadPool.getExecutorService("STRATOS_TEST_SERVER1", 1);
-            topologyEventReceiver.setExecutorService(executorService);
-            topologyEventReceiver.execute();
-        }
+        topologyEventReceiver = new TopologyEventReceiver();
+        topologyEventReceiver.setExecutorService(executorService);
+        topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent) event;
+                log.info(String.format("MemberActivatedEvent received for member [member-id] %s",
+                        memberActivatedEvent.getMemberId()));
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                MemberTerminatedEvent memberTerminatedEvent = (MemberTerminatedEvent) event;
+                log.info(String.format("MemberTerminatedEvent received for member [member-id] %s",
+                        memberTerminatedEvent.getMemberId()));
+            }
+        });
+        topologyEventReceiver.addEventListener(new ClusterInstanceActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                ClusterInstanceActivatedEvent clusterInstanceActivatedEvent = (ClusterInstanceActivatedEvent) event;
+                log.info(String.format("ClusterInstanceActivatedEvent received for cluster [cluster-id] %s",
+                        clusterInstanceActivatedEvent.getClusterId()));
+            }
+        });
+        topologyEventReceiver.addEventListener(new ClusterInstanceInactivateEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                ClusterInstanceInactivateEvent clusterInstanceInactivateEvent = (ClusterInstanceInactivateEvent) event;
+                log.info(String.format("MemberTerminatedEvent received for cluster [cluster-id] %s",
+                        clusterInstanceInactivateEvent.getClusterId()));
+            }
+        });
+        topologyEventReceiver.execute();
     }
 
     /**
      * Assert application Topology initialization
      */
     private void assertApplicationTopologyInitialized() {
+        log.info(String.format("Asserting application topology initialization within %d ms",
+                APPLICATION_TOPOLOGY_INIT_TIMEOUT));
         long startTime = System.currentTimeMillis();
-        boolean applicationTopologyInitialized = ApplicationManager.getApplications().isInitialized();
-        while (!applicationTopologyInitialized) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-            applicationTopologyInitialized = ApplicationManager.getApplications().isInitialized();
-            if ((System.currentTimeMillis() - startTime) > APPLICATION_TOPOLOGY_TIMEOUT) {
+        while (!ApplicationManager.getApplications().isInitialized()) {
+            log.info("Waiting for application topology to be initialized...");
+            sleep(1000);
+            if ((System.currentTimeMillis() - startTime) > APPLICATION_TOPOLOGY_INIT_TIMEOUT) {
                 break;
             }
         }
-        assertEquals(String.format("Application Topology didn't get initialized "), applicationTopologyInitialized,
-                true);
+        if (ApplicationManager.getApplications().isInitialized()) {
+            log.info(String.format("Application topology initialized under %d ms",
+                    (System.currentTimeMillis() - startTime)));
+        }
+        assertTrue(String.format("Application topology didn't get initialized within %d ms",
+                APPLICATION_TOPOLOGY_INIT_TIMEOUT), ApplicationManager.getApplications().isInitialized());
     }
 
     /**
      * Assert Topology initialization
      */
     private void assertTopologyInitialized() {
+        log.info(String.format("Asserting topology initialization within %d ms", TOPOLOGY_INIT_TIMEOUT));
         long startTime = System.currentTimeMillis();
-        boolean topologyInitialized = TopologyManager.getTopology().isInitialized();
-        while (!topologyInitialized) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-            topologyInitialized = TopologyManager.getTopology().isInitialized();
-            if ((System.currentTimeMillis() - startTime) > APPLICATION_TOPOLOGY_TIMEOUT) {
+        while (!TopologyManager.getTopology().isInitialized()) {
+            log.info("Waiting for topology to be initialized...");
+            sleep(1000);
+            if ((System.currentTimeMillis() - startTime) > TOPOLOGY_INIT_TIMEOUT) {
                 break;
             }
         }
-        assertEquals(String.format("Topology didn't get initialized "), topologyInitialized, true);
+        if (TopologyManager.getTopology().isInitialized()) {
+            log.info(String.format("Topology initialized under %d ms", (System.currentTimeMillis() - startTime)));
+        }
+        assertTrue(String.format("Topology didn't get initialized within %d ms", TOPOLOGY_INIT_TIMEOUT),
+                TopologyManager.getTopology().isInitialized());
+    }
+
+    private void assertTenantInitialized() {
+        log.info(String.format("Asserting tenant model initialization within %d ms", TENANT_INIT_TIMEOUT));
+        long startTime = System.currentTimeMillis();
+        while (!TenantManager.getInstance().isInitialized()) {
+            log.info("Waiting for tenant model to be initialized...");
+            sleep(1000);
+            if ((System.currentTimeMillis() - startTime) > TENANT_INIT_TIMEOUT) {
+                break;
+            }
+        }
+        if (TenantManager.getInstance().isInitialized()) {
+            log.info(String.format("Tenant model initialized under %d ms", (System.currentTimeMillis() - startTime)));
+        }
+        assertTrue(String.format("Tenant model didn't get initialized within %d ms", TENANT_INIT_TIMEOUT),
+                TenantManager.getInstance().isInitialized());
+    }
+
+    private void assertApplicationSignUpInitialized() {
+        log.info(String.format("Asserting application signup initialization within %d ms",
+                APPLICATION_SIGNUP_INIT_TIMEOUT));
+        long startTime = System.currentTimeMillis();
+        while (!ApplicationSignUpManager.getInstance().isInitialized()) {
+            log.info("Waiting for application signup model to be initialized...");
+            sleep(1000);
+            if ((System.currentTimeMillis() - startTime) > APPLICATION_SIGNUP_INIT_TIMEOUT) {
+                break;
+            }
+        }
+        if (ApplicationSignUpManager.getInstance().isInitialized()) {
+            log.info(String.format("Application signup initialized under %d ms",
+                    (System.currentTimeMillis() - startTime)));
+        }
+        assertTrue(String.format("Application signup didn't get initialized within %d ms",
+                APPLICATION_SIGNUP_INIT_TIMEOUT), ApplicationSignUpManager.getInstance().isInitialized());
+    }
+
+    /**
+     * Assert application Active status
+     *
+     * @param applicationId
+     */
+    public void assertApplicationActiveStatus(final String applicationId) throws InterruptedException {
+        log.info(String.format("Asserting application status ACTIVE for [application-id] %s...", applicationId));
+        final long startTime = System.currentTimeMillis();
+        final Object synObject = new Object();
+        ApplicationInstanceActivatedEventListener activatedEventListener
+                = new ApplicationInstanceActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                ApplicationInstanceActivatedEvent activatedEvent = (ApplicationInstanceActivatedEvent) event;
+                Application application = ApplicationManager.getApplications().getApplication(applicationId);
+                if (application == null) {
+                    log.warn(String.format("Application is null: [application-id] %s, [instance-id] %s", applicationId,
+                            activatedEvent.getInstanceId()));
+                }
+                if (application != null && application.getStatus() == ApplicationStatus.Active) {
+                    synchronized (synObject) {
+                        synObject.notify();
+                    }
+                }
+            }
+        };
+        applicationsEventReceiver.addEventListener(activatedEventListener);
+
+        Future future = executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                Application application = ApplicationManager.getApplications().getApplication(applicationId);
+                while (!((application != null) && (application.getStatus() == ApplicationStatus.Active))) {
+                    if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
+                        log.error(String.format("Application [application-id] %s did not activate within [timeout] %d",
+                                applicationId, APPLICATION_ACTIVATION_TIMEOUT));
+                        break;
+                    }
+                    ApplicationStatus currentStatus = (application != null) ? application.getStatus() : null;
+                    log.info(String.format(
+                            "Waiting for [application-id] %s [current-status] %s to become [status] %s...",
+                            applicationId, currentStatus, ApplicationStatus.Active));
+                    sleep(10000);
+                    application = ApplicationManager.getApplications().getApplication(applicationId);
+                }
+                synchronized (synObject) {
+                    synObject.notify();
+                }
+            }
+        });
+
+        synchronized (synObject) {
+            synObject.wait();
+            future.cancel(true);
+            applicationsEventReceiver.removeEventListener(activatedEventListener);
+        }
+
+        Application application = ApplicationManager.getApplications().getApplication(applicationId);
+        ApplicationStatus currentStatus = (application != null) ? application.getStatus() : null;
+        log.info(
+                String.format("Assert application active status for [application-id] %s [current-status] %s took %d ms",
+                        applicationId, currentStatus, System.currentTimeMillis() - startTime));
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationId), application);
+        assertEquals(
+                String.format("Application status did not change to %s: [application-id] %s", ApplicationStatus.Active,
+                        applicationId), ApplicationStatus.Active, application.getStatus());
+    }
+
+    /**
+     * Assert application Inactive status within default timeout
+     *
+     * @param applicationId
+     */
+    public void assertApplicationInActiveStatus(final String applicationId) throws InterruptedException {
+        assertApplicationInActiveStatus(applicationId, APPLICATION_INACTIVATION_TIMEOUT);
+    }
+
+    /**
+     * Assert application Inactive status
+     *
+     * @param applicationId
+     * @param timeout
+     */
+    public void assertApplicationInActiveStatus(final String applicationId, final int timeout)
+            throws InterruptedException {
+        log.info(
+                String.format("Asserting application status INACTIVE for [application-id] %s within [timeout] %d ms...",
+                        applicationId, timeout));
+        final long startTime = System.currentTimeMillis();
+        final Object synObject = new Object();
+        ApplicationInstanceInactivatedEventListener inactivatedEventListener
+                = new ApplicationInstanceInactivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                Application application = ApplicationManager.getApplications().getApplication(applicationId);
+                if (application == null || application.getStatus() == ApplicationStatus.Inactive) {
+                    synchronized (synObject) {
+                        synObject.notify();
+                    }
+                }
+            }
+        };
+        applicationsEventReceiver.addEventListener(inactivatedEventListener);
+
+        Future future = executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                Application application = ApplicationManager.getApplications().getApplication(applicationId);
+                while (!((application != null) && (application.getStatus() == ApplicationStatus.Inactive))) {
+                    if ((System.currentTimeMillis() - startTime) > timeout) {
+                        log.error(String.format(
+                                "Application [application-id] %s did not become inactive within [timeout] %d",
+                                applicationId, timeout));
+                        break;
+                    }
+                    ApplicationStatus currentStatus = (application != null) ? application.getStatus() : null;
+                    log.info(String.format(
+                            "Waiting for [application-id] %s [current-status] %s to become [status] %s...",
+                            applicationId, currentStatus, ApplicationStatus.Inactive));
+                    sleep(10000);
+                    application = ApplicationManager.getApplications().getApplication(applicationId);
+                }
+                synchronized (synObject) {
+                    synObject.notify();
+                }
+            }
+        });
+
+        synchronized (synObject) {
+            synObject.wait();
+            future.cancel(true);
+            applicationsEventReceiver.removeEventListener(inactivatedEventListener);
+        }
+        Application application = ApplicationManager.getApplications().getApplication(applicationId);
+        ApplicationStatus currentStatus = (application != null) ? application.getStatus() : null;
+        log.info(String.format(
+                "Assert application inactive status for [application-id] %s [current-status] %s took %d ms",
+                applicationId, currentStatus, System.currentTimeMillis() - startTime));
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationId), application);
+        assertEquals(String.format("Application status did not change to %s: [application-id] %s",
+                ApplicationStatus.Inactive, applicationId), ApplicationStatus.Inactive, application.getStatus());
     }
 
     /**
      * Assert application activation
      *
-     * @param applicationName
+     * @param applicationId
      */
-    public void assertApplicationStatus(String applicationName, ApplicationStatus status) {
-        long startTime = System.currentTimeMillis();
-        Application application = ApplicationManager.getApplications().getApplication(applicationName);
-        while (!((application != null) && (application.getStatus() == status))) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-            application = ApplicationManager.getApplications().getApplication(applicationName);
-            if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
-                log.error("Application did not activate within timeout period");
-                break;
-            }
-        }
-        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
-        assertEquals(String.format("Application status did not change to %s: [application-id] %s", status.toString(),
-                applicationName), status, application.getStatus());
-    }
-
-    /**
-     * Assert application activation
-     *
-     * @param applicationName
-     */
-    public void assertGroupActivation(String applicationName) {
-        Application application = ApplicationManager.getApplications().getApplication(applicationName);
-        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
+    public void assertGroupActivation(String applicationId) {
+        log.info(String.format("Asserting group status ACTIVE for [application-id] %s...", applicationId));
+        Application application = ApplicationManager.getApplications().getApplication(applicationId);
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationId), application);
 
         Collection<Group> groups = application.getAllGroupsRecursively();
         for (Group group : groups) {
@@ -192,23 +449,25 @@ public class TopologyHandler {
     /**
      * Assert application activation
      *
-     * @param applicationName
+     * @param applicationId
      */
-    public void assertClusterActivation(String applicationName) {
-        Application application = ApplicationManager.getApplications().getApplication(applicationName);
-        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
+    public void assertClusterActivation(String applicationId) {
+        log.info(String.format("Asserting cluster status ACTIVE for [application-id] %s...", applicationId));
+        Application application = ApplicationManager.getApplications().getApplication(applicationId);
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationId), application);
 
         Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
         for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
             String serviceName = clusterDataHolder.getServiceType();
             String clusterId = clusterDataHolder.getClusterId();
             Service service = TopologyManager.getTopology().getService(serviceName);
-            assertNotNull(String.format("Service is not found: [application-id] %s [service] %s", applicationName,
-                    serviceName), service);
+            assertNotNull(
+                    String.format("Service is not found: [application-id] %s [service] %s", applicationId, serviceName),
+                    service);
 
             Cluster cluster = service.getCluster(clusterId);
             assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
-                    applicationName, serviceName, clusterId), cluster);
+                    applicationId, serviceName, clusterId), cluster);
             for (Member member : cluster.getMembers()) {
                 log.info(String.format("Member [member-id] %s found in cluster instance [cluster-instance] %s of "
                                 + "cluster [cluster-id] %s", member.getMemberId(), member.getClusterInstanceId(),
@@ -274,17 +533,22 @@ public class TopologyHandler {
      * @param mockIaasApiClient
      */
     public void terminateMemberInMockIaas(String memberId, MockIaasApiClient mockIaasApiClient) {
-        boolean memberTerminated = false;
-        memberTerminated = mockIaasApiClient.terminateInstance(memberId);
+        boolean memberTerminated = mockIaasApiClient.terminateInstance(memberId);
+        log.info(String.format("Terminating mock instance via Mock API client: [member-id] %s", memberId));
         assertTrue(String.format("Member [member-id] %s couldn't be terminated from the mock IaaS", memberId),
                 memberTerminated);
     }
 
     public void assertMemberTermination(String memberId) {
+        log.info(String.format("Asserting member termination for [member-id] %s", memberId));
         long startTime = System.currentTimeMillis();
-        assertNotNull(String.format("Member id is not found: [member-id] %s", memberId));
+        assertNotNull("Member id cannot be null", memberId);
         boolean hasMemberRemoved = false;
         while (!hasMemberRemoved) {
+            if (System.currentTimeMillis() - startTime > MEMBER_TERMINATION_TIMEOUT) {
+                log.error("Member did not get removed from the topology within timeout period");
+                break;
+            }
             // Wait until the member gets removed by MemberTerminatedEvent topology receiver
             if (getTerminatingMembers().get(memberId) == null &&
                     getInActiveMembers().get(memberId) == null &&
@@ -292,39 +556,34 @@ public class TopologyHandler {
                     getCreatedMembers().get(memberId) == null) {
                 getTerminatedMembers().remove(memberId);
                 hasMemberRemoved = true;
-            } else {
-                if (getTerminatedMembers().get(memberId) - startTime > MEMBER_TERMINATION_TIMEOUT) {
-                    log.error("Member did not get removed from the topology within timeout period");
-                    break;
-                }
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                log.error("Could not sleep", e);
-            }
+            log.info(String.format("Waiting for [member-id] %s to be terminated...", memberId));
+            sleep(2000);
         }
+        log.info(String.format("Assert member termination for [member-id] %s took %d ms", memberId,
+                System.currentTimeMillis() - startTime));
         assertTrue(String.format("Member [member-id] %s did not get removed from the topology", memberId),
                 hasMemberRemoved);
     }
 
-    public void assertClusterMinMemberCount(String applicationName, int minMembers) {
+    public void assertClusterMinMemberCount(String applicationId, int minMembers) {
+        log.info(String.format("Asserting cluster min member count for [application-id] %s...", applicationId));
         long startTime = System.currentTimeMillis();
-
-        Application application = ApplicationManager.getApplications().getApplication(applicationName);
-        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
+        Application application = ApplicationManager.getApplications().getApplication(applicationId);
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationId), application);
 
         Set<ClusterDataHolder> clusterDataHolderSet = application.getClusterDataRecursively();
         for (ClusterDataHolder clusterDataHolder : clusterDataHolderSet) {
             String serviceName = clusterDataHolder.getServiceType();
             String clusterId = clusterDataHolder.getClusterId();
             Service service = TopologyManager.getTopology().getService(serviceName);
-            assertNotNull(String.format("Service is not found: [application-id] %s [service] %s", applicationName,
-                    serviceName), service);
+            assertNotNull(
+                    String.format("Service is not found: [application-id] %s [service] %s", applicationId, serviceName),
+                    service);
 
             Cluster cluster = service.getCluster(clusterId);
             assertNotNull(String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
-                    applicationName, serviceName, clusterId), cluster);
+                    applicationId, serviceName, clusterId), cluster);
             boolean clusterActive = false;
 
             for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
@@ -339,14 +598,15 @@ public class TopologyHandler {
                 clusterActive = activeInstances >= minMembers;
 
                 while (!clusterActive) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ignore) {
+                    if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
+                        log.error("Cluster did not activate within timeout period");
+                        break;
                     }
+                    log.info(String.format("Waiting for [application-id] %s to be terminated...", applicationId));
+                    sleep(2000);
                     service = TopologyManager.getTopology().getService(serviceName);
-                    assertNotNull(
-                            String.format("Service is not found: [application-id] %s [service] %s", applicationName,
-                                    serviceName), service);
+                    assertNotNull(String.format("Service is not found: [application-id] %s [service] %s", applicationId,
+                            serviceName), service);
 
                     cluster = service.getCluster(clusterId);
                     activeInstances = 0;
@@ -360,14 +620,11 @@ public class TopologyHandler {
                     clusterActive = activeInstances >= minMembers;
                     assertNotNull(
                             String.format("Cluster is not found: [application-id] %s [service] %s [cluster-id] %s",
-                                    applicationName, serviceName, clusterId), cluster);
-
-                    if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
-                        log.error("Cluster did not activate within timeout period");
-                        break;
-                    }
+                                    applicationId, serviceName, clusterId), cluster);
                 }
             }
+            log.info(String.format("Assert cluster min member count [cluster-id] %s took %d ms", clusterId,
+                    System.currentTimeMillis() - startTime));
             assertEquals(String.format("Cluster status did not change to active: [cluster-id] %s", clusterId),
                     clusterActive, true);
         }
@@ -377,46 +634,52 @@ public class TopologyHandler {
     /**
      * Assert application activation
      *
-     * @param applicationName
+     * @param applicationId
      */
-    public boolean assertApplicationUndeploy(String applicationName) {
+    public boolean assertApplicationUndeploy(String applicationId) {
+        log.info(String.format("Asserting application undeploy for [application-id] %s...", applicationId));
         long startTime = System.currentTimeMillis();
-        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+        Application application = ApplicationManager.getApplications().getApplication(applicationId);
         ApplicationContext applicationContext = null;
         try {
-            applicationContext = AutoscalerServiceClient.getInstance().getApplication(applicationName);
+            applicationContext = AutoscalerServiceClient.getInstance().getApplication(applicationId);
         } catch (RemoteException e) {
-            log.error("Error while getting the application context for [application] " + applicationName);
+            log.error(
+                    String.format("Error while getting the application context for [application-id] %s", applicationId),
+                    e);
         }
         while (((application != null) && application.getInstanceContextCount() > 0) || (applicationContext == null
                 || applicationContext.getStatus().equals(APPLICATION_STATUS_UNDEPLOYING))) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-            application = ApplicationManager.getApplications().getApplication(applicationName);
-            try {
-                applicationContext = AutoscalerServiceClient.getInstance().getApplication(applicationName);
-            } catch (RemoteException e) {
-                log.error("Error while getting the application context for [application] " + applicationName);
-            }
             if ((System.currentTimeMillis() - startTime) > APPLICATION_UNDEPLOYMENT_TIMEOUT) {
-                log.error("Application did not undeploy within timeout period");
+                log.error(String.format("Application [application-id] %s did not undeploy within timeout period",
+                        applicationId));
                 break;
             }
+            String currentStatus = (applicationContext != null) ? applicationContext.getStatus() : null;
+            log.info(String.format("Waiting for [application-id] %s [current-status] %s to be undeployed...",
+                    applicationId, currentStatus));
+            sleep(2000);
+            application = ApplicationManager.getApplications().getApplication(applicationId);
+            try {
+                applicationContext = AutoscalerServiceClient.getInstance().getApplication(applicationId);
+            } catch (RemoteException e) {
+                log.error(String.format("Error while getting the application context for [application-id] %s",
+                        applicationId), e);
+            }
         }
+        log.info(String.format("Assert application undeploy for [application-id] %s took %d ms", applicationId,
+                System.currentTimeMillis() - startTime));
 
-        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
-        assertNotNull(String.format("Application Context is not found: [application-id] %s", applicationName),
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationId), application);
+        assertNotNull(String.format("Application Context is not found: [application-id] %s", applicationId),
                 applicationContext);
 
-        //Force undeployment after the graceful deployment
+        // Trigger a forced undeployment if graceful deployment fails
         if (application.getInstanceContextCount() > 0 || applicationContext.getStatus()
                 .equals(APPLICATION_STATUS_UNDEPLOYING)) {
             return false;
         }
-        assertEquals(
-                String.format("Application status did not change to Created: [application-id] %s", applicationName),
+        assertEquals(String.format("Application status did not change to Created: [application-id] %s", applicationId),
                 APPLICATION_STATUS_CREATED, applicationContext.getStatus());
         return true;
     }
@@ -424,40 +687,46 @@ public class TopologyHandler {
     /**
      * Assert application activation
      *
-     * @param applicationName
+     * @param applicationId
      */
-    public void assertGroupInstanceCount(String applicationName, String groupAlias, int count) {
+    public void assertGroupInstanceCount(String applicationId, String groupAlias, int count) {
+        log.info(String.format("Asserting group instance count for [application-id] %s, [group-alias] %s...",
+                applicationId, groupAlias));
         long startTime = System.currentTimeMillis();
-        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+        Application application = ApplicationManager.getApplications().getApplication(applicationId);
         if (application != null) {
             Group group = application.getGroupRecursively(groupAlias);
             while (group.getInstanceContextCount() != count) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignore) {
-                }
                 if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
                     log.error("Group instance min count check failed within timeout period");
                     break;
                 }
+                log.info(String.format(
+                        "Waiting until [application-id] %s [group-alias] %s instance count to be [count] %d...",
+                        applicationId, groupAlias, count));
+                sleep(2000);
             }
+            log.info(String.format("Assert group instance min count for [group-alias] %s took %d ms", groupAlias,
+                    System.currentTimeMillis() - startTime));
+
             for (GroupInstance instance : group.getInstanceIdToInstanceContextMap().values()) {
                 while (!instance.getStatus().equals(GroupStatus.Active)) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ignore) {
-                    }
                     if ((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
                         log.error("Application did not activate within timeout period");
                         break;
                     }
+                    log.info(String.format("Waiting for group [alias] %s, [group-instance-id] %s to be active...",
+                            instance.getAlias(), instance.getInstanceId()));
+                    sleep(2000);
                 }
             }
+            log.info(String.format("Assert group instance active for [group-alias] %s took %d ms", groupAlias,
+                    System.currentTimeMillis() - startTime));
             assertEquals(
-                    String.format("Application status did not change to active: [application-id] %s", applicationName),
+                    String.format("Application status did not change to active: [application-id] %s", applicationId),
                     group.getInstanceContextCount(), count);
         }
-        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationId), application);
 
     }
 
@@ -682,5 +951,12 @@ public class TopologyHandler {
             }
         }
         return memberList;
+    }
+
+    private void sleep(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (Exception ignored) {
+        }
     }
 }

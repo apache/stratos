@@ -23,7 +23,7 @@ package org.apache.stratos.cloud.controller.registry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.internal.ServiceReferenceHolder;
+import org.apache.stratos.cloud.controller.internal.ServiceReferenceHolder;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
@@ -141,7 +141,7 @@ public class RegistryManager {
     }
 
     private UserRegistry getRegistry() throws RegistryException {
-        return ServiceReferenceHolder.getInstance().getRegistryService().getGovernanceSystemRegistry();
+        return ServiceReferenceHolder.getInstance().getRegistry();
     }
 
     /**

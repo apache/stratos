@@ -54,7 +54,8 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.styles:${project.version}
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.manager.styles:${project.version}
                                 </bundleDef>
                             </bundles>
                             <importFeatures>

@@ -63,4 +63,16 @@ public class InstanceNotifierMessageProcessorChain extends MessageProcessorChain
             throw new RuntimeException("Unknown event listener");
         }
     }
+
+    public void removeEventListener(EventListener eventListener) {
+        if (eventListener instanceof ArtifactUpdateEventListener) {
+            artifactUpdateMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof InstanceCleanupMemberEventListener) {
+            instanceCleanupMemberNotifierMessageProcessor.removeEventListener(eventListener);
+        } else if (eventListener instanceof InstanceCleanupClusterEventListener) {
+            instanceCleanupClusterNotifierMessageProcessor.removeEventListener(eventListener);
+        } else {
+            throw new RuntimeException("Unknown event listener");
+        }
+    }
 }

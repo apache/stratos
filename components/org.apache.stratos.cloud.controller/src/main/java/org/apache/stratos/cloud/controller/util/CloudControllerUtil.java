@@ -37,11 +37,11 @@ import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -64,7 +64,7 @@ public class CloudControllerUtil {
         }
     }
 
-    public static void extractIaaSProvidersFromCartridge(Cartridge cartridge) {
+    public static void extractIaaSProvidersFromCartridge(Cartridge cartridge) throws InvalidIaasProviderException {
         if (cartridge == null) {
             return;
         }
@@ -75,67 +75,23 @@ public class CloudControllerUtil {
         if (iaasConfigs != null) {
             for (IaasConfig iaasConfig : iaasConfigs) {
                 if (iaasConfig != null) {
-                    IaasProvider iaasProvider = null;
+                    IaasProvider matchingIaasProviderInCC = null;
                     if (iaases != null) {
                         // check whether this is a reference to a predefined IaaS.
                         for (IaasProvider iaas : iaases) {
                             if (iaas.getType().equals(iaasConfig.getType())) {
-                                iaasProvider = new IaasProvider(iaas);
+                                matchingIaasProviderInCC = iaas;
                                 break;
                             }
                         }
                     }
 
-                    if (iaasProvider == null) {
-                        iaasProvider = new IaasProvider();
-                        iaasProvider.setType(iaasConfig.getType());
+                    if (matchingIaasProviderInCC == null) {
+                        matchingIaasProviderInCC = new IaasProvider();
+                        matchingIaasProviderInCC.setType(iaasConfig.getType());
                     }
 
-                    String className = iaasConfig.getClassName();
-                    if (className != null) {
-                        iaasProvider.setClassName(className);
-                    }
-
-                    String name = iaasConfig.getName();
-                    if (name != null) {
-                        iaasProvider.setName(name);
-                    }
-
-                    String identity = iaasConfig.getIdentity();
-                    if (identity != null) {
-                        iaasProvider.setIdentity(identity);
-                    }
-
-                    String credential = iaasConfig.getCredential();
-                    if (credential != null) {
-                        iaasProvider.setCredential(credential);
-                    }
-
-                    String provider = iaasConfig.getProvider();
-                    if (provider != null) {
-                        iaasProvider.setProvider(provider);
-                    }
-                    String imageId = iaasConfig.getImageId();
-                    if (imageId != null) {
-                        iaasProvider.setImage(imageId);
-                    }
-
-                    byte[] payload = iaasConfig.getPayload();
-                    if (payload != null) {
-                        iaasProvider.setPayload(payload);
-                    }
-
-                    org.apache.stratos.common.Properties props1 = iaasConfig.getProperties();
-                    if (props1 != null) {
-                        for (Property prop : props1.getProperties()) {
-                            iaasProvider.addProperty(prop.getName(), String.valueOf(prop.getValue()));
-                        }
-                    }
-
-                    NetworkInterfaces networkInterfaces = iaasConfig.getNetworkInterfaces();
-                    if (networkInterfaces != null && networkInterfaces.getNetworkInterfaces() != null) {
-                        iaasProvider.setNetworkInterfaces(networkInterfaces.getNetworkInterfaces());
-                    }
+                    IaasProvider iaasProvider = createUpdatedIaasProviderObject(iaasConfig, matchingIaasProviderInCC);
 
                     CloudControllerContext.getInstance().addIaasProvider(cartridge.getType(), iaasProvider);
                 }
@@ -333,5 +289,162 @@ public class CloudControllerUtil {
 
     public static String getAliasFromClusterId(String clusterId) {
         return StringUtils.substringBefore(StringUtils.substringAfter(clusterId, "."), ".");
+    }
+
+    public static IaasProvider getUpdatedIaasProviderInstance (Cartridge cartridge, Partition partition)
+            throws InvalidIaasProviderException {
+
+        IaasConfig cartridgeIaasConfig = null;
+        for (IaasConfig anIaasConfig : cartridge.getIaasConfigs()) {
+            if (anIaasConfig.getType().equals(partition.getProvider())) {
+                cartridgeIaasConfig = anIaasConfig;
+            }
+        }
+
+        // get the correct IaaS Provider config from cloud-controller.xml
+        IaasProvider ccIaasProvider = CloudControllerConfig.getInstance().getIaasProvider(partition
+                .getProvider());
+
+        if (ccIaasProvider == null) {
+            String errorMsg = "No Iaas Provider configuration found in cloud-controller.xml for " +
+                    "type " + partition.getProvider();
+            log.error(errorMsg);
+            throw new InvalidIaasProviderException(errorMsg);
+        }
+
+        IaasProvider iaasProvider = null;
+        // update with new cloud-controller.xml and cartridge definition changes
+        if (cartridgeIaasConfig == null) {
+            iaasProvider = ccIaasProvider;
+        } else {
+            iaasProvider = createUpdatedIaasProviderObject(cartridgeIaasConfig, ccIaasProvider);
+        }
+
+        // update with Partition properties
+        if (partition.getProperties() != null && partition.getProperties().getProperties() != null) {
+            for (Property property : partition.getProperties().getProperties()) {
+                iaasProvider.addProperty(property.getName(), property.getValue());
+            }
+        }
+
+        if (log.isDebugEnabled()) {
+            logProperties(iaasProvider.getType(), iaasProvider.getProperties(), cartridge.getType(),
+                    partition.getId());
+        }
+
+        if (log.isDebugEnabled()) {
+            logNetworkInterfaces(iaasProvider.getType(), iaasProvider.getNetworkInterfaces());
+        }
+
+        return iaasProvider;
+    }
+
+    private static IaasProvider createUpdatedIaasProviderObject (IaasConfig cartridgeIaasConfig,
+                                                                 IaasProvider ccIaasProvider)
+            throws InvalidIaasProviderException {
+
+        // create a deep copy of the IaaSProvider, not a reference
+        IaasProvider newIaasProvider = new IaasProvider(ccIaasProvider);
+
+        // priority order
+        // 1. cartridge definition
+        // 2. cloud-controller.xml
+        newIaasProvider.setClassName(selectAttribute("className", cartridgeIaasConfig.getClassName(),
+                ccIaasProvider.getClassName(), true));
+
+        // should not log identity details even in debug logs
+        newIaasProvider.setIdentity(selectAttribute("identity", cartridgeIaasConfig.getIdentity(),
+                ccIaasProvider.getIdentity(), false));
+
+        // should not log credentials details even in debug logs
+        newIaasProvider.setCredential(selectAttribute("credential", cartridgeIaasConfig.getCredential(),
+                ccIaasProvider.getCredential(), false));
+
+        newIaasProvider.setProvider(selectAttribute("provider", cartridgeIaasConfig.getProvider(),
+                ccIaasProvider.getProvider(), true));
+
+        newIaasProvider.setImage(selectAttribute("imageId", cartridgeIaasConfig.getImageId(),
+                ccIaasProvider.getImage(), true));
+
+        byte[] payload = cartridgeIaasConfig.getPayload();
+        if (payload != null) {
+            newIaasProvider.setPayload(payload);
+        }
+
+        Map<String, String> ccIaasProperties = ccIaasProvider.getProperties();
+        if (ccIaasProperties != null) {
+            for (Map.Entry<String, String> ccIaasProperty : ccIaasProperties.entrySet()) {
+                newIaasProvider.addProperty(ccIaasProperty.getKey(), ccIaasProperty.getValue());
+            }
+        }
+
+        // add properties defined in Cartridge and cloud-controller.xml
+        org.apache.stratos.common.Properties cartridgeIaasProperties = cartridgeIaasConfig.getProperties();
+        if (cartridgeIaasProperties != null) {
+            for (Property prop : cartridgeIaasProperties.getProperties()) {
+                newIaasProvider.addProperty(prop.getName(), String.valueOf(prop.getValue()));
+            }
+        }
+
+        NetworkInterfaces networkInterfacesInCartridge = cartridgeIaasConfig.getNetworkInterfaces();
+        NetworkInterface[] networkInterfacesInCC = ccIaasProvider.getNetworkInterfaces();
+        if (networkInterfacesInCartridge != null && networkInterfacesInCartridge.getNetworkInterfaces().length > 0) {
+            newIaasProvider.setNetworkInterfaces(networkInterfacesInCartridge
+                    .getNetworkInterfaces());
+        } else if (networkInterfacesInCC != null && networkInterfacesInCC.length > 0) {
+            newIaasProvider.setNetworkInterfaces(networkInterfacesInCC);
+        } else {
+            log.debug("No network interface definition set for IaaS provider " + newIaasProvider.getType());
+        }
+
+        return newIaasProvider;
+    }
+
+    private static String selectAttribute(String attributeName, String attributeDefinedInCartridge,
+                                          String attributeDefinedInCC, boolean logInfo) throws InvalidIaasProviderException {
+
+        if (attributeDefinedInCartridge != null) {
+            if (log.isDebugEnabled() && logInfo) {
+                log.debug("Selected " + attributeName + "=" +
+                        attributeDefinedInCartridge + " from Cartridge Definition");
+            }
+            return attributeDefinedInCartridge;
+        } else if (attributeDefinedInCC != null) {
+            if (log.isDebugEnabled() && logInfo) {
+                log.debug("Selected " + attributeName + "=" +
+                        attributeDefinedInCC + " from cloud-controller.xml configuration");
+            }
+            return attributeDefinedInCC;
+        } else {
+            String errorMsg = "Iaas Provider attribute " + attributeName + " not set in " +
+                    "either cartridge definition of cloud-controller.xml";
+            log.error(errorMsg);
+            throw new InvalidIaasProviderException(errorMsg);
+        }
+    }
+
+    private static void logNetworkInterfaces (String iaasProviderType, NetworkInterface[] networkInterfaces) {
+
+        if (networkInterfaces != null) {
+            log.debug("All Network interfaces in IaasProvider object for type: " +
+                    iaasProviderType);
+            for (NetworkInterface nwInterface : networkInterfaces) {
+                log.debug("Interface " + nwInterface.toString());
+            }
+        }
+    }
+
+    private static void logProperties(String iaasProviderType, Map<String, String> properties,
+                                      String cartridgeType, String partitionId) {
+
+        if (properties != null) {
+            log.debug("Properties defined in IaasProvider object for type: " +
+                    iaasProviderType + ", cartridge type: " + cartridgeType + ", partition: " +
+                    partitionId);
+            for (Map.Entry<String, String> property : properties.entrySet()) {
+                log.debug("Property key: " + property.getKey() + ", value: " +
+                        property.getValue());
+            }
+        }
     }
 }

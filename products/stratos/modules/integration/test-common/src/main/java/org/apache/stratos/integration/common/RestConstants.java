@@ -34,6 +34,8 @@ public class RestConstants {
     public static final String APPLICATIONS_RUNTIME = "/runtime";
     public static final String APPLICATIONS_DEPLOY = "/deploy";
     public static final String APPLICATIONS_UNDEPLOY = "/undeploy";
+    public static final String REPO_NOTIFY = "/" + API + "/repo/notify";
+    public static final String REPO_NOTIFY_NAME = "GitHook";
 
     public static final String AUTOSCALING_POLICIES_PATH = "/autoscaling-policies/";
     public static final String AUTOSCALING_POLICIES_NAME = "autoscalingPolicy";
@@ -51,4 +53,6 @@ public class RestConstants {
     public static final String APPLICATION_POLICIES_PATH = "/application-policies/";
     public static final String APPLICATION_POLICIES_NAME = "applicationPolicy";
 
+    public static final String METADATA_RESPONSE_ATTRIBUTE_KEY = "key";
+    public static final String METADATA_RESPONSE_ATTRIBUTE_VALUES = "values";
 }

@@ -1,0 +1,29 @@
+{
+    "id": "deployment-policy-2-application-startup-order-test",
+    "networkPartitions": [
+        {
+            "id": "network-partition-1-application-startup-order-test",
+            "partitionAlgo": "one-after-another",
+            "partitions": [
+                {
+                    "id": "partition-1",
+                    "partitionMax": 5
+                }
+            ]
+        },
+        {
+            "id": "network-partition-2-application-startup-order-test",
+            "partitionAlgo": "round-robin",
+            "partitions": [
+                {
+                    "id": "network-partition-2-partition-1",
+                    "partitionMax": 5
+                },
+                {
+                    "id": "network-partition-2-partition-2",
+                    "partitionMax": 5
+                }
+            ]
+        }
+    ]
+}

@@ -20,6 +20,8 @@
 package org.apache.stratos.messaging.domain.application;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 
@@ -33,7 +35,7 @@ import java.util.Stack;
 public class Application extends ParentComponent<ApplicationInstance> {
 
     private static final long serialVersionUID = -5092959597171649688L;
-
+    private static final Log log = LogFactory.getLog(Application.class);
     // Unique id for the Application, defined in Application Definition
     private String id;
     private String name;
@@ -57,8 +59,6 @@ public class Application extends ParentComponent<ApplicationInstance> {
         this.id = id;
         this.key = RandomStringUtils.randomAlphanumeric(16);
         this.setInstanceIdToInstanceContextMap(new HashMap<String, ApplicationInstance>());
-        //this.applicationStateManager =
-        //new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created, id);
     }
 
     public String getUniqueIdentifier() {
@@ -105,6 +105,11 @@ public class Application extends ParentComponent<ApplicationInstance> {
         if ((getInstanceIdToInstanceContextMap() != null) && (getInstanceIdToInstanceContextMap().size() > 0)) {
             boolean applicationActive = true;
             for (ApplicationInstance applicationInstance : getInstanceIdToInstanceContextMap().values()) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Checking status of [application-id] %s. ApplicationInstance: [instance-id] %s, [status] "
+                                    + "%s", id, applicationInstance.getInstanceId(), applicationInstance.getStatus()));
+                }
                 if (applicationInstance.getStatus() != ApplicationStatus.Active) {
                     applicationActive = false;
                 }

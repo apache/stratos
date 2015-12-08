@@ -21,7 +21,10 @@ package org.apache.stratos.messaging.message.receiver.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
+import org.apache.stratos.messaging.event.initializer.CompleteTopologyRequestEvent;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
@@ -50,14 +53,11 @@ public class TopologyEventReceiver {
         messageDelegator.addEventListener(eventListener);
     }
 
-
     public void execute() {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.TOPOLOGY_TOPIC.getTopicName(), messageListener);
-            // subscriber.setMessageListener(messageListener);
             executorService.execute(eventSubscriber);
-
 
             if (log.isDebugEnabled()) {
                 log.debug("Topology event message receiver thread started");
@@ -69,7 +69,7 @@ public class TopologyEventReceiver {
                 log.debug("Topology event message delegator thread started");
             }
 
-
+            initializeCompleteTopology();
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Topology receiver failed", e);
@@ -80,6 +80,25 @@ public class TopologyEventReceiver {
     public void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
+    }
+
+    public void initializeCompleteTopology() {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                while (!eventSubscriber.isSubscribed()) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignore) {
+                    }
+                }
+
+                CompleteTopologyRequestEvent completeTopologyRequestEvent = new CompleteTopologyRequestEvent();
+                String topic = MessagingUtil.getMessageTopicName(completeTopologyRequestEvent);
+                EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
+                eventPublisher.publish(completeTopologyRequestEvent);
+            }
+        });
     }
 
     public ExecutorService getExecutorService() {

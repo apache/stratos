@@ -1,0 +1,24 @@
+{
+  "alias": "app-iaasprovider-attribute-test",
+  "applicationId": "app-iaasprovider-attribute-test",
+  "components": {
+    "cartridges": [
+      {
+        "type": "cartridge-iaasprovider-attribute-test",
+        "cartridgeMin": 1,
+        "cartridgeMax": 1,
+        "subscribableInfo": {
+          "alias": "cartridge-alias-default-iaasprovider-attribute-test",
+          "autoscalingPolicy": "autoscaling-policy-iaasprovider-attribute-test",
+          "deploymentPolicy": "deployment-policy-iaasprovider-attribute-test",
+          "artifactRepository": {
+            "privateRepo": false,
+            "repoUrl": "https://github.com/lakwarus/single-cartridge.git",
+            "repoUsername": "",
+            "repoPassword": ""
+          }
+        }
+      }
+    ]
+  }
+}

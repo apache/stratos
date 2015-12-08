@@ -18,8 +18,8 @@
  */
 package org.apache.stratos.metadata.service.registry;
 
-
 import org.apache.stratos.metadata.service.definition.Property;
+import org.apache.stratos.metadata.service.exception.MetadataException;
 import org.wso2.carbon.registry.api.RegistryException;
 
 import java.util.List;
@@ -29,18 +29,21 @@ import java.util.List;
  */
 public interface DataStore {
 
-    public void addPropertyToApplication(String applicationId, Property property) throws RegistryException;
+    public void addPropertyToApplication(String applicationId, Property property)
+            throws RegistryException, MetadataException;
 
-    public List<Property> getApplicationProperties(String applicationName) throws RegistryException;
+    public List<Property> getApplicationProperties(String applicationId) throws MetadataException;
 
-    public List<Property> getClusterProperties(String applicationName, String clusterId)
-            throws RegistryException;
+    public List<Property> getClusterProperties(String applicationId, String clusterId) throws MetadataException;
 
-    public void addPropertyToCluster(String applicationId, String clusterId, Property property) throws RegistryException;
+    public void addPropertyToCluster(String applicationId, String clusterId, Property property)
+            throws RegistryException, MetadataException;
 
-    public boolean deleteApplicationProperties(String applicationId) throws RegistryException;
+    public boolean deleteApplicationProperties(String applicationId) throws RegistryException, MetadataException;
 
-    public boolean removePropertyFromApplication(String applicationId, String propertyName) throws RegistryException;
+    public boolean removePropertyFromApplication(String applicationId, String propertyName)
+            throws RegistryException, MetadataException;
 
-    public boolean removePropertyValueFromApplication(String applicationId, String propertyName, String valueToRemove) throws RegistryException;
+    public boolean removePropertyValueFromApplication(String applicationId, String propertyName, String valueToRemove)
+            throws RegistryException, MetadataException;
 }

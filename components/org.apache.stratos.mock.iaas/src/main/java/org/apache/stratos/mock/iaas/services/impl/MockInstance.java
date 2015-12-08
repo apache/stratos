@@ -21,20 +21,26 @@ package org.apache.stratos.mock.iaas.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.domain.NameValuePair;
 import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
+import org.apache.stratos.messaging.event.topology.MemberInitializedEvent;
+import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
+import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupClusterEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupMemberEventListener;
+import org.apache.stratos.messaging.listener.topology.MemberInitializedEventListener;
+import org.apache.stratos.messaging.listener.topology.MemberMaintenanceListener;
+import org.apache.stratos.messaging.listener.topology.MemberStartedEventListener;
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventReceiver;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.mock.iaas.domain.MockInstanceContext;
 import org.apache.stratos.mock.iaas.event.publisher.MockMemberEventPublisher;
 import org.apache.stratos.mock.iaas.statistics.publisher.MockHealthStatisticsNotifier;
 
 import java.io.Serializable;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -44,41 +50,117 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Mock member instance definition.
  */
-public class MockInstance implements Runnable, Serializable {
+public class MockInstance implements Serializable {
     private static final Log log = LogFactory.getLog(MockInstance.class);
     private static final int HEALTH_STAT_INTERVAL = 15; // 15 seconds
-    private final MockInstanceContext mockInstanceContext;
+
     private transient ScheduledFuture<?> healthStatNotifierScheduledFuture;
     private transient InstanceNotifierEventReceiver instanceNotifierEventReceiver;
+    private transient TopologyEventReceiver topologyEventReceiver;
+    private transient MockHealthStatisticsNotifier mockHealthStatisticsNotifier;
+
+    // this is the mock iaas instance runtime status, do not persist this state
+    private transient MemberStatus memberStatus = MemberStatus.Created;
+
+    private final MockInstanceContext mockInstanceContext;
+    private final AtomicBoolean hasGracefullyShutdown = new AtomicBoolean(false);
+
     private static final ExecutorService eventListenerExecutorService = StratosThreadPool
-            .getExecutorService("mock.iaas.event.listener.thread.pool", 20);
+            .getExecutorService("mock.iaas.event.listener.thread.pool", 100);
     private static final ScheduledExecutorService healthStatNotifierExecutorService = StratosThreadPool
-            .getScheduledExecutorService("mock.iaas.health.statistics.notifier.thread.pool", 20);
-    AtomicBoolean hasGracefullyShutdown = new AtomicBoolean(false);
+            .getScheduledExecutorService("mock.iaas.health.statistics.notifier.thread.pool", 100);
 
     public MockInstance(MockInstanceContext mockInstanceContext) {
         this.mockInstanceContext = mockInstanceContext;
     }
 
-    @Override
-    public void run() {
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Mock member started: [member-id] %s", mockInstanceContext.getMemberId()));
+    public synchronized void initialize() {
+        if (MemberStatus.Created.equals(memberStatus) || memberStatus == null) {
+            startTopologyEventReceiver();
+            startInstanceNotifierEventReceiver();
+            startHealthStatisticsPublisher();
+            memberStatus = MemberStatus.Initialized;
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Mock instance initialized: [member-id] %s", mockInstanceContext.getMemberId()));
+            }
+        } else {
+            if (log.isInfoEnabled()) {
+                log.info(String.format(
+                        "Mock instance cannot be initialized since it is not in created state: [member-id] %s [status] "
+                                + "%s", mockInstanceContext.getMemberId(), memberStatus));
+            }
         }
-        sleep(5000);
-        MockMemberEventPublisher.publishInstanceStartedEvent(mockInstanceContext);
-        sleep(5000);
-        MockMemberEventPublisher.publishInstanceActivatedEvent(mockInstanceContext);
-        startInstanceNotifierReceiver();
-        startHealthStatisticsPublisher();
     }
 
-    private void startInstanceNotifierReceiver() {
+    private void startHealthStatisticsPublisher() {
+        mockHealthStatisticsNotifier = new MockHealthStatisticsNotifier(mockInstanceContext);
         if (log.isDebugEnabled()) {
-            log.debug("Starting instance notifier event message receiver for mock member [member-id] "
-                            + mockInstanceContext.getMemberId());
+            log.debug(String.format("Starting health statistics notifier: [member-id] %s",
+                    mockInstanceContext.getMemberId()));
         }
+        healthStatNotifierScheduledFuture = healthStatNotifierExecutorService
+                .scheduleAtFixedRate(mockHealthStatisticsNotifier, 0, HEALTH_STAT_INTERVAL, TimeUnit.SECONDS);
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Health statistics notifier started: [member-id] %s",
+                    mockInstanceContext.getMemberId()));
+        }
+    }
+
+    private void startTopologyEventReceiver() {
+        topologyEventReceiver = new TopologyEventReceiver();
+        topologyEventReceiver.addEventListener(new MemberInitializedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                MemberInitializedEvent memberInitializedEvent = (MemberInitializedEvent) event;
+                if (memberInitializedEvent.getMemberId().equals(mockInstanceContext.getMemberId())) {
+                    MockMemberEventPublisher.publishInstanceStartedEvent(mockInstanceContext);
+
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Mock member started event published for [member-id] %s",
+                                mockInstanceContext.getMemberId()));
+                    }
+                }
+            }
+        });
+        topologyEventReceiver.addEventListener(new MemberStartedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                MemberStartedEvent memberStartedEvent = (MemberStartedEvent) event;
+                if (memberStartedEvent.getMemberId().equals(mockInstanceContext.getMemberId())) {
+                    MockMemberEventPublisher.publishInstanceActivatedEvent(mockInstanceContext);
+
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Mock member activated event published for [member-id] %s",
+                                mockInstanceContext.getMemberId()));
+                    }
+                }
+            }
+        });
+        topologyEventReceiver.addEventListener(new MemberMaintenanceListener() {
+            @Override
+            protected void onEvent(Event event) {
+                MemberMaintenanceModeEvent memberMaintenanceModeEvent = (MemberMaintenanceModeEvent) event;
+                if (memberMaintenanceModeEvent.getMemberId().equals(mockInstanceContext.getMemberId())) {
+                    MockMemberEventPublisher.publishInstanceReadyToShutdownEvent(mockInstanceContext);
+                    hasGracefullyShutdown.set(true);
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Mock member ready to shutdown event published for [member-id] %s",
+                                mockInstanceContext.getMemberId()));
+                    }
+                }
+            }
+        });
+        topologyEventReceiver.setExecutorService(eventListenerExecutorService);
+        topologyEventReceiver.execute();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Mock instance topology event message receiver started for mock member [member-id] %s",
+                    mockInstanceContext.getMemberId()));
+        }
+    }
+
+    private void startInstanceNotifierEventReceiver() {
         instanceNotifierEventReceiver = new InstanceNotifierEventReceiver();
         instanceNotifierEventReceiver.addEventListener(new InstanceCleanupClusterEventListener() {
             @Override
@@ -101,25 +183,24 @@ public class MockInstance implements Runnable, Serializable {
                 }
             }
         });
-
+        // TODO: Fix InstanceNotifierEventReceiver to use executor service
+        // do not remove this since execute() is a blocking call
         eventListenerExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 instanceNotifierEventReceiver.execute();
             }
         });
-
         if (log.isDebugEnabled()) {
-            log.debug("Instance notifier event message receiver started");
+            log.debug(String.format(
+                    "Mock instance instance notifier event message receiver started for mock member [member-id] %s",
+                    mockInstanceContext.getMemberId()));
         }
     }
 
     private void handleMemberTermination() {
         if (!hasGracefullyShutdown.get()) {
             MockMemberEventPublisher.publishMaintenanceModeEvent(mockInstanceContext);
-            sleep(5000);
-            MockMemberEventPublisher.publishInstanceReadyToShutdownEvent(mockInstanceContext);
-            hasGracefullyShutdown.set(true);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Mock instance is already gracefully shutdown [member-id] %s",
@@ -128,50 +209,36 @@ public class MockInstance implements Runnable, Serializable {
         }
     }
 
-    private void startHealthStatisticsPublisher() {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Starting health statistics notifier: [member-id] %s",
-                    mockInstanceContext.getMemberId()));
-        }
-
-        healthStatNotifierScheduledFuture = healthStatNotifierExecutorService
-                .scheduleAtFixedRate(new MockHealthStatisticsNotifier(mockInstanceContext), 0, HEALTH_STAT_INTERVAL,
-                        TimeUnit.SECONDS);
-
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Health statistics notifier started: [member-id] %s",
-                    mockInstanceContext.getMemberId()));
-        }
-    }
-
     private void stopHealthStatisticsPublisher() {
-        if (healthStatNotifierScheduledFuture != null) {
-            healthStatNotifierScheduledFuture.cancel(true);
-        }
+        healthStatNotifierScheduledFuture.cancel(true);
     }
 
     private void stopInstanceNotifierReceiver() {
-        if (instanceNotifierEventReceiver != null) {
-            instanceNotifierEventReceiver.terminate();
-        }
-    }
-
-    private void sleep(long time) {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException ignore) {
-        }
+        instanceNotifierEventReceiver.terminate();
     }
 
     public MockInstanceContext getMockInstanceContext() {
         return mockInstanceContext;
     }
 
-    public void terminate() {
-        stopInstanceNotifierReceiver();
-        stopHealthStatisticsPublisher();
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Mock member terminated: [member-id] %s", mockInstanceContext.getMemberId()));
+    public synchronized void terminate() {
+        if (MemberStatus.Initialized.equals(memberStatus)) {
+            stopInstanceNotifierReceiver();
+            stopHealthStatisticsPublisher();
+            memberStatus = MemberStatus.Terminated;
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Mock instance stopped: [member-id] %s", mockInstanceContext.getMemberId()));
+            }
+        } else {
+            if (log.isInfoEnabled()) {
+                log.info(String.format(
+                        "Mock instance cannot be terminated since it is not in initialized state: [member-id] %s ",
+                        mockInstanceContext.getMemberId()));
+            }
         }
+    }
+
+    public MockHealthStatisticsNotifier getMockHealthStatisticsNotifier() {
+        return mockHealthStatisticsNotifier;
     }
 }

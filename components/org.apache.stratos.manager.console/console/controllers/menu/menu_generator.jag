@@ -29,7 +29,7 @@ var log = new Log("controller.menu_generator");
  */
 function menuGenerator(context, jsonobject, permissions) {
     var menupermission,
-            link='',
+            link = '',
             target = '_self',
             menu_html = '';
 
@@ -39,15 +39,29 @@ function menuGenerator(context, jsonobject, permissions) {
                     hasPermission = intersection(jsonPermission.permissionPaths, permissions);
 
             if (hasPermission.length > 0) {
-                if(jsonPermission.linkexternal){
-                    link = jsonPermission.link;
-                    target = "_blank";
-                }else{
-                    link = context + '/' + jsonPermission.link;
+                if (jsonPermission.title == "Monitoring") {
+                    if(jsonPermission.linkexternal){
+                        target = "_blank";
+                    }
+                    if (application.get("dasStatsPublisherEnabled") == true) {
+                        link = application.get("monitoringDashboardUrl");
+                        menu_html += '<li><a href="' + link + '" target="' + target + '">';
+                    } else {
+                        link = jsonPermission.link;
+                        menu_html += '<li><a href="' + link + '" target="' + target + '" class="disabled">';
+                    }
+                } else {
+                    if (jsonPermission.linkexternal) {
+                        link = jsonPermission.link;
+                        target = "_blank";
+                    } else {
+                        link = context + '/' + jsonPermission.link;
+                    }
+                    menu_html += '<li><a href="' + link + '" target="' + target + '">';
                 }
-                menu_html += '<li><a href="'+ link + '" target="'+target+'">' +
-                        '<i class="fa ' + jsonPermission.icon + '"></i>' +
+                menu_html += '<i class="fa ' + jsonPermission.icon + '"></i>' +
                         jsonPermission.title + '</a>';
+
                 if (jsonPermission.hasOwnProperty('sub-menu')) {
                     menu_html += '<i class="fa fa-angle-down"></i>';
                     menu_html += '<ul>';
@@ -57,7 +71,7 @@ function menuGenerator(context, jsonobject, permissions) {
 
                         if (hasSubmenuPermission.length > 0) {
                             menu_html += '<li><a href="' + context + '/' + jsonSubmenuPermission.link +
-                                    '" target="'+target+'"><i class="fa ' + jsonSubmenuPermission.icon + '"></i>' + jsonSubmenuPermission.title + '</a></li>';
+                                    '" target="' + target + '"><i class="fa ' + jsonSubmenuPermission.icon + '"></i>' + jsonSubmenuPermission.title + '</a></li>';
                         }
                     }
                     menu_html += '</ul></li>';
@@ -103,6 +117,9 @@ function metroGenerator(context, jsonobject, permissions) {
                     hasPermission = intersection(jsonPermission.permissionPaths, permissions);
 
             if (hasPermission.length > 0 && jsonPermission.context == context) {
+                if (jsonPermission.title == "Monitoring" && application.get("dasStatsPublisherEnabled") == true) {
+                    jsonPermission.link = application.get("monitoringDashboardUrl");
+                }
                 metroJSON.push(jsonPermission);
             }
 

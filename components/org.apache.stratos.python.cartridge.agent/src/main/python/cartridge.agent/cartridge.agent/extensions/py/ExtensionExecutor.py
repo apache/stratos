@@ -41,7 +41,7 @@ class ExtensionExecutor(ICartridgeAgentPlugin):
         if len(errors) > 0:
             raise RuntimeError("Extension execution failed for script %s: %s" % (event_name, errors))
 
-        log.info("%s Extension executed. [output]: %s" % (event_name, output))
+        log.debug("%s Extension executed. [output]: %s" % (event_name, output))
 
     @staticmethod
     def execute_script(bash_file, extension_values):

@@ -34,8 +34,8 @@ public class StratosIntegrationTest {
     protected String stratosSecuredBackendURL;
     protected RestClient restClient;
     protected MockIaasApiClient mockIaasApiClient;
-    public static final int GLOBAL_TEST_TIMEOUT = 5 * 60 * 1000; // 5 mins
-    public static final int APPLICATION_TEST_TIMEOUT = 20 * 60 * 1000; // 20 mins
+    public static final int DEFAULT_TEST_TIMEOUT = 5 * 60 * 1000; // 5 mins
+    public static final int DEFAULT_APPLICATION_TEST_TIMEOUT = 25 * 60 * 1000; // 25 mins
 
     public StratosIntegrationTest() {
         try {

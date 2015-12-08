@@ -2062,8 +2062,20 @@ public class StratosApiV41 extends AbstractApi {
         try {
             StratosApiV41Utils.removeKubernetesCluster(kubernetesClusterId);
         } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(new ResponseMessageBean(ResponseMessageBean.ERROR,
-                    String.format("Kubernetes cluster not found: [kub-cluster] %s", kubernetesClusterId))).build();
+            String message = String
+                    .format("Could not remove Kubernetes cluster. Kubernetes cluster not found: [kub-cluster] %s",
+                            kubernetesClusterId);
+            log.error(message);
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, message)).build();
+        } catch (CloudControllerServiceKubernetesClusterAlreadyUsedExceptionException e) {
+            String message = String
+                    .format("Could not remove Kubernetes cluster. Kubernetes cluster is being used by a deployed "
+                            + "application: [kub-cluster] %s",
+                            kubernetesClusterId);
+            log.error(message);
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, message)).build();
         }
         return Response.ok().entity(new ResponseMessageBean(ResponseMessageBean.SUCCESS,
                 String.format("Kubernetes Cluster removed successfully: [kub-cluster] %s", kubernetesClusterId)))

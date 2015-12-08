@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.applications;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
 
 public class ApplicationEventSynchronizer implements Runnable {
 
@@ -30,11 +30,8 @@ public class ApplicationEventSynchronizer implements Runnable {
     @Override
     public void run() {
         if (log.isDebugEnabled()) {
-            log.debug("Executing topology synchronization task");
+            log.debug("Executing applications synchronization task");
         }
-        // publish to the topic
-        if (ApplicationHolder.getApplications() != null) {
-            ApplicationBuilder.handleCompleteApplication(ApplicationHolder.getApplications());
-        }
+        ApplicationsEventPublisher.sendCompleteApplicationsEvent(ApplicationHolder.getApplications());
     }
 }

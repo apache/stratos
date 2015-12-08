@@ -31,10 +31,11 @@
             <!-- SM client timeout in ms -->
             <clientTimeout>300000</clientTimeout>
         </stratosManager>
-	<identity>
+	    <identity>
                 <hostname>localhost</hostname>
                 <port>9443</port>                    
                 <clientTimeout>300000</clientTimeout>
+                <adminUser>admin</adminUser>
         </identity>
         <member>
             <spinAfterTerminate>false</spinAfterTerminate>

@@ -34,6 +34,7 @@ public class Constants {
 	public static final String AWS_SECRET_KEY = "secret-key";
 	public static final String LB_PREFIX = "load-balancer-prefix";
 	public static final String LOAD_BALANCER_SECURITY_GROUP_NAME = "load-balancer-security-group-name";
+	public static final String LOAD_BALANCER_SECURITY_GROUP_ID = "load-balancer-security-group-id";
 	public static final String LOAD_BALANCER_SECURITY_GROUP_DESCRIPTION = "Security group for load balancers created for Apache Stratos.";
 	public static final String ELB_ENDPOINT_URL_FORMAT = "elasticloadbalancing.%s.amazonaws.com";
 	public static final String EC2_ENDPOINT_URL_FORMAT = "ec2.%s.amazonaws.com";
@@ -54,4 +55,16 @@ public class Constants {
 	public static final String STATISTICS_INTERVAL = "statistics-interval";
 	public static final int STATISTICS_INTERVAL_MULTIPLE_OF = 60;
 	public static final String LOAD_BALANCER_SSL_CERTIFICATE_ID = "load-balancer-ssl-certificate-id";
+	public static final String APP_STICKY_SESSION_COOKIE_NAME = "app-sticky-session-cookie-name";
+	public static final String TERMINATE_LBS_ON_EXTENSION_STOP = "terminate.lbs.on.extension.stop";
+	public static final String TERMINATE_LB_ON_CLUSTER_REMOVAL = "terminate.lb.on.cluster.removal";
+	public static final String STICKINESS_POLICY = "stickiness-policy";
+	public static final String OPERATIMG_IN_VPC = "operating.in.vpc";
+	public static final String ENABLE_CROSS_ZONE_LOADBALANCING = "enable.cross.zone.load.balancing";
+	public static final String INITIAL_AVAILABILITY_ZONES = "initial-availability-zones";
+	public static final String SUBNET_IDS = "subnet-ids";
+	public static final String VPC_IDS = "vpc-ids";
+	public static final String LB_SCHEME = "load-balancer-scheme";
+	public static final String LB_SCHEME_INTERNAL = "internal";
+	public static final String EC2_AVAILABILITY_ZONE_PROPERTY = "EC2_AVAILABILITY_ZONE";
 }

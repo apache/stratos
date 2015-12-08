@@ -53,17 +53,18 @@
             <property name="keyPair" value="keypair-name" />
             <property name="securityGroups" value="default" />
         </iaasProvider -->
-        <!-- iaasProvider type="ec2" name="Amazon EC2">
+        <!--iaasProvider type="ec2" name="Amazon EC2">
             <className>org.apache.stratos.cloud.controller.iaases.ec2.EC2Iaas</className>
             <provider>aws-ec2</provider>
             <identity svns:secretAlias="cloud.controller.ec2.identity">identity</identity>
             <credential svns:secretAlias="cloud.controller.ec2.credential">credential</credential>
+            <imageId>ap-southeast-1/ami-660ccb05</imageId>
             <property name="jclouds.ec2.ami-query" value="owner-id=owner-id;state=available;image-type=machine"/>
             <property name="availabilityZone" value="ap-southeast-1b"/>
             <property name="securityGroups" value="default"/>
             <property name="autoAssignIp" value="true" />
             <property name="keyPair" value="keypair-name"/>
-        </iaasProvider -->
+        </iaasProvider-->
         <iaasProvider type="kubernetes" name="Kubernetes">
             <className>org.apache.stratos.cloud.controller.iaases.kubernetes.KubernetesIaas</className>
             <provider>kubernetes</provider>
@@ -75,7 +76,13 @@
             <provider>mock</provider>
             <identity svns:secretAlias="cloud.controller.mock.identity">identity</identity>
             <credential svns:secretAlias="cloud.controller.mock.credential">credential</credential>
+            <imageId>RegionOne/b4ca55e3-58ab-4937-82ce-817ebd10240e</imageId>
             <property name="api.endpoint" value="https://localhost:STRATOS_SECURE_DYNAMIC_PORT/mock-iaas/api"/>
+            <property name="availabilityZone" value="avaialbility_zone_in_cc"/>
+            <property name="securityGroups" value="default"/>
+            <property name="autoAssignIp" value="true" />
+            <property name="keyPair" value="keypair-name"/>
+            <property name="property1" value="cc_property_value_1"/>
         </iaasProvider>
     </iaasProviders>
 </cloudController>

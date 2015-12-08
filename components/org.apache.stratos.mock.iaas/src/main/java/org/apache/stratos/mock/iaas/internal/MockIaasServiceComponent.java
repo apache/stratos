@@ -65,12 +65,6 @@ public class MockIaasServiceComponent {
                     // Wait for stratos manager to be activated
                     componentStartUpSynchronizer.waitForComponentActivation(Component.MockIaaS,
                             Component.StratosManager);
-
-                    PersistenceManager persistenceManager =
-                            PersistenceManagerFactory.getPersistenceManager(PersistenceManagerType.Registry);
-                    MockIaasServiceUtil mockIaasServiceUtil = new MockIaasServiceUtil(persistenceManager);
-                    mockIaasServiceUtil.startInstancesPersisted();
-
                     MockIaasService mockIaasService = new MockIaasServiceImpl();
                     context.getBundleContext().registerService(MockIaasService.class.getName(), mockIaasService, null);
                     log.info("Mock IaaS service registered");

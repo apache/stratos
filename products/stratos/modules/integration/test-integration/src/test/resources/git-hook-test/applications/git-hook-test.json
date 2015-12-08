@@ -1,0 +1,25 @@
+{
+    "applicationId": "git-hook-test",
+    "alias": "git-hook-test",
+    "multiTenant": false,
+    "components": {
+        "cartridges": [
+            {
+                "type": "c1-git-hook-test",
+                "cartridgeMin": 1,
+                "cartridgeMax": 5,
+                "subscribableInfo": {
+                    "alias": "my-c1-git-hook-test",
+                    "autoscalingPolicy": "autoscaling-policy-git-hook-test",
+                    "deploymentPolicy": "deployment-policy-git-hook-test",
+                    "artifactRepository": {
+                        "privateRepo": false,
+                        "repoUrl": "https://github.com/lakwarus/single-cartridge.git",
+                        "repoUsername": "",
+                        "repoPassword": ""
+                    }
+                }
+            }
+        ]
+    }
+}

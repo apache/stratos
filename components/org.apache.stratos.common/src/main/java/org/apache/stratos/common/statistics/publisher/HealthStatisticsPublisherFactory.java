@@ -19,6 +19,7 @@
 
 package org.apache.stratos.common.statistics.publisher;
 
+import org.apache.stratos.common.exception.InvalidStatisticsPublisherTypeException;
 import org.apache.stratos.common.statistics.publisher.wso2.cep.WSO2CEPHealthStatisticsPublisher;
 
 /**
@@ -28,9 +29,9 @@ public class HealthStatisticsPublisherFactory {
 
     public static HealthStatisticsPublisher createHealthStatisticsPublisher(StatisticsPublisherType type) {
         if (type == StatisticsPublisherType.WSO2CEP) {
-            return new WSO2CEPHealthStatisticsPublisher();
+            return WSO2CEPHealthStatisticsPublisher.getInstance();
         } else {
-            throw new RuntimeException("Unknown statistics publisher type");
+            throw new InvalidStatisticsPublisherTypeException("Invalid statistics publisher type is used to create publisher.");
         }
     }
 }

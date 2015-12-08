@@ -27,6 +27,7 @@ import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.Template;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +59,60 @@ public class IaasProvider implements Serializable {
      */
     private Map<String, String> properties = new HashMap<String, String>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        IaasProvider that = (IaasProvider) o;
+
+        if (type != null ? !type.equals(that.type) : that.type != null) {
+            return false;
+        }
+        if (className != null ? !className.equals(that.className) : that.className != null) {
+            return false;
+        }
+        if (name != null ? !name.equals(that.name) : that.name != null) {
+            return false;
+        }
+        if (properties != null ? !properties.equals(that.properties) : that.properties != null) {
+            return false;
+        }
+        if (!Arrays.equals(networkInterfaces, that.networkInterfaces)) {
+            return false;
+        }
+        if (image != null ? !image.equals(that.image) : that.image != null) {
+            return false;
+        }
+        if (provider != null ? !provider.equals(that.provider) : that.provider != null) {
+            return false;
+        }
+        if (identity != null ? !identity.equals(that.identity) : that.identity != null) {
+            return false;
+        }
+        return !(credential != null ? !credential.equals(that.credential) : that.credential != null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = type != null ? type.hashCode() : 0;
+        result = 31 * result + (className != null ? className.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (properties != null ? properties.hashCode() : 0);
+        result = 31 * result + (networkInterfaces != null ? Arrays.hashCode(networkInterfaces) : 0);
+        result = 31 * result + (image != null ? image.hashCode() : 0);
+        result = 31 * result + (provider != null ? provider.hashCode() : 0);
+        result = 31 * result + (identity != null ? identity.hashCode() : 0);
+        result = 31 * result + (credential != null ? credential.hashCode() : 0);
+        return result;
+    }
+
     /**
+
      * Network Interfaces Configuration
      */
     private NetworkInterface[] networkInterfaces;
@@ -185,20 +239,6 @@ public class IaasProvider implements Serializable {
 
     public void setTemplate(Template template) {
         this.template = template;
-    }
-
-    public boolean equals(Object o) {
-        if (o instanceof IaasProvider) {
-            return ((IaasProvider) o).getType().equals(this.getType());
-        }
-
-        return false;
-    }
-
-    public int hashCode() {
-        return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
-                append(type).
-                toHashCode();
     }
 
     public IaasProvider copy() {

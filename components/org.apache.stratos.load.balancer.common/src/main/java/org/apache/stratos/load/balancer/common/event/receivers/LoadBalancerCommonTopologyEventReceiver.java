@@ -32,6 +32,8 @@ import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
+import java.util.Properties;
+
 /**
  * Load balancer common topology receiver updates the topology in the given topology provider
  * according to topology events.
@@ -422,6 +424,14 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
                 cluster.addHostName(hostName);
             }
         }
+
+        Properties messagingClusterProps = new Properties();
+        if (messagingCluster.getAppId() != null) {
+            messagingClusterProps.setProperty("applicationId", messagingCluster.getAppId());
+        }
+        cluster.setProperties(messagingClusterProps);
+
+
         return cluster;
     }
 
@@ -458,6 +468,9 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         if (messagingMember.getInstanceId() != null) {
             member.setInstanceId(messagingMember.getInstanceId());
         }
+
+        member.setProperties(messagingMember.getProperties());
+
         return member;
     }
 }

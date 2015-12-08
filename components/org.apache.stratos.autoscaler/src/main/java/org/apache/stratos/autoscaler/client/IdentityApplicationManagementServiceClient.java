@@ -72,7 +72,8 @@ public class IdentityApplicationManagementServiceClient {
             stub = new IdentityApplicationManagementServiceStub(epr);
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, autosclaerSocketTimeout);
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, autosclaerSocketTimeout);
-            Utility.setAuthHeaders(stub._getServiceClient(), "admin");
+	        String username = conf.getString("autoscaler.identity.adminUser", "admin");
+            Utility.setAuthHeaders(stub._getServiceClient(), username);
 
         } catch (AxisFault axisFault) {
             String msg = "Failed to initiate identity service client. " + axisFault.getMessage();

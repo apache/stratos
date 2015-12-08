@@ -1,0 +1,135 @@
+{
+    "alias": "application-startup-order-test",
+    "applicationId": "application-startup-order-test",
+    "components": {
+        "groups": [
+            {
+                "name": "app-group-application-startup-order-test",
+                "alias": "my-appgroup-application-startup-order-test",
+                "cartridges": [
+                    {
+                        "type": "tomcat-application-startup-order-test",
+                        "cartridgeMax": 2,
+                        "cartridgeMin": 1,
+                        "subscribableInfo": {
+                            "alias": "my-tomcat-application-startup-order-test",
+                            "artifactRepository": {
+                                "alias": "my-tomcat-application-startup-order-test",
+                                "privateRepo": true,
+                                "repoPassword": "password",
+                                "repoUrl": "http://xxx:10080/git/default.git",
+                                "repoUsername": "user"
+                            },
+                            "autoscalingPolicy": "autoscaling-policy-application-startup-order-test",
+                            "deploymentPolicy": "deployment-policy-1-application-startup-order-test"
+                        }
+                    },
+                    {
+                        "type": "php-application-startup-order-test",
+                        "cartridgeMax": 2,
+                        "cartridgeMin": 1,
+                        "subscribableInfo": {
+                            "alias": "my-php-application-startup-order-test",
+                            "artifactRepository": {
+                                "privateRepo": true,
+                                "repoPassword": "password",
+                                "repoUrl": "http://xxx:10080/git/default.git",
+                                "repoUsername": "user"
+                            },
+                            "autoscalingPolicy": "autoscaling-policy-application-startup-order-test",
+                            "deploymentPolicy": "deployment-policy-1-application-startup-order-test"
+                        }
+                    }
+                ],
+                "groupMaxInstances": 2,
+                "groupMinInstances": 1,
+                "groupScalingEnabled": true
+            },
+            {
+                "name": "db-group-application-startup-order-test",
+                "alias": "my-dbgroup-application-startup-order-test",
+                "cartridges": [
+                    {
+                        "type": "postgres-application-startup-order-test",
+                        "cartridgeMax": 2,
+                        "cartridgeMin": 1,
+                        "subscribableInfo": {
+                            "alias": "my-postgres-application-startup-order-test",
+                            "artifactRepository": {
+                                "alias": "my-postgres-application-startup-order-test",
+                                "privateRepo": false,
+                                "repoPassword": "password",
+                                "repoUrl": "http://xxx:10080/git/default.git",
+                                "repoUsername": "user"
+                            },
+                            "autoscalingPolicy": "autoscaling-policy-application-startup-order-test",
+                            "deploymentPolicy": "deployment-policy-1-application-startup-order-test"
+                        }
+                    },
+                    {
+                        "type": "mysql-application-startup-order-test",
+                        "cartridgeMax": 2,
+                        "cartridgeMin": 1,
+                        "subscribableInfo": {
+                            "alias": "my-mysql-application-startup-order-test",
+                            "artifactRepository": {
+                                "alias": "my-mysql-application-startup-order-test",
+                                "privateRepo": true,
+                                "repoPassword": "password",
+                                "repoUrl": "http://xxx:10080/git/default.git",
+                                "repoUsername": "user"
+                            },
+                            "autoscalingPolicy": "autoscaling-policy-application-startup-order-test",
+                            "deploymentPolicy": "deployment-policy-1-application-startup-order-test"
+                        }
+                    }
+                ],
+                "groupMaxInstances": 2,
+                "groupMinInstances": 1,
+                "groupScalingEnabled": true
+            }
+        ],
+        "cartridges": [
+            {
+                "type": "esb-application-startup-order-test",
+                "cartridgeMax": 2,
+                "cartridgeMin": 1,
+                "subscribableInfo": {
+                    "alias": "my-esb-application-startup-order-test",
+                    "artifactRepository": {
+                        "privateRepo": true,
+                        "repoPassword": "password",
+                        "repoUrl": "http://xxx:10080/git/default.git",
+                        "repoUsername": "user"
+                    },
+                    "autoscalingPolicy": "autoscaling-policy-application-startup-order-test",
+                    "deploymentPolicy": "deployment-policy-1-application-startup-order-test"
+                }
+            }
+        ],
+        "dependencies": {
+            "scalingDependents": [
+                {
+                    "aliases": [
+                        "group.my-appgroup-application-startup-order-test, cartridge.my-esb-application-startup-order-test"
+                    ]
+                }
+            ],
+            "startupOrders": [
+                {
+                    "aliases": [
+                        "group.my-dbgroup3333",
+                        "group.my-appgroup5555"
+                    ]
+                },
+                {
+                    "aliases": [
+                        "group.my-dbgroup555",
+                        "cartridge.my-esb66666"
+                    ]
+                }
+            ],
+            "terminationBehaviour": "terminate-none"
+        }
+    }
+}

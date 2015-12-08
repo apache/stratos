@@ -17,23 +17,21 @@
  * under the License.
  *
  */
-var applicationId;
-var clusterId;
+
 var vars;
-$(document).ready(function () {
+
+function readRequestParam(){
     var query = window.location.search.substring(1);
     vars = query.split("&");
 
-    applicationId = getRequestParam('applicationId');
-    clusterId = getRequestParam('clusterId');
+    var applicationId = getRequestParam('applicationId');
+    var clusterId = getRequestParam('clusterId');
 
-    setTimeout(function () {
-        var data = {applicationId: applicationId, clusterId: clusterId};
-        console.log("Publishing request params: " + JSON.stringify(data));
-        ues.hub.publish("request-params",data);
-    }, 2000);
+    var data = {applicationId: applicationId, clusterId: clusterId};
+    console.log("Publishing request params: " + JSON.stringify(data));
+    ues.hub.publish("request-params",data);
+}
 
-});
 
 function getRequestParam(variable) {
     for (var i = 0; i < vars.length; i++) {

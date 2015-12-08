@@ -27,10 +27,10 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.apache.stratos.das.artifacts</artifactId>
+    <artifactId>apache-stratos-das-extension</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - DAS Artifacts</name>
-    <description>Apache Stratos DAS Artifacts</description>
+    <name>Apache Stratos - DAS Extension</name>
+    <description>Apache Stratos DAS Extension</description>
 
     <profiles>
         <profile>

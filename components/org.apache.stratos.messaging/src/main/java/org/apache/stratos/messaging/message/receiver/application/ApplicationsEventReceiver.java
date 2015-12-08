@@ -20,7 +20,10 @@ package org.apache.stratos.messaging.message.receiver.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
+import org.apache.stratos.messaging.event.initializer.CompleteApplicationsRequestEvent;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
@@ -32,7 +35,6 @@ public class ApplicationsEventReceiver {
     private ApplicationsEventMessageDelegator messageDelegator;
     private ApplicationsEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
-    private boolean terminated;
     private ExecutorService executorService;
 
     public ApplicationsEventReceiver() {
@@ -45,11 +47,15 @@ public class ApplicationsEventReceiver {
         messageDelegator.addEventListener(eventListener);
     }
 
+    public void removeEventListener(EventListener eventListener) {
+        messageDelegator.removeEventListener(eventListener);
+    }
 
     public void execute() {
         try {
             // Start topic subscriber thread
-            eventSubscriber = new EventSubscriber(MessagingUtil.Topics.APPLICATION_TOPIC.getTopicName(), messageListener);
+            eventSubscriber = new EventSubscriber(MessagingUtil.Topics.APPLICATION_TOPIC.getTopicName(),
+                    messageListener);
             executorService.execute(eventSubscriber);
 
             if (log.isDebugEnabled()) {
@@ -62,8 +68,7 @@ public class ApplicationsEventReceiver {
             if (log.isDebugEnabled()) {
                 log.debug("Application status event message delegator thread started");
             }
-
-
+            initializeCompleteApplicationsModel();
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Application status failed", e);
@@ -74,7 +79,26 @@ public class ApplicationsEventReceiver {
     public void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
-        terminated = true;
+    }
+
+    public void initializeCompleteApplicationsModel() {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                while (!eventSubscriber.isSubscribed()) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignore) {
+                    }
+                }
+
+                CompleteApplicationsRequestEvent completeApplicationsRequestEvent
+                        = new CompleteApplicationsRequestEvent();
+                String topic = MessagingUtil.getMessageTopicName(completeApplicationsRequestEvent);
+                EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
+                eventPublisher.publish(completeApplicationsRequestEvent);
+            }
+        });
     }
 
     public ExecutorService getExecutorService() {

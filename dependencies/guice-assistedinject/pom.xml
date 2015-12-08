@@ -36,9 +36,9 @@
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-assistedinject</artifactId>
-            <version>${guice.assistedinject.version}</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -53,7 +53,7 @@
                         </Export-Package>
                         <Import-Package>
                             !com.google.inject.assistedinject.*,
-                            com.google.inject.*;version="${guice.imp.pkg.version}",
+                            com.google.inject.*;version="${guice.imp.pkg.version.range}",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

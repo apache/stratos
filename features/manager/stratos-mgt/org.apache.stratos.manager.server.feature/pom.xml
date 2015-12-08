@@ -79,19 +79,33 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
+                                <!-- Stratos bundles -->
                                 <bundleDef>org.apache.stratos:org.apache.stratos.manager:${project.version}</bundleDef>
                                 <bundleDef>
                                     org.apache.stratos:org.apache.stratos.manager.service.stub:${project.version}
                                 </bundleDef>
-                                <bundleDef>org.wso2.andes.wso2:andes-client:0.13.wso2v8</bundleDef>
                                 <bundleDef>
                                     org.apache.stratos:org.apache.stratos.cloud.controller.service.stub:${project.version}
                                 </bundleDef>
-                                <bundleDef>com.gitblit:gitblit:1.2.0.wso2v1</bundleDef>
-                                <bundleDef>com.google.code.gson:gson:2.1</bundleDef>
-                                <bundleDef>org.apache.commons:commons-lang3:3.1</bundleDef>
-                                <bundleDef>org.eclipse.jgit:org.eclipse.jgit:2.1.0.wso2v1</bundleDef>
-                                <bundleDef>com.jcraft:jsch:0.1.49.wso2v1</bundleDef>
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.autoscaler.service.stub:${project.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.messaging:${project.version}
+                                </bundleDef>
+                                <bundleDef>
+                                    org.apache.stratos:org.apache.stratos.common:${project.version}
+                                </bundleDef>
+
+                                <!-- Misc -->
+                                <bundleDef>org.wso2.andes.wso2:andes-client:${andes.client.version}</bundleDef>
+                                <bundleDef>com.google.code.gson:gson:${gson.version}</bundleDef>
+                                <bundleDef>org.apache.commons:commons-lang3:${commons.lang3.version}</bundleDef>
+                                <bundleDef>
+                                    org.eclipse.jgit:org.eclipse.jgit:${eclipse.jgit.wso2.osgi.version}
+                                </bundleDef>
+                                <bundleDef>com.jcraft:jsch:${jsch.version}</bundleDef>
+                                <bundleDef>com.gitblit:gitblit:${gitblit.version}</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>

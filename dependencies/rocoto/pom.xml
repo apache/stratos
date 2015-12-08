@@ -36,7 +36,6 @@
         <dependency>
             <groupId>org.99soft.guice</groupId>
             <artifactId>rocoto</artifactId>
-            <version>${rocoto.version}</version>
         </dependency>
     </dependencies>
 
@@ -57,7 +56,7 @@
                             !com.google.inject*,
                             *;resolution:=optional
                         </Import-Package>
-                        <Fragment-Host>guice;bundle-version="${guice.imp.pkg.version}"</Fragment-Host>
+                        <Fragment-Host>guice;bundle-version="${guice.imp.pkg.version.range}"</Fragment-Host>
                         <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>

@@ -1,0 +1,14 @@
+{
+    "id": "autoscaling-policy-application-startup-order-test",
+    "loadThresholds": {
+        "requestsInFlight": {
+            "threshold": 20
+        },
+        "memoryConsumption": {
+            "threshold": 70
+        },
+        "loadAverage": {
+            "threshold": 70
+        }
+    }
+}

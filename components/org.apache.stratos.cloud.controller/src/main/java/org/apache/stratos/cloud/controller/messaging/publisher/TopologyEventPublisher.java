@@ -25,6 +25,7 @@ import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.ClusterContext;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.domain.PortMapping;
+import org.apache.stratos.cloud.controller.messaging.topology.TopologyHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
@@ -314,12 +315,16 @@ public class TopologyEventPublisher {
     }
 
     public static void sendCompleteTopologyEvent(Topology topology) {
-        CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
-
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Publishing complete topology event"));
+        TopologyHolder.acquireReadLock();
+        try {
+            CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
+            if (log.isDebugEnabled()) {
+                log.debug("Publishing complete topology event...");
+            }
+            publishEvent(completeTopologyEvent);
+        } finally {
+            TopologyHolder.releaseReadLock();
         }
-        publishEvent(completeTopologyEvent);
     }
 
     public static void sendClusterTerminatingEvent(ClusterInstanceTerminatingEvent clusterTerminatingEvent) {

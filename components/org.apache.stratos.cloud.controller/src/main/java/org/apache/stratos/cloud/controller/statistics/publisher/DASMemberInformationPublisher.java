@@ -27,7 +27,6 @@ import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.InstanceMetadata;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.common.statistics.publisher.ThriftStatisticsPublisher;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
@@ -41,19 +40,31 @@ import java.util.concurrent.ExecutorService;
 /**
  * MemberInfoPublisher to publish member information/metadata to DAS.
  */
-public class DASMemberInformationPublisher extends ThriftStatisticsPublisher implements MemberInformationPublisher {
+public class DASMemberInformationPublisher extends MemberInformationPublisher {
 
     private static final Log log = LogFactory.getLog(DASMemberInformationPublisher.class);
-
+    private static volatile DASMemberInformationPublisher dasMemberInformationPublisher;
     private static final String DATA_STREAM_NAME = "member_info";
     private static final String VERSION = "1.0.0";
     private static final String DAS_THRIFT_CLIENT_NAME = "das";
     private static final String VALUE_NOT_FOUND = "Value Not Found";
     private ExecutorService executorService;
 
-    public DASMemberInformationPublisher() {
+    private DASMemberInformationPublisher() {
         super(createStreamDefinition(), DAS_THRIFT_CLIENT_NAME);
-        executorService = StratosThreadPool.getExecutorService("cloud.controller.stats.publisher.thread.pool", 10);
+        executorService = StratosThreadPool.getExecutorService(CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_ID,
+                CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_SIZE);
+    }
+
+    public static DASMemberInformationPublisher getInstance() {
+        if (dasMemberInformationPublisher == null) {
+            synchronized (DASMemberInformationPublisher.class) {
+                if (dasMemberInformationPublisher == null) {
+                    dasMemberInformationPublisher = new DASMemberInformationPublisher();
+                }
+            }
+        }
+        return dasMemberInformationPublisher;
     }
 
     private static StreamDefinition createStreamDefinition() {
@@ -146,7 +157,7 @@ public class DASMemberInformationPublisher extends ThriftStatisticsPublisher imp
                                 metadata.getOperatingSystemName(), metadata.getOperatingSystemVersion(),
                                 metadata.getOperatingSystemArchitecture(), metadata.isOperatingSystem64bit()));
                     }
-                    DASMemberInformationPublisher.super.publish(payload.toArray());
+                    publish(payload.toArray());
                 }
             }
         };

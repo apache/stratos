@@ -36,6 +36,10 @@ public class AWSExtensionContext {
     private String networkPartitionId;
     private String clusterId;
     private String serviceName;
+    private boolean terminateLBsOnExtensionStop;
+    private boolean terminateLBOnClusterRemoval;
+    private boolean operatingInVPC;
+    private boolean enableCrossZoneLoadBalancing;
 
     private AWSExtensionContext() {
         this.cepStatsPublisherEnabled = Boolean.getBoolean(Constants.CEP_STATS_PUBLISHER_ENABLED);
@@ -44,6 +48,10 @@ public class AWSExtensionContext {
         this.networkPartitionId = System.getProperty(Constants.NETWORK_PARTITION_ID);
         this.clusterId = System.getProperty(Constants.CLUSTER_ID);
         this.serviceName = System.getProperty(Constants.SERVICE_NAME);
+        this.terminateLBsOnExtensionStop = Boolean.getBoolean(Constants.TERMINATE_LBS_ON_EXTENSION_STOP);
+        this.terminateLBOnClusterRemoval = Boolean.getBoolean(Constants.TERMINATE_LB_ON_CLUSTER_REMOVAL);
+        this.operatingInVPC = Boolean.getBoolean(Constants.OPERATIMG_IN_VPC);
+        this.enableCrossZoneLoadBalancing = Boolean.getBoolean(Constants.ENABLE_CROSS_ZONE_LOADBALANCING);
 
         if (log.isDebugEnabled()) {
             log.debug(Constants.CEP_STATS_PUBLISHER_ENABLED + " = " + cepStatsPublisherEnabled);
@@ -51,6 +59,10 @@ public class AWSExtensionContext {
             log.debug(Constants.THRIFT_RECEIVER_PORT + " = " + thriftReceiverPort);
             log.debug(Constants.NETWORK_PARTITION_ID + " = " + networkPartitionId);
             log.debug(Constants.CLUSTER_ID + " = " + clusterId);
+            log.debug(Constants.TERMINATE_LBS_ON_EXTENSION_STOP + "=" + terminateLBsOnExtensionStop);
+            log.debug(Constants.TERMINATE_LB_ON_CLUSTER_REMOVAL + "=" + terminateLBOnClusterRemoval);
+            log.debug(Constants.OPERATIMG_IN_VPC + "=" + operatingInVPC);
+            log.debug(Constants.ENABLE_CROSS_ZONE_LOADBALANCING + "=" +  enableCrossZoneLoadBalancing);
         }
     }
 
@@ -97,5 +109,21 @@ public class AWSExtensionContext {
 
     public String getServiceName() {
         return serviceName;
+    }
+
+    public boolean terminateLBsOnExtensionStop() {
+        return terminateLBsOnExtensionStop;
+    }
+
+    public boolean terminateLBOnClusterRemoval() {
+        return terminateLBOnClusterRemoval;
+    }
+
+    public boolean isOperatingInVPC() {
+        return operatingInVPC;
+    }
+
+    public boolean isCrossZoneLoadBalancingEnabled () {
+        return enableCrossZoneLoadBalancing;
     }
 }

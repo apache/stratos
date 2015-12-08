@@ -42,8 +42,7 @@ public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
     }
 
     @Override
-    public boolean process(String idOfComponent, String appId,
-                           String instanceId) {
+    public boolean process(String idOfComponent, String appId, String instanceId) {
         boolean statusChanged;
         statusChanged = doProcess(idOfComponent, appId, instanceId);
         if (statusChanged) {
@@ -55,8 +54,8 @@ public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
             return nextProcessor.process(idOfComponent, appId, instanceId);
         } else {
 
-            log.warn(String.format("No possible state change found for [component] %s [instance] %s",
-                    idOfComponent, instanceId));
+            log.warn(String.format("No possible state change found for [component] %s [instance] %s", idOfComponent,
+                    instanceId));
         }
         return false;
     }
@@ -68,13 +67,12 @@ public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
         Map<String, ClusterDataHolder> clusterData;
 
         if (log.isDebugEnabled()) {
-            log.debug("StatusChecker calculating the terminated status for the group " +
-                    "[ " + idOfComponent + " ] " + " for the instance " + " [ " + instanceId + " ]");
+            log.debug(String.format(
+                    "GroupStatusTerminatedProcessor is calculating the terminated status for [group-id] %s "
+                            + "[instance-id] %s", idOfComponent, instanceId));
         }
-
+        ApplicationHolder.acquireWriteLock();
         try {
-            ApplicationHolder.acquireWriteLock();
-
             Application application = ApplicationHolder.getApplications().
                     getApplication(appId);
             component = application;
@@ -88,32 +86,28 @@ public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
             groups = component.getAliasToGroupMap();
             clusterData = component.getClusterDataMap();
 
-            if (groups.isEmpty() &&
-                    getAllClusterInSameState(clusterData, ClusterStatus.Terminated, instanceId) ||
-                    clusterData.isEmpty() &&
-                            getAllGroupInSameState(groups, GroupStatus.Terminated, instanceId) ||
-                    getAllClusterInSameState(clusterData, ClusterStatus.Terminated, instanceId) &&
-                            getAllGroupInSameState(groups, GroupStatus.Terminated, instanceId)) {
+            if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Terminated, instanceId) ||
+                    clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Terminated, instanceId) ||
+                    getAllClusterInSameState(clusterData, ClusterStatus.Terminated, instanceId)
+                            && getAllGroupInSameState(groups, GroupStatus.Terminated, instanceId)) {
                 //send the terminated event
                 if (component instanceof Application) {
-                    log.info("Sending application instance terminated for [application] " + appId
-                            + " [instance] " + instanceId);
+                    log.info(String.format(
+                            "Sending application instance terminated for [application-id] %s, [instance-id] %s", appId,
+                            instanceId));
                     ApplicationBuilder.handleApplicationInstanceTerminatedEvent(appId, instanceId);
                     return true;
                 } else {
-                    log.info("Sending group instance terminated for [group] " +
-                            component.getUniqueIdentifier() + " [instance] " + instanceId);
-                    ApplicationBuilder.handleGroupInstanceTerminatedEvent(appId,
-                            component.getUniqueIdentifier(), instanceId);
+                    log.info(String.format("Sending group instance terminated for [group-id] %s, [instance-id] %s",
+                            component.getUniqueIdentifier(), instanceId));
+                    ApplicationBuilder
+                            .handleGroupInstanceTerminatedEvent(appId, component.getUniqueIdentifier(), instanceId);
                     return true;
                 }
             }
         } finally {
             ApplicationHolder.releaseWriteLock();
-
         }
         return false;
     }
-
-
 }

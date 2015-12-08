@@ -1,0 +1,229 @@
+{
+  "id": "metering-dashboard",
+  "title": "Metering Dashboard",
+  "description": "This dashboard is to show metering data.",
+  "permissions": {
+    "viewers": [
+      "Internal/everyone"
+    ],
+    "editors": [
+      "Internal/everyone"
+    ]
+  },
+  "pages": [
+    {
+      "id": "member-status",
+      "title": "Member Status",
+      "layout": {
+        "id": "single-column",
+        "title": "Single Column",
+        "description": "This is a layout generated through single-column.io",
+        "thumbnail": "store://layout/single-column/index.png",
+        "url": "store://layout/single-column/index.hbs",
+        "content": "<!--\n\n Licensed to the Apache Software Foundation (ASF) under one\n or more contributor license agreements.  See the NOTICE file\n distributed with this work for additional information\n regarding copyright ownership.  The ASF licenses this file\n to you under the Apache License, Version 2.0 (the\n \"License\"); you may not use this file except in compliance\n with the License.  You may obtain a copy of the License at\n\n   http://www.apache.org/licenses/LICENSE-2.0\n\n Unless required by applicable law or agreed to in writing,\n software distributed under the License is distributed on an\n \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n KIND, either express or implied.  See the License for the\n specific language governing permissions and limitations\n under the License.\n\n-->\n<div class=\"container\">\n<div class=\"row\">\n    <div id=\"a\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"b\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"c\" class=\"col-md-12 ues-component-box\"></div>\n</div>\n</div>\n"
+      },
+      "isanon": false,
+      "content": {
+        "default": {
+          "a": [
+            {
+              "id": "ehng97cyk3kxogvi",
+              "content": {
+                "id": "Member_Status_Filter",
+                "title": "",
+                "type": "gadget",
+                "thumbnail": "store://gadget/Member_Status_Filter/index.png",
+                "data": {
+                  "url": "store://gadget/Member_Status_Filter/index.xml"
+                },
+                "styles": {
+                  "title": "",
+                  "height": "100",
+                  "borders": false,
+                  "titlePosition": "left"
+                },
+                "notify": {
+                  "member-status-filter": {
+                    "type": "address",
+                    "description": "This notifies time interval"
+                  },
+                  "cancel": {
+                    "type": "boolean",
+                    "description": "This notifies cancellation of state selection"
+                  }
+                },
+                "settings": {}
+              }
+            }
+          ],
+          "b": [
+            {
+              "id": "q1pf6m8s5bq08uxr",
+              "content": {
+                "id": "Member_Count",
+                "title": "Member Count",
+                "type": "gadget",
+                "thumbnail": "local://store/carbon.super/gadget/usa-business-revenue/index.png",
+                "data": {
+                  "url": "local://store/carbon.super/gadget/Member_Count/index.xml"
+                },
+                "listen": {
+                  "member-status-filter": {
+                    "type": "address",
+                    "description": "Used to filter based on state",
+                    "on": [
+                      {
+                        "from": "ehng97cyk3kxogvi",
+                        "event": "member-status-filter"
+                      }
+                    ]
+                  },
+                  "auto-update": {
+                    "type": "boolean",
+                    "description": "Used to filter based on state",
+                    "on": []
+                  }
+                },
+                "styles": {
+                  "title": "",
+                  "height": "400",
+                  "borders": true,
+                  "titlePosition": "left"
+                },
+                "settings": {}
+              }
+            }
+          ],
+          "c": [
+            {
+              "id": "qf9lnn9oiv1pds4i",
+              "content": {
+                "id": "Member_Update",
+                "title": "Member Status",
+                "type": "gadget",
+                "thumbnail": "local://store/carbon.super/gadget/usa-business-revenue/index.png",
+                "data": {
+                  "url": "local://store/carbon.super/gadget/Member_Status/index.xml"
+                },
+                "listen": {
+                  "member-status-filter": {
+                    "type": "address",
+                    "description": "Used to filter based on state",
+                    "on": [
+                      {
+                        "from": "ehng97cyk3kxogvi",
+                        "event": "member-status-filter"
+                      }
+                    ]
+                  },
+                  "auto-update": {
+                    "type": "boolean",
+                    "description": "Used to filter based on state",
+                    "on": []
+                  }
+                },
+                "styles": {
+                  "title": "",
+                  "height": "800",
+                  "borders": true,
+                  "titlePosition": "left"
+                },
+                "settings": {}
+              }
+            }
+          ]
+        },
+        "anon": {}
+      }
+    },
+    {
+      "id": "member-details",
+      "title": "Member Details",
+      "layout": {
+        "id": "single-column",
+        "title": "Single Column",
+        "description": "This is a layout generated through single-column.io",
+        "thumbnail": "store://layout/single-column/index.png",
+        "url": "store://layout/single-column/index.hbs",
+        "content": "<!--\n\n Licensed to the Apache Software Foundation (ASF) under one\n or more contributor license agreements.  See the NOTICE file\n distributed with this work for additional information\n regarding copyright ownership.  The ASF licenses this file\n to you under the Apache License, Version 2.0 (the\n \"License\"); you may not use this file except in compliance\n with the License.  You may obtain a copy of the License at\n\n   http://www.apache.org/licenses/LICENSE-2.0\n\n Unless required by applicable law or agreed to in writing,\n software distributed under the License is distributed on an\n \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n KIND, either express or implied.  See the License for the\n specific language governing permissions and limitations\n under the License.\n\n-->\n<div class=\"container\">\n<div class=\"row\">\n    <div id=\"a\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"b\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"c\" class=\"col-md-12 ues-component-box\"></div>\n</div>\n</div>\n"
+      },
+      "isanon": false,
+      "content": {
+        "default": {
+          "a": [
+            {
+              "id": "8zgl65uoackgldi",
+              "content": {
+                "id": "Member_Details_Filter",
+                "title": "",
+                "type": "gadget",
+                "thumbnail": "store://gadget/Member_Details_Filter/index.png",
+                "data": {
+                  "url": "store://gadget/Member_Details_Filter/index.xml"
+                },
+                "styles": {
+                  "title": "",
+                  "height": "100",
+                  "borders": false,
+                  "titlePosition": "left"
+                },
+                "notify": {
+                  "member-details-filter": {
+                    "type": "address",
+                    "description": "This notifies applicationId and clusterId"
+                  }
+                },
+                "cancel": {
+                  "type": "boolean",
+                  "description": "This notifies cancellation of state selection"
+                },
+                "settings": {}
+              }
+            }
+          ],
+          "b": [
+            {
+              "id": "hoqfz4b6z91nstt9",
+              "content": {
+                "id": "Member_Details",
+                "title": "Member Details",
+                "type": "gadget",
+                "thumbnail": "local://store/carbon.super/gadget/usa-business-revenue/index.png",
+                "data": {
+                  "url": "local://store/carbon.super/gadget/Member_Information/index.xml"
+                },
+                "listen": {
+                  "member-details-filter": {
+                    "type": "address",
+                    "description": "Used to filter based on state",
+                    "on": [
+                      {
+                        "from": "8zgl65uoackgldi",
+                        "event": "member-details-filter"
+                      }
+                    ]
+                  },
+                  "auto-update": {
+                    "type": "boolean",
+                    "description": "Used to filter based on state"
+                  }
+                },
+                "styles": {
+                  "title": "",
+                  "height": "800",
+                  "borders": true,
+                  "titlePosition": "left"
+                },
+                "settings": {}
+              }
+            }
+          ]
+        },
+        "anon": {}
+      }
+    }
+  ],
+  "landing": "member-status",
+  "isanon": false,
+  "isUserCustom": false
+}

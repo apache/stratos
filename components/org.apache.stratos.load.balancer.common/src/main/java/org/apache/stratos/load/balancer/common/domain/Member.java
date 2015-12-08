@@ -22,6 +22,7 @@ package org.apache.stratos.load.balancer.common.domain;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Load balancer member definition.
@@ -34,6 +35,7 @@ public class Member {
     private String hostName;
     private Map<Integer, Port> portMap;
     private String instanceId;
+    private Properties properties;
 
 	public Member(String serviceName, String clusterId, String memberId, String hostName) {
         this.serviceName = serviceName;
@@ -95,4 +97,12 @@ public class Member {
 	public void setInstanceId(String instanceId) {
 		this.instanceId = instanceId;
 	}
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
 }

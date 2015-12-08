@@ -1,0 +1,15 @@
+{
+    "id": "deployment-policy-git-hook-test",
+    "networkPartitions": [
+        {
+            "id": "network-partition-git-hook-test",
+            "partitionAlgo": "one-after-another",
+            "partitions": [
+                {
+                    "id": "partition-1",
+                    "partitionMax": 20
+                }
+            ]
+        }
+    ]
+}

@@ -15,13 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from plugins.contracts import IArtifactCommitPlugin
-from modules.util.log import LogFactory
-from modules.artifactmgt.git.agentgithandler import AgentGitHandler
-from config import Config
-import constants
 from exception import *
 from git import *
+from modules.artifactmgt.git.agentgithandler import AgentGitHandler
+from plugins.contracts import IArtifactCommitPlugin
+
+from modules.util.log import LogFactory
 
 
 class DefaultArtifactCommit(IArtifactCommitPlugin):
@@ -43,7 +42,9 @@ class DefaultArtifactCommit(IArtifactCommitPlugin):
         if git_repo is None:
             # not cloned yet
             AgentGitHandler.log.error("Not a valid repository to push from. Aborting Git push...")
+            return
 
+        repo = Repo(git_repo.local_repo_path)
         # Get initial HEAD so in case if push fails it can be reverted to this hash
         # This way, commit and push becomes an single operation. No intermediate state will be left behind.
         (init_head, init_errors) = AgentGitHandler.execute_git_command(["rev-parse", "HEAD"], git_repo.local_repo_path)
@@ -58,10 +59,7 @@ class DefaultArtifactCommit(IArtifactCommitPlugin):
             AgentGitHandler.log.error("Git could not stage untracked artifacts")
 
         # check for changes in working directory
-        modified = AgentGitHandler.has_modified_files(git_repo.local_repo_path)
-
-        AgentGitHandler.log.debug("[Git] Modified: %s" % str(modified))
-        if not modified:
+        if not repo.is_dirty():
             AgentGitHandler.log.debug("No changes detected in the local repository for tenant %s" % git_repo.tenant_id)
             return
 
@@ -88,7 +86,6 @@ class DefaultArtifactCommit(IArtifactCommitPlugin):
             AgentGitHandler.execute_git_command(["reset", "--hard", init_head], git_repo.local_repo_path)
             return
 
-        repo = Repo(git_repo.local_repo_path)
         # pull and rebase before pushing to remote repo
         AgentGitHandler.execute_git_command(["pull", "--rebase", "origin", "master"], git_repo.local_repo_path)
         if repo.is_dirty():

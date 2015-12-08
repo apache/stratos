@@ -215,7 +215,7 @@ public class PolicyManager {
     public void removeASPolicyInInformationModel(String policyID) throws PolicyDoesNotExistException {
         if (autoscalePolicyListMap.containsKey(policyID)) {
             if (log.isDebugEnabled()) {
-                log.debug("Updating autoscaling policy: " + policyID);
+                log.debug("Removing autoscaling policy: " + policyID);
             }
             autoscalePolicyListMap.remove(policyID);
         } else {

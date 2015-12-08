@@ -1,0 +1,24 @@
+{
+    "alias": "stratos-server-restart-test",
+    "applicationId": "stratos-server-restart-test",
+    "components": {
+      "cartridges": [
+        {
+          "type": "c1-stratos-server-restart-test",
+          "cartridgeMin": 1,
+          "cartridgeMax": 1,
+          "subscribableInfo": {
+            "alias": "c1-1x0-stratos-server-restart-test",
+            "autoscalingPolicy": "autoscaling-policy-stratos-server-restart-test",
+            "deploymentPolicy": "deployment-policy-stratos-server-restart-test",
+            "artifactRepository": {
+              "privateRepo": false,
+              "repoUrl": "https://github.com/lakwarus/single-cartridge.git",
+              "repoUsername": "",
+              "repoPassword": ""
+            }
+          }
+        }
+      ]
+    }
+}

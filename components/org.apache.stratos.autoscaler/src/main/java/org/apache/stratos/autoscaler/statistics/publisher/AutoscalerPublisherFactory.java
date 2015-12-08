@@ -19,6 +19,7 @@
 
 package org.apache.stratos.autoscaler.statistics.publisher;
 
+import org.apache.stratos.common.exception.InvalidStatisticsPublisherTypeException;
 import org.apache.stratos.common.statistics.publisher.StatisticsPublisherType;
 
 /**
@@ -29,9 +30,9 @@ public class AutoscalerPublisherFactory {
     public static ScalingDecisionPublisher createScalingDecisionPublisher(StatisticsPublisherType type) {
 
         if (type == StatisticsPublisherType.WSO2DAS) {
-            return new DASScalingDecisionPublisher();
+            return DASScalingDecisionPublisher.getInstance();
         } else {
-            throw new RuntimeException("Unknown statistics publisher type");
+            throw new InvalidStatisticsPublisherTypeException("Invalid statistics publisher type is used to create publisher.");
         }
     }
 }

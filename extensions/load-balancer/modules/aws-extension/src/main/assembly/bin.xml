@@ -52,6 +52,11 @@
                 <include>client-truststore.jks</include>
             </includes>
         </fileSet>
+	<fileSet>
+            <directory>${project.basedir}/src/main/resources</directory>
+            <outputDirectory>/resources</outputDirectory>
+            <fileMode>0600</fileMode>
+        </fileSet>
         <fileSet>
             <directory>${project.basedir}</directory>
             <outputDirectory>/</outputDirectory>

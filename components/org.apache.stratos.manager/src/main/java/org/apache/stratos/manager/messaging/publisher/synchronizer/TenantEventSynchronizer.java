@@ -42,9 +42,13 @@ public class TenantEventSynchronizer implements Runnable {
 
     @Override
     public void run() {
+        sendCompleteTenantEvent();
+    }
+
+    public static synchronized void sendCompleteTenantEvent(){
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Publishing complete tenant event"));
+                log.debug("Publishing complete tenant event");
             }
             Tenant tenant;
             List<Tenant> tenants = new ArrayList<Tenant>();

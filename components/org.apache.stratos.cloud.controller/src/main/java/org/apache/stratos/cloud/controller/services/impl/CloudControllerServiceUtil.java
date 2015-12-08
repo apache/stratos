@@ -26,7 +26,6 @@ import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.domain.Partition;
-import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
@@ -53,6 +52,9 @@ public class CloudControllerServiceUtil {
         if (memberContext == null) {
             throw new RuntimeException("Member context is null. Could not execute member termination post process");
         }
+        if (log.isDebugEnabled()) {
+            log.debug("Executing member termination post process for member: " + memberContext.toString());
+        }
         String partitionId = memberContext.getPartition() == null ? null : memberContext.getPartition().getId();
 
         // Update the topology
@@ -65,6 +67,10 @@ public class CloudControllerServiceUtil {
 
         // Persist cloud controller context
         CloudControllerContext.getInstance().persist();
+
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully executed member termination post process for member: " + memberContext.toString());
+        }
     }
 
     public static boolean isValidIpAddress(String ip) {

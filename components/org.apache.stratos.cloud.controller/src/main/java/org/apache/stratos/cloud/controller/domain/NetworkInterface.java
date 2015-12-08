@@ -114,4 +114,20 @@ public class NetworkInterface implements Serializable {
         sb.append('}');
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NetworkInterface that = (NetworkInterface) o;
+
+        return !(networkUuid != null ? !networkUuid.equals(that.networkUuid) : that.networkUuid != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return networkUuid != null ? networkUuid.hashCode() : 0;
+    }
 }
