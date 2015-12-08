@@ -471,20 +471,17 @@ public class AWSHelper {
     public List<Instance> getAttachedInstances(String loadBalancerName,
                                                String region) {
         try {
-            LoadBalancerDescription lbDescription = getLoadBalancerDescription(
-                    loadBalancerName, region);
+            LoadBalancerDescription lbDescription = getLoadBalancerDescription(loadBalancerName, region);
 
             if (lbDescription == null) {
-                log.warn("Could not find description of load balancer "
-                        + loadBalancerName);
+                log.warn("Could not find description of load balancer "+ loadBalancerName);
                 return null;
             }
 
             return lbDescription.getInstances();
 
         } catch (AmazonClientException e) {
-            log.error("Could not find instances attached  load balancer "
-                    + loadBalancerName, e);
+            log.error("Could not find instances attached  load balancer "+ loadBalancerName, e);
         }
 
         return null;

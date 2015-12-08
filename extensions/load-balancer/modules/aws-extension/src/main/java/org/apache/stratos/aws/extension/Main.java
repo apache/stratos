@@ -25,6 +25,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancerExtension;
+import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 
 import java.util.concurrent.ExecutorService;
 
@@ -34,6 +35,8 @@ import java.util.concurrent.ExecutorService;
 
 public class Main {
 	private static final Log log = LogFactory.getLog(Main.class);
+	public static final String AWS_EXTENSION_THREAD_POOL = "aws.extension.thread.pool";
+	public static final int THREAD_POOL_SIZE = 10;
 	private static ExecutorService executorService;
 
 	public static void main(String[] args) {
@@ -41,23 +44,20 @@ public class Main {
 		LoadBalancerExtension extension = null;
 		try {
 			// Configure log4j properties
-			PropertyConfigurator.configure(System
-					.getProperty("log4j.properties.file.path"));
+			PropertyConfigurator.configure(System.getProperty("log4j.properties.file.path"));
 
 			if (log.isInfoEnabled()) {
 				log.info("AWS extension started");
 			}
 
-			executorService = StratosThreadPool.getExecutorService(
-					"aws.extension.thread.pool", 10);
+			executorService = StratosThreadPool.getExecutorService(AWS_EXTENSION_THREAD_POOL, THREAD_POOL_SIZE);
 			// Validate runtime parameters
 			AWSExtensionContext.getInstance().validate();
 			TopologyProvider topologyProvider = new TopologyProvider();
-			AWSStatisticsReader statisticsReader = AWSExtensionContext
-					.getInstance().isCEPStatsPublisherEnabled() ? new AWSStatisticsReader(
-					topologyProvider) : null;
-			extension = new LoadBalancerExtension(new AWSLoadBalancer(),
-					statisticsReader, topologyProvider);
+			AWSStatisticsReader statisticsReader =
+					AWSExtensionContext.getInstance().isCEPStatsPublisherEnabled() ? new AWSStatisticsReader(
+							topologyProvider) : null;
+			extension = new LoadBalancerExtension(new AWSLoadBalancer(), statisticsReader, topologyProvider);
 			extension.setExecutorService(executorService);
 			extension.execute();
 
@@ -68,7 +68,7 @@ public class Main {
 				public void run() {
 					try {
 						if (finalExtension != null) {
-							log.info("Shutting aws extension...");
+							log.info("Shutting aws LB extension...");
 							finalExtension.stop();
 						}
 						mainThread.join();
@@ -77,9 +77,9 @@ public class Main {
 					}
 				}
 			});
-		} catch (Exception e) {
+		} catch (LoadBalancerExtensionException e) {
 			if (log.isErrorEnabled()) {
-				log.error(e);
+				log.error("Error occurred while running the aws lb extension");
 			}
 			if (extension != null) {
 				log.info("Shutting aws extension...");
