@@ -1844,7 +1844,7 @@ public class StratosApiV41Utils {
                         if (applicationDefinition.isMultiTenant()) {
                             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
                             boolean hasSignUps = StratosManagerServiceClient.getInstance().
-                                    applicationSignUpsExist(applicationDefinition.getApplicationId());
+                                    applicationSignUpExist(applicationDefinition.getApplicationId(), tenantId);
                             applicationDefinition.setSignUpsExist(hasSignUps);
                         }
                         applicationDefinitions.add(applicationDefinition);
@@ -2065,7 +2065,7 @@ public class StratosApiV41Utils {
      * @param group             Group
      * @param groupInstanceBean GroupInstanceBean
      */
-    private static void setSubGroupInstances(Group group, GroupInstanceBean groupInstanceBean) throws RestAPIException {
+    private static void setSubGroupInstances(Group group, GroupInstanceBean groupInstanceBean) {
         Collection<Group> subgroups = group.getGroups();
         addClustersInstancesToGroupInstanceBean(groupInstanceBean, group);
         if (subgroups != null && !subgroups.isEmpty()) {

@@ -40,6 +40,20 @@ public class TopologyHolder {
     private TopologyHolder() {
     }
 
+    public static void acquireReadLock() {
+        lock.acquireReadLock();
+        if (log.isDebugEnabled()) {
+            log.debug("Read lock acquired");
+        }
+    }
+
+    public static void releaseReadLock() {
+        lock.releaseReadLock();
+        if (log.isDebugEnabled()) {
+            log.debug("Read lock released");
+        }
+    }
+
     public static void acquireWriteLock() {
         lock.acquireWriteLock();
         if (log.isDebugEnabled()) {
