@@ -25,6 +25,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancerExtension;
+import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -41,8 +42,7 @@ public class Main {
 		LoadBalancerExtension extension = null;
 		try {
 			// Configure log4j properties
-			PropertyConfigurator.configure(System
-					.getProperty("log4j.properties.file.path"));
+			PropertyConfigurator.configure(System.getProperty("log4j.properties.file.path"));
 
 			if (log.isInfoEnabled()) {
 				log.info("AWS extension started");
@@ -59,6 +59,7 @@ public class Main {
 			extension = new LoadBalancerExtension(new AWSLoadBalancer(),
 					statisticsReader, topologyProvider);
 			extension.setExecutorService(executor);
+
 			extension.execute();
 
 			// Add shutdown hook
@@ -68,7 +69,7 @@ public class Main {
 				public void run() {
 					try {
 						if (finalExtension != null) {
-							log.info("Shutting aws extension...");
+							log.info("Shutting aws LB extension...");
 							finalExtension.stop();
 						}
 						mainThread.join();
@@ -77,9 +78,9 @@ public class Main {
 					}
 				}
 			});
-		} catch (Exception e) {
+		} catch (LoadBalancerExtensionException e) {
 			if (log.isErrorEnabled()) {
-				log.error(e);
+				log.error("Error occurred while running the aws lb extension");
 			}
 			if (extension != null) {
 				log.info("Shutting aws extension...");
