@@ -39,7 +39,7 @@ public class InstanceStatusEventReceiver extends StratosEventReceiver {
 
     private InstanceStatusEventReceiver() {
         // TODO: make pool size configurable
-        this.executor = StratosThreadPool.getExecutorService("topology-event-receiver", 35, 100);
+        this.executor = StratosThreadPool.getExecutorService("messaging-event-receiver", 35, 150);
         InstanceStatusEventMessageQueue messageQueue = new InstanceStatusEventMessageQueue();
         this.messageDelegator = new InstanceStatusEventMessageDelegator(messageQueue);
         this.messageListener = new InstanceStatusEventMessageListener(messageQueue);

@@ -45,7 +45,7 @@ public class TopologyEventReceiver extends StratosEventReceiver {
 
     private TopologyEventReceiver() {
         // TODO: make pool size configurable
-        this.executor = StratosThreadPool.getExecutorService("topology-event-receiver", 35, 100);
+        this.executor = StratosThreadPool.getExecutorService("messaging-event-receiver", 35, 150);
         TopologyEventMessageQueue messageQueue = new TopologyEventMessageQueue();
         this.messageDelegator = new TopologyEventMessageDelegator(messageQueue);
         this.messageListener = new TopologyEventMessageListener(messageQueue);

@@ -44,7 +44,7 @@ public class ApplicationSignUpEventReceiver extends StratosEventReceiver {
 
     private ApplicationSignUpEventReceiver() {
         // TODO: make pool size configurable
-        this.executor = StratosThreadPool.getExecutorService("application-signup-event-receiver", 35, 100);
+        this.executor = StratosThreadPool.getExecutorService("messaging-event-receiver", 35, 150);
         ApplicationSignUpEventMessageQueue messageQueue = new ApplicationSignUpEventMessageQueue();
         this.messageDelegator = new ApplicationSignUpEventMessageDelegator(messageQueue);
         this.messageListener = new ApplicationSignUpEventMessageListener(messageQueue);

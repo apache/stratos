@@ -192,8 +192,6 @@ public class StratosManagerServiceComponent {
 
     private void initializeInitializerEventReceiver() {
         initializerTopicReceiver = new StratosManagerInitializerTopicReceiver();
-//        initializerTopicReceiver.setExecutorService(executor);
-//        initializerTopicReceiver.execute();
     }
 
     /**
@@ -201,8 +199,6 @@ public class StratosManagerServiceComponent {
      */
     private void initializeInstanceStatusEventReceiver() {
         instanceStatusEventReceiver = new StratosManagerInstanceStatusEventReceiver();
-//        instanceStatusEventReceiver.setExecutorService(executor);
-//        instanceStatusEventReceiver.execute();
     }
 
     /**
@@ -210,8 +206,6 @@ public class StratosManagerServiceComponent {
      */
     private void initializeTopologyEventReceiver() {
         topologyEventReceiver = new StratosManagerTopologyEventReceiver();
-//        topologyEventReceiver.setExecutorService(executor);
-//        topologyEventReceiver.execute();
     }
 
     /**
@@ -219,8 +213,6 @@ public class StratosManagerServiceComponent {
      */
     private void initializeApplicationEventReceiver() {
         applicationEventReceiver = new StratosManagerApplicationEventReceiver();
-//        applicationEventReceiver.setExecutorService(executor);
-//        applicationEventReceiver.execute();
     }
 
     /**
@@ -335,38 +327,5 @@ public class StratosManagerServiceComponent {
         // Close event publisher connections to message broker
         EventPublisherPool.close(MessagingUtil.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName());
         EventPublisherPool.close(MessagingUtil.Topics.TENANT_TOPIC.getTopicName());
-
-        //shutdownExecutor(THREAD_POOL_ID);
-        //shutdownScheduledExecutorService(SCHEDULER_THREAD_POOL_ID);
     }
-
-//    private void shutdownExecutor(String executorServiceId) {
-//        ThreadPoolExecutor executor = StratosThreadPool.getExecutorService(executorServiceId, 1, 1);
-//        if (executor != null) {
-//            shutdownExecutor(executor);
-//        }
-//    }
-
-//    private void shutdownScheduledExecutorService(String executorServiceId) {
-//        ScheduledThreadPoolExecutor scheduledExecutor = StratosThreadPool.getScheduledExecutorService(executorServiceId, 1);
-//        if (scheduledExecutor != null) {
-//            shutdownExecutor(scheduledExecutor);
-//        }
-//    }
-
-//    private void shutdownExecutor(ThreadPoolExecutor executor) {
-//        try {
-//            executor.shutdownNow();
-//        } catch (Exception e) {
-//            log.warn("An error occurred while shutting down executor service", e);
-//        }
-//    }
-
-//    private void shutdownExecutor(ExecutorService executorService) {
-//        try {
-//            executorService.shutdownNow();
-//        } catch (Exception e) {
-//            log.warn("An error occurred while shutting down executor service", e);
-//        }
-//    }
 }

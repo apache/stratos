@@ -31,20 +31,11 @@ import java.util.concurrent.ExecutorService;
 public class AutoscalerInitializerTopicReceiver {
     private static final Log log = LogFactory.getLog(AutoscalerInitializerTopicReceiver.class);
     private InitializerEventReceiver initializerEventReceiver;
-    //private ExecutorService executorService;
 
     public AutoscalerInitializerTopicReceiver() {
         this.initializerEventReceiver = InitializerEventReceiver.getInstance();
         addEventListeners();
     }
-
-//    public void execute() {
-//        initializerEventReceiver.setExecutor(executor);
-//        initializerEventReceiver.execute();
-//        if (log.isInfoEnabled()) {
-//            log.info("Cloud controller initializer topic receiver started");
-//        }
-//    }
 
     private void addEventListeners() {
         initializerEventReceiver.addEventListener(new CompleteApplicationsRequestEventListener() {
@@ -61,12 +52,4 @@ public class AutoscalerInitializerTopicReceiver {
             }
         });
     }
-
-//    public ExecutorService getExecutor() {
-//        return executorService;
-//    }
-//
-//    public void setExecutor(ExecutorService executorService) {
-//        this.executorService = executorService;
-//    }
 }

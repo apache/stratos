@@ -145,40 +145,9 @@ public class CloudControllerServiceComponent {
 
     private void executeCoordinatorTasks() {
         applicationEventReceiver = new ApplicationEventReceiver();
-//        applicationEventReceiver.setExecutorService(executor);
-//        applicationEventReceiver.execute();
-
-        if (log.isInfoEnabled()) {
-            log.info("Application event receiver thread started");
-        }
-
         clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
-//        clusterStatusTopicReceiver.setExecutorService(executor);
-//        clusterStatusTopicReceiver.execute();
-
-        if (log.isInfoEnabled()) {
-            log.info("Cluster status event receiver thread started");
-        }
-
         instanceStatusTopicReceiver = new InstanceStatusTopicReceiver();
-//        instanceStatusTopicReceiver.setExecutorService(executor);
-//        instanceStatusTopicReceiver.execute();
-
-        if (log.isInfoEnabled()) {
-            log.info("Instance status event receiver thread started");
-        }
-
         initializerTopicReceiver = new InitializerTopicReceiver();
-//        initializerTopicReceiver.setExecutorService(executor);
-//        initializerTopicReceiver.execute();
-
-        if (log.isInfoEnabled()) {
-            log.info("Initializer event receiver thread started");
-        }
-
-        if (log.isInfoEnabled()) {
-            log.info("Scheduling topology synchronizer task");
-        }
         Runnable topologySynchronizer = new TopologyEventSynchronizer();
         scheduler.scheduleAtFixedRate(topologySynchronizer, 0, 1, TimeUnit.MINUTES);
     }
@@ -258,34 +227,6 @@ public class CloudControllerServiceComponent {
             EventPublisherPool.close(MessagingUtil.Topics.TOPOLOGY_TOPIC.getTopicName());
         } catch (Exception e) {
             log.warn("An error occurred while closing cloud controller topology event publisher", e);
-        }
-
-        // Shutdown executor service
-        //shutdownExecutorService(THREAD_POOL_ID);
-
-        // Shutdown scheduler
-        shutdownScheduledExecutorService(SCHEDULER_THREAD_POOL_ID);
-    }
-
-//    private void shutdownExecutorService(String executorServiceId) {
-//        ThreadPoolExecutor executor = StratosThreadPool.getExecutorService(executorServiceId, 1, 1);
-//        if (executor != null) {
-//            shutdownExecutorService(executor);
-//        }
-//    }
-
-    private void shutdownScheduledExecutorService(String executorServiceId) {
-        ExecutorService executorService = StratosThreadPool.getScheduledExecutorService(executorServiceId, 1);
-        if (executorService != null) {
-            shutdownExecutorService(executorService);
-        }
-    }
-
-    private void shutdownExecutorService(ExecutorService executorService) {
-        try {
-            executorService.shutdownNow();
-        } catch (Exception e) {
-            log.warn("An error occurred while shutting down executor service", e);
         }
     }
 }

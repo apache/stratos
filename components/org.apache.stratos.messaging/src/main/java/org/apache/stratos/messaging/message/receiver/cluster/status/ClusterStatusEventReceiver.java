@@ -39,7 +39,7 @@ public class ClusterStatusEventReceiver extends StratosEventReceiver {
 
     private ClusterStatusEventReceiver() {
         // TODO: make pool size configurable
-        this.executor = StratosThreadPool.getExecutorService("clusterstatus-event-receiver", 35, 100);
+        this.executor = StratosThreadPool.getExecutorService("messaging-event-receiver", 35, 150);
         ClusterStatusEventMessageQueue messageQueue = new ClusterStatusEventMessageQueue();
         this.messageDelegator = new ClusterStatusEventMessageDelegator(messageQueue);
         this.messageListener = new ClusterStatusEventMessageListener(messageQueue);

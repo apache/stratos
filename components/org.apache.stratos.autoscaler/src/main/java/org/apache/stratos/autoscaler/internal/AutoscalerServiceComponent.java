@@ -171,27 +171,10 @@ public class AutoscalerServiceComponent {
 
         // Start topology receiver
         asTopologyReceiver = new AutoscalerTopologyEventReceiver();
-//        asTopologyReceiver.setExecutor(executor);
-        //asTopologyReceiver.execute();
-        if (log.isDebugEnabled()) {
-            log.debug("Topology receiver executor service started");
-        }
-
         // Start health stat receiver
         autoscalerHealthStatEventReceiver = new AutoscalerHealthStatEventReceiver();
-//        autoscalerHealthStatEventReceiver.setExecutor(executor);
-//        autoscalerHealthStatEventReceiver.execute();
-        if (log.isDebugEnabled()) {
-            log.debug("Health statistics receiver thread started");
-        }
-
         // Start initializer receiver
         autoscalerInitializerTopicReceiver = new AutoscalerInitializerTopicReceiver();
-//        autoscalerInitializerTopicReceiver.setExecutor(executor);
-//        autoscalerInitializerTopicReceiver.execute();
-//        if (log.isDebugEnabled()) {
-//            log.debug("Initializer receiver thread started");
-//        }
 
         if (log.isInfoEnabled()) {
             log.info("Scheduling tasks to publish applications");
@@ -243,56 +226,10 @@ public class AutoscalerServiceComponent {
     }
 
     protected void deactivate(ComponentContext context) {
-//        if (asTopologyReceiver != null) {
-//            try {
-//                asTopologyReceiver.terminate();
-//            } catch (Exception e) {
-//                log.warn("An error occurred while terminating autoscaler topology event receiver", e);
-//            }
-//        }
-
-        if (autoscalerHealthStatEventReceiver != null) {
-            try {
-                autoscalerHealthStatEventReceiver.terminate();
-            } catch (Exception e) {
-                log.warn("An error occurred while terminating autoscaler health statistics event receiver", e);
-            }
+        if (log.isDebugEnabled()) {
+            log.debug("Autoscaler Component de-activated");
         }
-
-        // Shutdown executor service
-        //shutdownExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID);
-
-        // Shutdown scheduler
-        //shutdownScheduledExecutorService(AutoscalerConstants.AUTOSCALER_SCHEDULER_ID);
-
-        // Shutdown application monitor executor service
-        //shutdownExecutorService(AutoscalerConstants.MONITOR_THREAD_POOL_ID);
-
-        // Shutdown cluster monitor scheduler executor service
-        //shutdownScheduledExecutorService(AutoscalerConstants.CLUSTER_MONITOR_SCHEDULER_ID);
     }
-
-//    private void shutdownExecutorService(String executorServiceId) {
-//        ThreadPoolExecutor executor = StratosThreadPool.getExecutorService(executorServiceId, 1, 1);
-//        if (executor != null) {
-//            shutdownExecutorService(executor);
-//        }
-//    }
-//
-//    private void shutdownScheduledExecutorService(String executorServiceId) {
-//        ScheduledThreadPoolExecutor scheduledExecutor = StratosThreadPool.getScheduledExecutorService(executorServiceId, 1);
-//        if (scheduledExecutor != null) {
-//            shutdownExecutorService(scheduledExecutor);
-//        }
-//    }
-//
-//    private void shutdownExecutorService(ExecutorService executorService) {
-//        try {
-//            executorService.shutdownNow();
-//        } catch (Exception e) {
-//            log.warn("An error occurred while shutting down executor service", e);
-//        }
-//    }
 
     protected void setRegistryService(RegistryService registryService) {
         if (log.isDebugEnabled()) {

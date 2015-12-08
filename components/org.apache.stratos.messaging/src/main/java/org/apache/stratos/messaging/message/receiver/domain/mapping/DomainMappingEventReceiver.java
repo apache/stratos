@@ -41,8 +41,7 @@ public class DomainMappingEventReceiver extends StratosEventReceiver {
 
     private DomainMappingEventReceiver() {
         // TODO: make pool size configurable
-        this.executor = StratosThreadPool.getExecutorService("domainmapping-event-receiver", 35,
-                100);
+        this.executor = StratosThreadPool.getExecutorService("messaging-event-receiver", 35, 150);
         DomainMappingEventMessageQueue messageQueue = new DomainMappingEventMessageQueue();
         this.messageDelegator = new DomainMappingEventMessageDelegator(messageQueue);
         this.messageListener = new DomainMappingEventMessageListener(messageQueue);

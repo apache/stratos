@@ -39,24 +39,13 @@ import java.util.concurrent.ExecutorService;
 public class AutoscalerHealthStatEventReceiver {
 
     private static final Log log = LogFactory.getLog(AutoscalerHealthStatEventReceiver.class);
-    private boolean terminated = false;
 
     private HealthStatEventReceiver healthStatEventReceiver;
-   // private ExecutorService executorService;
 
     public AutoscalerHealthStatEventReceiver() {
         this.healthStatEventReceiver = HealthStatEventReceiver.getInstance();
         addEventListeners();
     }
-
-//    public void execute() {
-//        healthStatEventReceiver.setExecutor(executor);
-//        healthStatEventReceiver.execute();
-//
-//        if (log.isInfoEnabled()) {
-//            log.info("Autoscaler health stat event receiver thread started");
-//        }
-//    }
 
     private void addEventListeners() {
         // Listen to health stat events that affect clusters
@@ -475,16 +464,4 @@ public class AutoscalerHealthStatEventReceiver {
             TopologyManager.releaseReadLock();
         }
     }
-
-    public void terminate() {
-        this.terminated = true;
-    }
-
-//    public ExecutorService getExecutor() {
-//        return executorService;
-//    }
-//
-//    public void setExecutor(ExecutorService executorService) {
-//        this.executorService = executorService;
-//    }
 }
