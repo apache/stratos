@@ -31,7 +31,6 @@ import org.apache.stratos.messaging.listener.instance.status.InstanceMaintenance
 import org.apache.stratos.messaging.listener.instance.status.InstanceReadyToShutdownEventListener;
 import org.apache.stratos.messaging.listener.instance.status.InstanceStartedEventListener;
 import org.apache.stratos.messaging.message.receiver.instance.status.InstanceStatusEventReceiver;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.concurrent.ExecutorService;
 
@@ -42,6 +41,7 @@ public class InstanceStatusTopicReceiver {
     private static final Log log = LogFactory.getLog(InstanceStatusTopicReceiver.class);
 
     private InstanceStatusEventReceiver statusEventReceiver;
+    private boolean terminated;
     private ExecutorService executorService;
 
     public InstanceStatusTopicReceiver() {
@@ -129,6 +129,10 @@ public class InstanceStatusTopicReceiver {
             }
         });
 
+    }
+
+    public ExecutorService getExecutorService() {
+        return executorService;
     }
 
     public void setExecutorService(ExecutorService executorService) {

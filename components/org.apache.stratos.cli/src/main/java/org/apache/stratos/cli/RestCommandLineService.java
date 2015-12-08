@@ -50,6 +50,7 @@ import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
+import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
 import org.apache.stratos.common.beans.topology.ClusterBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1601,7 +1602,7 @@ public class RestCommandLineService {
      */
     public void describeApplicationRuntime(String applicationId) throws CommandException {
         try {
-            ApplicationBean application = (ApplicationBean) restClient
+	        ApplicationInfoBean application = (ApplicationInfoBean) restClient
                     .getEntity(ENDPOINT_GET_APPLICATION_RUNTIME, ApplicationBean.class, "{applicationId}", applicationId,
                             "application");
 

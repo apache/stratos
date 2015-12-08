@@ -33,6 +33,7 @@ public class ClusterStatusTopicReceiver {
     private static final Log log = LogFactory.getLog(ClusterStatusTopicReceiver.class);
 
     private ClusterStatusEventReceiver statusEventReceiver;
+    private boolean terminated;
     private ExecutorService executorService;
 
     public ClusterStatusTopicReceiver() {
@@ -113,6 +114,14 @@ public class ClusterStatusTopicReceiver {
                 }
             }
         });
+    }
+
+    public void setTerminated(boolean terminated) {
+        this.terminated = terminated;
+    }
+
+    public ExecutorService getExecutorService() {
+        return executorService;
     }
 
     public void setExecutorService(ExecutorService executorService) {

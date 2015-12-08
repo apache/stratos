@@ -304,7 +304,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
      * @param clusterIds
      */
     private void addApplicationSignUp(ApplicationContext applicationContext, String applicationKey,
-                                      List<String> clusterIds) {
+            List<String> clusterIds) {
 
         try {
             if (log.isInfoEnabled()) {
@@ -430,7 +430,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     private void updateArtifactRepositoryList(List<ArtifactRepository> artifactRepositoryList,
-                                              CartridgeContext[] cartridgeContexts) {
+            CartridgeContext[] cartridgeContexts) {
 
         if (cartridgeContexts == null) {
             return;
@@ -457,7 +457,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     public boolean undeployApplication(String applicationId, boolean force)
             throws RemoteException, StratosManagerServiceApplicationSignUpExceptionException,
-            UnremovableApplicationException {
+                   UnremovableApplicationException {
 
         AutoscalerContext asCtx = AutoscalerContext.getInstance();
         ApplicationMonitor appMonitor = asCtx.getAppMonitor(applicationId);
@@ -1158,7 +1158,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     @Override
     public boolean updateDeploymentPolicy(DeploymentPolicy deploymentPolicy)
             throws RemoteException, InvalidDeploymentPolicyException, DeploymentPolicyNotExistsException,
-            InvalidPolicyException, CloudControllerConnectionException {
+                   InvalidPolicyException, CloudControllerConnectionException {
 
         validateDeploymentPolicy(deploymentPolicy);
 
@@ -1230,7 +1230,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     private void removeOldPartitionsFromClusterMonitor(NetworkPartitionContext clusterLevelNetworkPartitionContext,
-                                                       NetworkPartitionRef networkPartition) {
+            NetworkPartitionRef networkPartition) {
 
         for (InstanceContext instanceContext : clusterLevelNetworkPartitionContext.getInstanceIdToInstanceContextMap()
                 .values()) {
@@ -1265,9 +1265,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     private void addNewPartitionsToClusterMonitor(NetworkPartitionContext clusterLevelNetworkPartitionContext,
-                                                  NetworkPartitionRef networkPartitionRef, String deploymentPolicyID, String cartridgeType)
+            NetworkPartitionRef networkPartitionRef, String deploymentPolicyID, String cartridgeType)
             throws RemoteException, CloudControllerServiceInvalidPartitionExceptionException,
-            CloudControllerServiceInvalidCartridgeTypeExceptionException {
+                   CloudControllerServiceInvalidCartridgeTypeExceptionException {
 
         boolean validationOfNetworkPartitionRequired = false;
         for (PartitionRef partition : networkPartitionRef.getPartitionRefs()) {
