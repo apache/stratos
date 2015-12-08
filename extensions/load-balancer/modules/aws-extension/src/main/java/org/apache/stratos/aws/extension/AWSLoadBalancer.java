@@ -120,6 +120,8 @@ public class AWSLoadBalancer implements LoadBalancer {
                                 initialAvailabilityZones.add(region + zone);
                             }
                         }
+
+
 	                    String loadBalancerDNSName =
 			                    createAWSLoadBalancer(loadBalancerName, region, listenersForThisCluster,initialAvailabilityZones);
 
@@ -141,8 +143,6 @@ public class AWSLoadBalancer implements LoadBalancer {
 			                        cluster.getClusterId()));
                         }
 	                    clusterIdToLoadBalancerMap.put(cluster.getClusterId(), lbInfoDTO);
-                        LoadBalancerInfo loadBalancerInfo = new LoadBalancerInfo(loadBalancerName, region);
-                        clusterIdToLoadBalancerMap.put(cluster.getClusterId(),loadBalancerInfo);
                     }
 
                     pause(3000);
@@ -276,10 +276,10 @@ public class AWSLoadBalancer implements LoadBalancer {
 
 	private Boolean updateExistingLoadBalancer(Cluster cluster) {
 		Boolean isUpdated=false;
-		LoadBalancerInfo loadBalancerInfo = clusterIdToLoadBalancerMap.get(cluster.getClusterId());
+		LBInfoDTO lbInfoDTO = clusterIdToLoadBalancerMap.get(cluster.getClusterId());
 
-		String loadBalancerName = loadBalancerInfo.getName();
-		String region = loadBalancerInfo.getRegion();
+		String loadBalancerName = lbInfoDTO.getName();
+		String region = lbInfoDTO.getRegion();
 
 		// Get all the instances attached - Attach newly added instances to load balancer
 
