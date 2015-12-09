@@ -112,6 +112,8 @@ class Config:
     """ :type : str  """
     super_tenant_repository_path = None
     """ :type : str  """
+    backup_initial_artifacts = False
+    """ :type : bool  """
     deployment = None
     """ :type : str  """
     manager_service_name = None
@@ -346,6 +348,7 @@ class Config:
             Config.lb_public_ip = Config.read_property(constants.LB_PUBLIC_IP, False)
             Config.tenant_repository_path = Config.read_property(constants.TENANT_REPO_PATH, False)
             Config.super_tenant_repository_path = Config.read_property(constants.SUPER_TENANT_REPO_PATH, False)
+            Config.backup_initial_artifacts = Config.read_property(constants.ENABLE_INITIAL_ARTIFACT_BACKUP, False)
 
             Config.is_primary = Config.read_property(constants.CLUSTERING_PRIMARY_KEY, False)
 
