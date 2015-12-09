@@ -77,6 +77,7 @@ SUPERTENANT_TEMP_PATH = "/tmp/-1234/"
 
 SUPER_TENANT_REPO_PATH = "super.tenant.repository.path"
 TENANT_REPO_PATH = "tenant.repository.path"
+ENABLE_INITIAL_ARTIFACT_BACKUP = "enable.initial.artifact.backup"
 
 # topic names to subscribe
 INSTANCE_NOTIFIER_TOPIC = "instance/#"

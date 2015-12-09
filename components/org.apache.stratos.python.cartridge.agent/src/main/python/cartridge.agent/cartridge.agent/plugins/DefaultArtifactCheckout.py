@@ -95,7 +95,8 @@ class DefaultArtifactCheckout(IArtifactCheckoutPlugin):
             self.log.info("Executing git clone: [tenant-id] %s [repo-url] %s, [repo path] %s",
                           git_repo.tenant_id, git_repo.repo_url, git_repo.local_repo_path)
 
-            self.check_and_backup_initial_artifacts(git_repo.local_repo_path)
+            if not Config.backup_initial_artifacts is None and Config.backup_initial_artifacts:
+                self.check_and_backup_initial_artifacts(git_repo.local_repo_path)
 
             try:
                 git_repo = AgentGitHandler.clone(git_repo)
