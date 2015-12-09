@@ -97,6 +97,8 @@ class DefaultArtifactCheckout(IArtifactCheckoutPlugin):
 
             if not Config.backup_initial_artifacts is None and Config.backup_initial_artifacts:
                 self.check_and_backup_initial_artifacts(git_repo.local_repo_path)
+            else:
+                self.log.info("Default artifact backup disabled")
 
             try:
                 git_repo = AgentGitHandler.clone(git_repo)
