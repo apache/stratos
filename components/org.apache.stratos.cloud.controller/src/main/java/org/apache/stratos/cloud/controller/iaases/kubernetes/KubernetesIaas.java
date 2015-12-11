@@ -803,7 +803,8 @@ public class KubernetesIaas extends Iaas {
 
         for (Service service : services) {
             for (ServicePort servicePort : service.getSpec().getPorts()) {
-                if (servicePort.getNodePort() == nodePort) {
+                // Need to check node port is null here to avoid unboxing errors
+                if ((servicePort.getNodePort() != null) && (servicePort.getNodePort() == nodePort)) {
                     return false;
                 }
             }
