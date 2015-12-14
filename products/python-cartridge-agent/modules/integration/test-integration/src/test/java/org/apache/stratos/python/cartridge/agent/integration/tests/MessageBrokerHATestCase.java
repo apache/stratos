@@ -152,6 +152,7 @@ public class MessageBrokerHATestCase extends PythonAgentIntegrationTest {
         log.info("MessageBrokerHATestCase subscriber test completed successfully.");
     }
 
+
     @Test(timeOut = HA_TEST_TIMEOUT,
           groups = { "ha" },
           priority = 2)

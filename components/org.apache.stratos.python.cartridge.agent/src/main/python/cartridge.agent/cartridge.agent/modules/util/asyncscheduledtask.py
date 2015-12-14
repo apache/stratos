@@ -17,6 +17,10 @@
 
 import time
 from threading import Thread
+from log import LogFactory
+
+
+log = LogFactory().get_log(__name__)
 
 
 class AbstractAsyncScheduledTask:
@@ -53,6 +57,9 @@ class ScheduledExecutor(Thread):
         """ :type : AbstractAsyncScheduledTask  """
         self.terminated = False
         """ :type : bool  """
+        self.setName("ScheduledExecutorForTask%s" % self.task.__class__.__name__)
+        self.setDaemon(True)
+        log.debug("Created a ScheduledExecutor thread for task %s" % self.task.__class__.__name__)
 
     def run(self):
         """
@@ -62,6 +69,9 @@ class ScheduledExecutor(Thread):
         while not self.terminated:
             time.sleep(self.delay)
             task_thread = Thread(target=self.task.execute_task)
+            task_thread.setName("WorkerThreadForTask%s" % self.task.__class__.__name__)
+            task_thread.setDaemon(True)
+            log.debug("Starting a worker thread for the Scheduled Executor for task %s" % self.task.__class__.__name__)
             task_thread.start()
 
     def terminate(self):

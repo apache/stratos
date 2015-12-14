@@ -44,7 +44,6 @@ class CartridgeAgent(object):
 
     def run_agent(self):
         self.__log.info("Starting Cartridge Agent...")
-
         # Start topology event receiver thread
         self.register_topology_event_listeners()
 
@@ -327,13 +326,31 @@ class Handlers(object):
         event_handler.on_application_signup_removed_event(event_obj)
 
 
+def check_termination(agent_obj):
+    terminate = False
+    terminator_file_path = os.path.abspath(os.path.dirname(__file__)) + "/terminator.txt"
+    while not terminate:
+        time.sleep(60)
+        try:
+            with open(terminator_file_path, 'r') as f:
+                file_output = f.read()
+                terminate = True if "true" in file_output else False
+        except IOError:
+            pass
+
+    log.info("Shutting down Stratos cartridge agent...")
+    agent_obj.terminate()
+
 
 if __name__ == "__main__":
     log = LogFactory().get_log(__name__)
+    cartridge_agent = CartridgeAgent()
     try:
         log.info("Starting Stratos cartridge agent...")
-        cartridge_agent = CartridgeAgent()
+        task_thread = Thread(target=check_termination, args=(cartridge_agent,))
+        task_thread.start()
         cartridge_agent.run_agent()
     except Exception as e:
         log.exception("Cartridge Agent Exception: %r" % e)
-        # cartridge_agent.terminate()
+        log.info("Terminating Stratos cartridge agent...")
+        cartridge_agent.terminate()

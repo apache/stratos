@@ -14,6 +14,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+
 from Queue import Queue
 
 import threading
@@ -34,6 +35,7 @@ class EventSubscriber(threading.Thread):
 
     def __init__(self, topic, urls, username, password):
         threading.Thread.__init__(self)
+        self.setDaemon(True)
 
         self.__event_queue = Queue(maxsize=0)
         self.__event_executor = EventExecutor(self.__event_queue)
@@ -44,19 +46,21 @@ class EventSubscriber(threading.Thread):
         self.__urls = urls
         self.__username = username
         self.__password = password
+        self.setName("MBSubscriberThreadForTopic%s" % topic)
+        EventSubscriber.log.debug("Created a subscriber thread for %s" % topic)
 
     def run(self):
+        EventSubscriber.log.debug("Starting the subscriber thread for %s" % self.__topic)
         #  Start the event executor thread
         self.__event_executor.start()
 
         """
         The following loop will iterate forever.
 
-        When a successful connection is made and the failover() method returns, a job will start
-        which will periodically check the availability of the connected message broker. Then the
+        When a successful connection is made, the failover() method returns. Then the
         blocking method loop_forever() will be called on the connected mqtt client. This will only
         return if disconnect() is called on the same client. If the connected message broker goes
-        down, the periodical job will call disconnect() on the connected client and the
+        down, the callback method on_disconnect() will call disconnect() on the connected client and the
         loop_forever() method will return. The parent loop will be called again and this repeats
         every time the message brokers are disconnected.
 
@@ -68,6 +72,7 @@ class EventSubscriber(threading.Thread):
             self.__mb_client = mqtt.Client()
             self.__mb_client.on_connect = self.on_connect
             self.__mb_client.on_message = self.on_message
+            self.__mb_client.on_disconnect = self.on_disconnect
             if self.__username is not None:
                 EventSubscriber.log.info("Message broker credentials are provided.")
                 self.__mb_client.username_pw_set(self.__username, self.__password)
@@ -77,28 +82,17 @@ class EventSubscriber(threading.Thread):
                 EventSubscriber.failover(self.__urls, self.__mb_client)
 
             EventSubscriber.log.info(
-                "Connected to the message broker with address %r:%r" % (connected_mb_ip, connected_mb_port))
+                "Connected to the message broker with address %s:%s" % (connected_mb_ip, connected_mb_port))
 
             self.__subscribed = True
-
-            # Start a job to periodically check the online status of the connected message broker
-            heartbeat_task = MessageBrokerHeartBeatChecker(
-                                                            self.__mb_client,
-                                                            connected_mb_ip,
-                                                            connected_mb_port,
-                                                            self.__username,
-                                                            self.__password)
-
-            heartbeat_job = ScheduledExecutor(5, heartbeat_task)
-            heartbeat_job.start()
 
             # Start blocking loop method
             self.__mb_client.loop_forever()
 
-            # Disconnected when the heart beat checker detected an offline message broker
+            # Disconnected when the on_disconnect calls disconnect() on the client
             self.__subscribed = False
-            heartbeat_job.terminate()
-            EventSubscriber.log.debug("Disconnected from the message broker %s:%s. Reconnecting..." % (connected_mb_ip, connected_mb_port))
+            EventSubscriber.log.debug("Disconnected from the message broker %s:%s. Reconnecting..."
+                                      % (connected_mb_ip, connected_mb_port))
 
     def register_handler(self, event, handler):
         """
@@ -124,6 +118,11 @@ class EventSubscriber(threading.Thread):
     def on_message(self, client, userdata, msg):
         EventSubscriber.log.debug("Message received: %s:\n%s" % (msg.topic, msg.payload))
         self.__event_queue.put(msg)
+
+    def on_disconnect(self, client, userdata, rc):
+        EventSubscriber.log.debug("Message broker client disconnected. %s:%s" % (client._host, client._port))
+        if rc != 0:
+            client.disconnect()
 
     def is_subscribed(self):
         """
@@ -177,11 +176,15 @@ class EventExecutor(threading.Thread):
     """
     def __init__(self, event_queue):
         threading.Thread.__init__(self)
+        self.setDaemon(True)
         self.__event_queue = event_queue
         self.__event_handlers = {}
         EventSubscriber.log = LogFactory().get_log(__name__)
+        self.setName("MBEventExecutorThread")
+        EventSubscriber.log.debug("Created an EventExecutor")
 
     def run(self):
+        EventSubscriber.log.debug("Starting an EventExecutor")
         while True:
             event_msg = self.__event_queue.get()
             event = event_msg.topic.rpartition('/')[2]
@@ -201,30 +204,3 @@ class EventExecutor(threading.Thread):
     def terminate(self):
         self.terminate()
 
-
-class MessageBrokerHeartBeatChecker(AbstractAsyncScheduledTask):
-    """
-    A scheduled task to periodically check if the connected message broker is online.
-    If the message broker goes offline, it will disconnect the currently connected
-    client object and it will return from the loop_forever() method.
-    """
-
-    def __init__(self, connected_client, mb_ip, mb_port, username=None, password=None):
-        self.__mb_client = mqtt.Client()
-
-        if username is not None:
-            self.__mb_client.username_pw_set(username, password)
-
-        self.__mb_ip = mb_ip
-        self.__mb_port = mb_port
-        self.__connected_client = connected_client
-        self.__log = LogFactory().get_log(__name__)
-
-    def execute_task(self):
-        try:
-            self.__mb_client.connect(self.__mb_ip, self.__mb_port, 60)
-            self.__mb_client.disconnect()
-        except Exception:
-            self.__log.info(
-                "Message broker %s:%s cannot be reached. Disconnecting client..." % (self.__mb_ip, self.__mb_port))
-            self.__connected_client.disconnect()

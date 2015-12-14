@@ -43,14 +43,18 @@ class HealthStatisticsPublisherManager(Thread):
         self.log = LogFactory().get_log(__name__)
         self.publish_interval = publish_interval
         """:type : int"""
+        self.setDaemon(True)
         self.terminated = False
         self.publisher = HealthStatisticsPublisher()
         """:type : HealthStatisticsPublisher"""
 
         """:type : IHealthStatReaderPlugin"""
         self.stats_reader = Config.health_stat_plugin
+        self.setName("HealthStatPublisherManagerThread")
+        self.log.debug("Created a HealthStatisticsPublisherManager thread")
 
     def run(self):
+        self.log.debug("Starting the HealthStatisticsPublisherManager thread")
         while not self.terminated:
             time.sleep(self.publish_interval)
 

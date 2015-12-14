@@ -43,8 +43,12 @@ class LogPublisher(Thread):
         self.member_id = member_id
 
         self.terminated = False
+        self.setName("LogPublisherThread")
+        self.setDaemon(True)
+        self.log.debug("Created a LogPublisher thread")
 
     def run(self):
+        self.log.debug("Starting the LogPublisher threads")
         if os.path.isfile(self.file_path) and os.access(self.file_path, os.R_OK):
             self.log.info("Starting log publisher for file: " + self.file_path + ", thread: " + str(current_thread()))
             # open file and keep reading for new entries
@@ -102,6 +106,9 @@ class LogPublisherManager(Thread):
     def define_stream(tenant_id, alias, date_time):
         """
         Creates a stream definition for Log Publishing
+        :param date_time:
+        :param alias:
+        :param tenant_id:
         :return: A StreamDefinition object with the required attributes added
         :rtype : StreamDefinition
         """
@@ -134,7 +141,7 @@ class LogPublisherManager(Thread):
         Thread.__init__(self)
 
         self.log = LogFactory().get_log(__name__)
-
+        self.setDaemon(True)
         self.logfile_paths = logfile_paths
         self.publishers = {}
         self.ports = []
@@ -158,8 +165,11 @@ class LogPublisherManager(Thread):
         self.date_time = LogPublisherManager.get_current_date()
 
         self.stream_definition = self.define_stream(self.tenant_id, self.alias, self.date_time)
+        self.setName("LogPublisherManagerThread")
+        self.log.debug("Created a LogPublisherManager thread")
 
     def run(self):
+        self.log.debug("Starting the LogPublisherManager thread")
         if self.logfile_paths is not None and len(self.logfile_paths):
             for log_path in self.logfile_paths:
                 # thread for each log file
@@ -170,6 +180,7 @@ class LogPublisherManager(Thread):
     def get_publisher(self, log_path):
         """
         Retrieve the publisher for the specified log file path. Creates a new LogPublisher if one is not available
+        :param log_path:
         :return: The LogPublisher object
         :rtype : LogPublisher
         """
@@ -188,6 +199,7 @@ class LogPublisherManager(Thread):
     def terminate_publisher(self, log_path):
         """
         Terminates the LogPublisher thread associated with the specified log file
+        :param log_path:
         """
         if log_path in self.publishers:
             self.publishers[log_path].terminate()

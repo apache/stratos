@@ -86,6 +86,7 @@ public abstract class PythonAgentIntegrationTest {
     protected boolean instanceActivated;
     protected ByteArrayOutputStreamLocal outputStream;
     protected ThriftTestServer thriftTestServer;
+    protected String agentPath;
 
     private Map<String, BrokerService> messageBrokers;
 
@@ -169,7 +170,7 @@ public abstract class PythonAgentIntegrationTest {
         thriftTestServer.start(cepPort);
         log.info("Started Thrift server with stream definition: " + str);
 
-        String agentPath = setupPythonAgent();
+        agentPath = setupPythonAgent();
         log.info("Python agent working directory name: " + PYTHON_AGENT_DIR_NAME);
         log.info("Starting python cartridge agent...");
         this.outputStream = executeCommand("python " + agentPath + PATH_SEP + "agent.py", timeout);

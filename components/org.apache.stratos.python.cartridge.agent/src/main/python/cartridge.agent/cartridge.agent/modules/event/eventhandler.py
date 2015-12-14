@@ -429,6 +429,8 @@ def execute_plugins_for_event(event, input_values):
             for plugin_info in plugins_for_event:
                 log.debug("Executing plugin %s for event %s" % (plugin_info.name, event))
                 plugin_thread = PluginExecutor(plugin_info, input_values)
+                plugin_thread.setName("PluginExecutorThreadForPlugin%s" % plugin_info.name)
+                log.debug("Starting a PluginExecutor Thread for event %s" % event.__class__.__name__)
                 plugin_thread.start()
 
                 # block till plugin run completes.
@@ -449,6 +451,8 @@ def execute_extension_for_event(event, extension_values):
         if Config.extension_executor is not None:
             log.debug("Executing extension for event [%s]" % event)
             extension_thread = PluginExecutor(Config.extension_executor, extension_values)
+            extension_thread.setName("ExtensionExecutorThreadForExtension%s" % event.__class__.__name__)
+            log.debug("Starting a PluginExecutor Thread for event extension %s" % event.__class__.__name__)
             extension_thread.start()
 
             # block till plugin run completes.
@@ -528,13 +532,16 @@ def is_member_initialized_in_topology(service_name, cluster_id, member_id):
         if member is None:
             raise Exception("Member id not found in topology [member] %s" % member_id)
 
-        log.info("Found member: " + member.to_json())
+        log.debug("Found member: " + member.to_json())
         if member.status == MemberStatus.Initialized:
             return True
+
+    log.debug("Member doesn't exist in topology")
     return False
 
 
 def member_exists_in_topology(service_name, cluster_id, member_id):
+    log.debug("Checking if member exists in topology : %s, %s, %s, " % (service_name, cluster_id, member_id))
     topology = TopologyContext.get_topology()
     service = topology.get_service(service_name)
     if service is None:
@@ -544,12 +551,14 @@ def member_exists_in_topology(service_name, cluster_id, member_id):
     if cluster is None:
         raise Exception("Cluster id not found in topology [cluster] %s" % cluster_id)
 
-    activated_member = cluster.get_member(member_id)
-    if activated_member is None:
-        log.error("Member id not found in topology [member] %s" % member_id)
-        return False
+    member = cluster.get_member(member_id)
+    if member is None:
+        raise Exception("Member id not found in topology [member] %s" % member_id)
 
-    return True
+    log.info("Found member: " + member.to_json())
+    if member.status == MemberStatus.Initialized:
+        return True
+    return False
 
 
 def mark_member_as_initialized(service_name, cluster_id, member_id):
@@ -678,8 +687,10 @@ class PluginExecutor(Thread):
         self.__plugin_info = plugin_info
         self.__values = values
         self.__log = LogFactory().get_log(__name__)
+        self.setDaemon(True)
 
     def run(self):
+        self.__log.debug("Starting the PluginExecutor thread")
         try:
             self.__plugin_info.plugin_object.run_plugin(self.__values)
         except Exception as e:
