@@ -30,8 +30,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * A thread for receiving tenant information from message broker and
  * build tenant information in tenant manager.
@@ -67,10 +65,6 @@ public class TenantEventReceiver extends StratosEventReceiver {
     public void addEventListener(EventListener eventListener) {
         messageDelegator.addEventListener(eventListener);
     }
-
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
-//    }
 
     private void execute() {
         try {

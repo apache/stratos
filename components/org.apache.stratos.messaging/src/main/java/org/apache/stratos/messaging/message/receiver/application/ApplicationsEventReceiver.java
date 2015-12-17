@@ -29,8 +29,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
-
 public class ApplicationsEventReceiver extends StratosEventReceiver{
     private static final Log log = LogFactory.getLog(ApplicationsEventReceiver.class);
 
@@ -117,12 +115,4 @@ public class ApplicationsEventReceiver extends StratosEventReceiver{
             }
         });
     }
-
-//    public ExecutorService getExecutorService() {
-//        return executorService;
-//    }
-//
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
-//    }
 }

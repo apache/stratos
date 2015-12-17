@@ -27,7 +27,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
 
 /**
  * A thread for receiving instance notifier information from message broker.
@@ -91,18 +90,4 @@ public class ClusterStatusEventReceiver extends StratosEventReceiver {
     public boolean isSubscribed() {
         return ((eventSubscriber != null) && (eventSubscriber.isSubscribed()));
     }
-
-//    public void terminate() {
-//        eventSubscriber.terminate();
-//        messageDelegator.terminate();
-//        terminated = true;
-//    }
-//
-//    public ExecutorService getExecutorService() {
-//        return executorService;
-//    }
-//
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
-//    }
 }

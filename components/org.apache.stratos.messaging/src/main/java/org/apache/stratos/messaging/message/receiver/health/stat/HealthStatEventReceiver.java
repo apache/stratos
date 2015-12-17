@@ -27,8 +27,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * A thread for receiving health stat information from message broker
  */
@@ -84,18 +82,4 @@ public class HealthStatEventReceiver extends StratosEventReceiver {
             }
         }
     }
-
-//    public void terminate() {
-//        eventSubscriber.terminate();
-//        messageDelegator.terminate();
-//        terminated = true;
-//    }
-//
-//    public ExecutorService getExecutorService() {
-//        return executorService;
-//    }
-//
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
-//    }
 }

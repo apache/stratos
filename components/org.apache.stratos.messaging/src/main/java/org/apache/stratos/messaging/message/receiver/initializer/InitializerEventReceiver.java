@@ -85,12 +85,4 @@ public class InitializerEventReceiver extends StratosEventReceiver {
         eventSubscriber.terminate();
         messageDelegator.terminate();
     }
-
-//    public ExecutorService getExecutorService() {
-//        return executorService;
-//    }
-//
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
-//    }
 }

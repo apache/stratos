@@ -30,8 +30,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * Application signup event receiver.
  */
@@ -119,12 +117,4 @@ public class ApplicationSignUpEventReceiver extends StratosEventReceiver {
         eventSubscriber.terminate();
         messageDelegator.terminate();
     }
-
-//    public ExecutorService getExecutorService() {
-//        return executorService;
-//    }
-
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
-//    }
 }
