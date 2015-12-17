@@ -41,28 +41,12 @@ public class AutoscalerHealthStatEventReceiver {
     private static final Log log = LogFactory.getLog(AutoscalerHealthStatEventReceiver.class);
 
     private HealthStatEventReceiver healthStatEventReceiver;
-<<<<<<< HEAD
-    private ExecutorService executorService;
-=======
->>>>>>> d4b35c0... removing unused methods
 
     public AutoscalerHealthStatEventReceiver() {
         this.healthStatEventReceiver = HealthStatEventReceiver.getInstance();
         addEventListeners();
     }
 
-<<<<<<< HEAD
-//    public void execute() {
-//        healthStatEventReceiver.setExecutorService(executorService);
-//        healthStatEventReceiver.execute();
-//
-//        if (log.isInfoEnabled()) {
-//            log.info("Autoscaler health stat event receiver thread started");
-//        }
-//    }
-
-=======
->>>>>>> d4b35c0... removing unused methods
     private void addEventListeners() {
         // Listen to health stat events that affect clusters
         healthStatEventReceiver.addEventListener(new AverageLoadAverageEventListener() {
@@ -480,19 +464,4 @@ public class AutoscalerHealthStatEventReceiver {
             TopologyManager.releaseReadLock();
         }
     }
-<<<<<<< HEAD
-
-    public void terminate() {
-        this.terminated = true;
-    }
-
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
-=======
->>>>>>> d4b35c0... removing unused methods
 }
