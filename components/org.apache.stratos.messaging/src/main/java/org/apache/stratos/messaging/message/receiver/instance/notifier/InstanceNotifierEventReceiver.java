@@ -43,10 +43,7 @@ public class InstanceNotifierEventReceiver extends StratosEventReceiver {
         this.executorService = StratosThreadPool.getExecutorService("topology-event-receiver", 100);
         InstanceNotifierEventMessageQueue messageQueue = new InstanceNotifierEventMessageQueue();
         this.messageDelegator = new InstanceNotifierEventMessageDelegator(messageQueue);
-        messageListener = new InstanceNotifierEventMessageListener(messageQueue);
-        // Start topic subscriber thread
-        eventSubscriber = new EventSubscriber(MessagingUtil.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName(),
-                messageListener);
+        this.messageListener = new InstanceNotifierEventMessageListener(messageQueue);
         execute();
     }
 

@@ -93,12 +93,4 @@ public class InstanceStatusEventReceiver extends StratosEventReceiver {
         messageDelegator.terminate();
        // terminated = true;
     }
-
-//    public ExecutorService getExecutorService() {
-//        return executorService;
-//    }
-//
-//    public void setExecutorService(ExecutorService executorService) {
-//        this.executorService = executorService;
-//    }
 }
