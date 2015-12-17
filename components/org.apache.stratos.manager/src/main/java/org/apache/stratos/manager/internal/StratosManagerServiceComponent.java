@@ -327,30 +327,5 @@ public class StratosManagerServiceComponent {
         // Close event publisher connections to message broker
         EventPublisherPool.close(MessagingUtil.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName());
         EventPublisherPool.close(MessagingUtil.Topics.TENANT_TOPIC.getTopicName());
-
-        shutdownExecutorService(THREAD_POOL_ID);
-        shutdownScheduledExecutorService(SCHEDULER_THREAD_POOL_ID);
-    }
-
-    private void shutdownExecutorService(String executorServiceId) {
-        ExecutorService executorService = StratosThreadPool.getExecutorService(executorServiceId, 1);
-        if (executorService != null) {
-            shutdownExecutorService(executorService);
-        }
-    }
-
-    private void shutdownScheduledExecutorService(String executorServiceId) {
-        ExecutorService executorService = StratosThreadPool.getScheduledExecutorService(executorServiceId, 1);
-        if (executorService != null) {
-            shutdownExecutorService(executorService);
-        }
-    }
-
-    private void shutdownExecutorService(ExecutorService executorService) {
-        try {
-            executorService.shutdownNow();
-        } catch (Exception e) {
-            log.warn("An error occurred while shutting down executor service", e);
-        }
     }
 }
