@@ -64,6 +64,11 @@ public class DomainMappingEventReceiver extends StratosEventReceiver {
         return instance;
     }
 
+    public void terminate() {
+        eventSubscriber.terminate();
+        messageDelegator.terminate();
+    }
+
     private void execute() {
         try {
             // Start topic subscriber thread
