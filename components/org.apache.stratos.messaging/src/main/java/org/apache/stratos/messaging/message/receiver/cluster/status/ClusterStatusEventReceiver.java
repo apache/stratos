@@ -90,17 +90,8 @@ public class ClusterStatusEventReceiver extends StratosEventReceiver {
         return ((eventSubscriber != null) && (eventSubscriber.isSubscribed()));
     }
 
-//    public void terminate() {
-//        eventSubscriber.terminate();
-//        messageDelegator.terminate();
-//        terminated = true;
-//    }
-//
-//    public ExecutorService getExecutorService() {
-//        return executor;
-//    }
-//
-//    public void setExecutorService(ExecutorService executor) {
-//        this.executor = executor;
-//    }
+    public void terminate() {
+        eventSubscriber.terminate();
+        messageDelegator.terminate();
+    }
 }

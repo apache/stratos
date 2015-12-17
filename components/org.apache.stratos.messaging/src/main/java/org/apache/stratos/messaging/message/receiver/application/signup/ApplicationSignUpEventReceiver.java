@@ -117,12 +117,4 @@ public class ApplicationSignUpEventReceiver extends StratosEventReceiver {
         eventSubscriber.terminate();
         messageDelegator.terminate();
     }
-
-//    public ExecutorService getExecutorService() {
-//        return executor;
-//    }
-
-//    public void setExecutorService(ExecutorService executor) {
-//        this.executor = executor;
-//    }
 }

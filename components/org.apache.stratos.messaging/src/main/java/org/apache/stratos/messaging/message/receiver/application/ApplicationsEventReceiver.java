@@ -115,12 +115,4 @@ public class ApplicationsEventReceiver extends StratosEventReceiver{
             }
         });
     }
-
-//    public ExecutorService getExecutorService() {
-//        return executor;
-//    }
-//
-//    public void setExecutorService(ExecutorService executor) {
-//        this.executor = executor;
-//    }
 }

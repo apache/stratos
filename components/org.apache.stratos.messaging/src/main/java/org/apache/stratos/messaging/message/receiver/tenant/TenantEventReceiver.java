@@ -66,10 +66,6 @@ public class TenantEventReceiver extends StratosEventReceiver {
         messageDelegator.addEventListener(eventListener);
     }
 
-//    public void setExecutorService(ExecutorService executor) {
-//        this.executor = executor;
-//    }
-
     private void execute() {
         try {
             // Start topic subscriber thread
