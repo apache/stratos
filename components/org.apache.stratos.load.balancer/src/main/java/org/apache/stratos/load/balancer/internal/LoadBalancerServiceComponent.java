@@ -25,7 +25,6 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.services.DistributedObjectProvider;
-import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.load.balancer.common.event.receivers.LoadBalancerCommonApplicationSignUpEventReceiver;
 import org.apache.stratos.load.balancer.common.statistics.notifier.LoadBalancerStatisticsNotifier;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
@@ -38,7 +37,6 @@ import org.apache.stratos.load.balancer.event.receivers.LoadBalancerDomainMappin
 import org.apache.stratos.load.balancer.event.receivers.LoadBalancerTopologyEventReceiver;
 import org.apache.stratos.load.balancer.exception.TenantAwareLoadBalanceEndpointException;
 import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsCollector;
-import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -63,7 +61,6 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.concurrent.ExecutorService;
 
 /**
  * @scr.component name="org.apache.stratos.load.balancer.internal.LoadBalancerServiceComponent" immediate="true"
@@ -90,7 +87,6 @@ public class LoadBalancerServiceComponent {
     private static final Log log = LogFactory.getLog(LoadBalancerServiceComponent.class);
 
     private boolean activated = false;
-    private ExecutorService executorService;
     private LoadBalancerTopologyEventReceiver topologyEventReceiver;
     private TenantEventReceiver tenantEventReceiver;
     private LoadBalancerDomainMappingEventReceiver domainMappingEventReceiver;
@@ -124,11 +120,6 @@ public class LoadBalancerServiceComponent {
             // Configure topology filters
             TopologyFilterConfigurator.configure(configuration);
 
-            int threadPoolSize = Integer.getInteger(LoadBalancerConstants.LOAD_BALANCER_THREAD_POOL_SIZE_KEY,
-                    LoadBalancerConstants.LOAD_BALANCER_DEFAULT_THREAD_POOL_SIZE);
-            executorService = StratosThreadPool.getExecutorService(LoadBalancerConstants.LOAD_BALANCER_THREAD_POOL_ID,
-                    threadPoolSize);
-
             TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
             if (topologyProvider == null) {
                 topologyProvider = new TopologyProvider();
@@ -137,18 +128,18 @@ public class LoadBalancerServiceComponent {
 
             if (configuration.isMultiTenancyEnabled() || configuration.isDomainMappingEnabled()) {
                 // Start tenant & application signup event receivers
-                startTenantEventReceiver(executorService);
-                startApplicationSignUpEventReceiver(executorService, topologyProvider);
+                startTenantEventReceiver();
+                startApplicationSignUpEventReceiver(topologyProvider);
             }
 
             if (configuration.isDomainMappingEnabled()) {
                 // Start domain mapping event receiver
-                startDomainMappingEventReceiver(executorService, topologyProvider);
+                startDomainMappingEventReceiver(topologyProvider);
             }
 
             if (configuration.isTopologyEventListenerEnabled()) {
                 // Start topology receiver
-                startTopologyEventReceiver(executorService, topologyProvider);
+                startTopologyEventReceiver(topologyProvider);
             }
 
             if (configuration.isCepStatsPublisherEnabled()) {
@@ -167,43 +158,28 @@ public class LoadBalancerServiceComponent {
         }
     }
 
-    private void startDomainMappingEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+    private void startDomainMappingEventReceiver(TopologyProvider topologyProvider) {
         if (domainMappingEventReceiver != null) {
             return;
         }
 
         domainMappingEventReceiver = new LoadBalancerDomainMappingEventReceiver(topologyProvider);
-//        domainMappingEventReceiver.setExecutorService(executorService);
-//        domainMappingEventReceiver.execute();
-//        if (log.isInfoEnabled()) {
-//            log.info("Domain mapping event receiver thread started");
-//        }
     }
 
-    private void startApplicationSignUpEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+    private void startApplicationSignUpEventReceiver(TopologyProvider topologyProvider) {
         if (applicationSignUpEventReceiver != null) {
             return;
         }
 
         applicationSignUpEventReceiver = new LoadBalancerCommonApplicationSignUpEventReceiver(topologyProvider);
-//        applicationSignUpEventReceiver.setExecutorService(executorService);
-//        applicationSignUpEventReceiver.execute();
-        if (log.isInfoEnabled()) {
-            log.info("Application signup event receiver thread started");
-        }
     }
 
-    private void startTopologyEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+    private void startTopologyEventReceiver(TopologyProvider topologyProvider) {
         if (topologyEventReceiver != null) {
             return;
         }
 
         topologyEventReceiver = new LoadBalancerTopologyEventReceiver(topologyProvider);
-//        topologyEventReceiver.setExecutorService(executorService);
-//        topologyEventReceiver.execute();
-//        if (log.isInfoEnabled()) {
-//            log.info("Topology receiver thread started");
-//        }
 
         if (log.isInfoEnabled()) {
             if (TopologyServiceFilter.getInstance().isActive()) {
@@ -223,14 +199,8 @@ public class LoadBalancerServiceComponent {
         }
     }
 
-    private void startTenantEventReceiver(ExecutorService executorService) {
-
+    private void startTenantEventReceiver() {
         tenantEventReceiver = TenantEventReceiver.getInstance();
-//        tenantEventReceiver.setExecutorService(executorService);
-//        tenantEventReceiver.execute();
-        if (log.isInfoEnabled()) {
-            log.info("Tenant event receiver thread started");
-        }
     }
 
     private void startStatisticsNotifier(TopologyProvider topologyProvider) {
@@ -256,48 +226,12 @@ public class LoadBalancerServiceComponent {
             log.warn("An error occurred while removing endpoint deployer", e);
         }
 
-        // Terminate topology receiver
-//        if (topologyEventReceiver != null) {
-//            try {
-//                topologyEventReceiver.terminate();
-//            } catch (Exception e) {
-//                log.warn("An error occurred while terminating topology event receiver", e);
-//            }
-//        }
-
-        // Terminate application signup event receiver
-//        if (applicationSignUpEventReceiver != null) {
-//            try {
-//                applicationSignUpEventReceiver.terminate();
-//            } catch (Exception e) {
-//                log.warn("An error occurred while terminating application signup event receiver", e);
-//            }
-//        }
-
-        // Terminate domain mapping event receiver
-//        if (domainMappingEventReceiver != null) {
-//            try {
-//                domainMappingEventReceiver.terminate();
-//            } catch (Exception e) {
-//                log.warn("An error occurred while terminating domain mapping event receiver", e);
-//            }
-//        }
-
         // Terminate statistics notifier
         if (statisticsNotifier != null) {
             try {
                 statisticsNotifier.terminate();
             } catch (Exception e) {
                 log.warn("An error occurred while terminating health statistics notifier", e);
-            }
-        }
-
-        // Shutdown executor service
-        if (executorService != null) {
-            try {
-                executorService.shutdownNow();
-            } catch (Exception e) {
-                log.warn("An error occurred while shutting down load balancer executor service", e);
             }
         }
     }

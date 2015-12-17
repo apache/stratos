@@ -59,13 +59,6 @@ public class LoadBalancerCommonTopologyEventReceiver {
         }
     }
 
-//    public void execute() {
-//        super.execute();
-//        if (log.isInfoEnabled()) {
-//            log.info("Load balancer topology receiver thread started");
-//        }
-//    }
-
     public void initializeTopology() {
         if (initialized) {
             return;
