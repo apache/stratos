@@ -95,6 +95,7 @@ public class TopologyEventReceiver extends StratosEventReceiver {
     public void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
+        StratosThreadPool.shutdown(threadPoolId);
     }
 
     public void initializeCompleteTopology() {

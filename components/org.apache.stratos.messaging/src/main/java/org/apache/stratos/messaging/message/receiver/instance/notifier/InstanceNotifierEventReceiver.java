@@ -36,7 +36,6 @@ public class InstanceNotifierEventReceiver extends StratosEventReceiver {
     private EventSubscriber eventSubscriber;
     private InstanceNotifierEventMessageListener messageListener;
     private static volatile InstanceNotifierEventReceiver instance;
-    //private boolean terminated;
 
     private InstanceNotifierEventReceiver() {
         // TODO: make pool size configurable
@@ -94,7 +93,6 @@ public class InstanceNotifierEventReceiver extends StratosEventReceiver {
     public synchronized void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
-        //terminated = true;
-        log.info("InstanceNotifierEventReceiver terminated");
+        StratosThreadPool.shutdown(threadPoolId);
     }
 }

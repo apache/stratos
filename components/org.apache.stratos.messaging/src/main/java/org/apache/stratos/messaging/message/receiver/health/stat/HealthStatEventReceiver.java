@@ -86,5 +86,6 @@ public class HealthStatEventReceiver extends StratosEventReceiver {
     public void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
+        StratosThreadPool.shutdown(threadPoolId);
     }
 }

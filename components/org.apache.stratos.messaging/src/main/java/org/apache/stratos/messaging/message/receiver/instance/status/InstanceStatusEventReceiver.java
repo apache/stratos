@@ -91,5 +91,6 @@ public class InstanceStatusEventReceiver extends StratosEventReceiver {
     public void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
+        StratosThreadPool.shutdown(threadPoolId);
     }
 }

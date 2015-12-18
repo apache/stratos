@@ -33,7 +33,6 @@ public class InitializerEventReceiver extends StratosEventReceiver {
     private InitializerEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
     private static volatile InitializerEventReceiver instance;
-    //private ExecutorService executor;
 
     private InitializerEventReceiver() {
         // TODO: make pool size configurable
@@ -82,5 +81,6 @@ public class InitializerEventReceiver extends StratosEventReceiver {
     public void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
+        StratosThreadPool.shutdown(threadPoolId);
     }
 }
