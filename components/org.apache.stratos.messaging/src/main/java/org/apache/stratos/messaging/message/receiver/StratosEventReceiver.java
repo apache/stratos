@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutorService;
 public class StratosEventReceiver {
 
     protected ExecutorService executorService;
+    protected String threadPoolId;
 
     public StratosEventReceiver () {
     }

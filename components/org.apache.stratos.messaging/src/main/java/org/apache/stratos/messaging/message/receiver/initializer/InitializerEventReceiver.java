@@ -39,7 +39,8 @@ public class InitializerEventReceiver extends StratosEventReceiver {
 
     private InitializerEventReceiver() {
         // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("initializer-event-receiver", 100);
+        this.threadPoolId = "initializer-event-receiver";
+        this.executorService = StratosThreadPool.getExecutorService(threadPoolId, 20);
         InitializerEventMessageQueue initializerEventMessageQueue = new InitializerEventMessageQueue();
         this.messageDelegator = new InitializerEventMessageDelegator(initializerEventMessageQueue);
         this.messageListener = new InitializerEventMessageListener(initializerEventMessageQueue);
@@ -84,5 +85,6 @@ public class InitializerEventReceiver extends StratosEventReceiver {
     public void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
+        StratosThreadPool.shutdown(threadPoolId);
     }
 }

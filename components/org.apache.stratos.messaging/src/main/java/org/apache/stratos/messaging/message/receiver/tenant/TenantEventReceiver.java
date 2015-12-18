@@ -43,7 +43,8 @@ public class TenantEventReceiver extends StratosEventReceiver {
 
     private TenantEventReceiver() {
         // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("tenant-event-receiver", 100);
+        this.threadPoolId = "tenant-event-receiver";
+        this.executorService = StratosThreadPool.getExecutorService(threadPoolId, 20);
         TenantEventMessageQueue messageQueue = new TenantEventMessageQueue();
         this.messageDelegator = new TenantEventMessageDelegator(messageQueue);
         this.messageListener = new TenantEventMessageListener(messageQueue);
@@ -112,5 +113,6 @@ public class TenantEventReceiver extends StratosEventReceiver {
     public void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
+        StratosThreadPool.shutdown(threadPoolId);
     }
 }

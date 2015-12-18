@@ -36,11 +36,11 @@ public class InstanceNotifierEventReceiver extends StratosEventReceiver {
     private EventSubscriber eventSubscriber;
     private InstanceNotifierEventMessageListener messageListener;
     private static volatile InstanceNotifierEventReceiver instance;
-    //private boolean terminated;
 
     private InstanceNotifierEventReceiver() {
         // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("topology-event-receiver", 100);
+        this.threadPoolId = "instance-notifier-event-receiver";
+        this.executorService = StratosThreadPool.getExecutorService(threadPoolId, 20);
         InstanceNotifierEventMessageQueue messageQueue = new InstanceNotifierEventMessageQueue();
         this.messageDelegator = new InstanceNotifierEventMessageDelegator(messageQueue);
         this.messageListener = new InstanceNotifierEventMessageListener(messageQueue);
@@ -94,7 +94,6 @@ public class InstanceNotifierEventReceiver extends StratosEventReceiver {
     public synchronized void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
-        //terminated = true;
-        log.info("InstanceNotifierEventReceiver terminated");
+        StratosThreadPool.shutdown(threadPoolId);
     }
 }
