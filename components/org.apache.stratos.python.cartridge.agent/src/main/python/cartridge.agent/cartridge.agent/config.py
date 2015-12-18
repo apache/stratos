@@ -21,8 +21,6 @@ import sys
 
 from yapsy.PluginManager import PluginManager
 
-from yapsy.PluginManager import PluginManager
-
 from modules.util.log import LogFactory
 from exception import ParameterNotFoundException, InvalidConfigValueException
 import constants

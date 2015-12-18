@@ -16,6 +16,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import os
+import time
+
+from threading import Thread
+
 import publisher
 from logpublisher import *
 from modules.event.application.signup.events import *
@@ -43,7 +48,6 @@ class CartridgeAgent(object):
         self.__topology_event_subscriber = EventSubscriber(constants.TOPOLOGY_TOPIC, mb_urls, mb_uname, mb_pwd)
 
     def run_agent(self):
-        self.__log.info("Starting Cartridge Agent...")
         # Start topology event receiver thread
         self.register_topology_event_listeners()
 
@@ -191,7 +195,7 @@ class CartridgeAgent(object):
             time.sleep(1)
 
     def wait_for_complete_topology(self):
-        while not TopologyContext.topology.initialized:
+        while not TopologyContext.initialized:
             self.__log.info("Waiting for complete topology event...")
             time.sleep(5)
         self.__log.info("Complete topology event received")

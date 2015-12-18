@@ -45,9 +45,15 @@ public class AgentTerminationTestCase extends PythonAgentIntegrationTest {
     public AgentTerminationTestCase() throws IOException {
     }
 
+    @Override
+    protected String getClassName() {
+        return this.getClass().getSimpleName();
+    }
+
     private static final Log log = LogFactory.getLog(AgentTerminationTestCase.class);
     private static final int TIMEOUT = 300000;
     private static final String CLUSTER_ID = "tomcat.domain";
+    private static final String APPLICATION_PATH = "/tmp/AgentTerminationTestCase";
     private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-6";
     private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-6";
     private static final String APP_ID = "application-6";
@@ -66,10 +72,10 @@ public class AgentTerminationTestCase extends PythonAgentIntegrationTest {
         super.setup(TIMEOUT);
         startServerSocket(8080);
     }
-    
+
     @AfterMethod(alwaysRun = true)
     public void tearDownAgentTerminationTest(){
-        tearDown();
+        tearDown(APPLICATION_PATH);
     }
 
     @Test(groups = {"smoke"})
@@ -107,42 +113,45 @@ public class AgentTerminationTestCase extends PythonAgentIntegrationTest {
         Thread startupTestThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (!eventReceiverInitiated) {
+                while (!eventReceiverInitialized) {
                     sleep(1000);
                 }
                 List<String> outputLines = new ArrayList<>();
-                boolean completeTopologyPublished = false;
-                boolean memberInitPublished = false;
                 while (!outputStream.isClosed()) {
                     List<String> newLines = getNewLines(outputLines, outputStream.toString());
                     if (newLines.size() > 0) {
                         for (String line : newLines) {
-                            if (line.contains("Waiting for complete topology event") && !completeTopologyPublished) {
+                            if (line.contains("Subscribed to 'topology/#'")) {
                                 sleep(2000);
                                 // Send complete topology event
                                 log.info("Publishing complete topology event...");
-                                Topology topology = createTestTopology();
+                                Topology topology = PythonAgentIntegrationTest.createTestTopology(
+                                        SERVICE_NAME,
+                                        CLUSTER_ID,
+                                        DEPLOYMENT_POLICY_NAME,
+                                        AUTOSCALING_POLICY_NAME,
+                                        APP_ID,
+                                        MEMBER_ID,
+                                        CLUSTER_INSTANCE_ID,
+                                        NETWORK_PARTITION_ID,
+                                        PARTITION_ID,
+                                        ServiceType.SingleTenant);
                                 CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
                                 publishEvent(completeTopologyEvent);
                                 log.info("Complete topology event published");
-                                completeTopologyPublished = true;
-                            }
 
-                            if (line.contains("Waiting for cartridge agent to be initialized") && !memberInitPublished) {
                                 // Publish member initialized event
                                 log.info("Publishing member initialized event...");
-                                MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(
-                                        SERVICE_NAME, CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID,
-                                        PARTITION_ID, INSTANCE_ID
-                                );
+                                MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(SERVICE_NAME,
+                                        CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID, PARTITION_ID,
+                                        INSTANCE_ID);
                                 publishEvent(memberInitializedEvent);
                                 log.info("Member initialized event published");
-                                memberInitPublished = true;
                             }
 
                             // Send artifact updated event to activate the instance first
                             if (line.contains("Artifact repository found")) {
-                                publishEvent(getArtifactUpdatedEventForPublicRepo());
+                                publishEvent(getArtifactUpdatedEventForPrivateRepo());
                                 log.info("Artifact updated event published");
                             }
                         }
@@ -160,10 +169,12 @@ public class AgentTerminationTestCase extends PythonAgentIntegrationTest {
         }
     }
 
-    private ArtifactUpdatedEvent getArtifactUpdatedEventForPublicRepo() {
-        ArtifactUpdatedEvent publicRepoEvent = createTestArtifactUpdatedEvent();
-        publicRepoEvent.setRepoURL("https://bitbucket.org/testapache2211/opentestrepo1.git");
-        return publicRepoEvent;
+    public static ArtifactUpdatedEvent getArtifactUpdatedEventForPrivateRepo() {
+        ArtifactUpdatedEvent privateRepoEvent = createTestArtifactUpdatedEvent();
+        privateRepoEvent.setRepoURL("https://bitbucket.org/testapache2211/testrepo.git");
+        privateRepoEvent.setRepoUserName("testapache2211");
+        privateRepoEvent.setRepoPassword("iF7qT+BKKPE3PGV1TeDsJA==");
+        return privateRepoEvent;
     }
 
     private static ArtifactUpdatedEvent createTestArtifactUpdatedEvent() {
@@ -171,34 +182,5 @@ public class AgentTerminationTestCase extends PythonAgentIntegrationTest {
         artifactUpdatedEvent.setClusterId(CLUSTER_ID);
         artifactUpdatedEvent.setTenantId(TENANT_ID);
         return artifactUpdatedEvent;
-    }
-
-    /**
-     * Create test topology
-     *
-     * @return
-     */
-    private Topology createTestTopology() {
-        Topology topology = new Topology();
-        Service service = new Service(SERVICE_NAME, ServiceType.SingleTenant);
-        topology.addService(service);
-
-        Cluster cluster = new Cluster(service.getServiceName(), CLUSTER_ID, DEPLOYMENT_POLICY_NAME,
-                AUTOSCALING_POLICY_NAME, APP_ID);
-        service.addCluster(cluster);
-
-        Member member = new Member(service.getServiceName(), cluster.getClusterId(), MEMBER_ID,
-                CLUSTER_INSTANCE_ID, NETWORK_PARTITION_ID, PARTITION_ID, LoadBalancingIPType.Private,
-                System.currentTimeMillis());
-
-        member.setDefaultPrivateIP("10.0.0.1");
-        member.setDefaultPublicIP("20.0.0.1");
-        Properties properties = new Properties();
-        properties.setProperty("prop1", "value1");
-        member.setProperties(properties);
-        member.setStatus(MemberStatus.Created);
-        cluster.addMember(member);
-
-        return topology;
     }
 }

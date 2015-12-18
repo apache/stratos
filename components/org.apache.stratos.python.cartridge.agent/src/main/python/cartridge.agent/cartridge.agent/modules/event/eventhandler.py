@@ -138,7 +138,7 @@ def on_artifact_updated_event(artifacts_updated_event):
         try:
             update_interval = int(Config.artifact_update_interval)
         except ValueError:
-            log.exception("Invalid artifact sync interval specified: %s, defaulting to 10 seconds" % ValueError)
+            log.debug("Invalid artifact sync interval specified: %s, defaulting to 10 seconds" % ValueError)
             update_interval = 10
 
         AgentGitHandler.schedule_artifact_update_task(
@@ -171,7 +171,7 @@ def on_member_activated_event(member_activated_event):
         member_activated_event.member_id)
 
     if not member_initialized:
-        log.error("Member has not initialized, failed to execute member activated event")
+        log.debug("Member has not initialized, failed to execute member activated event")
         return
 
     execute_event_extendables(constants.MEMBER_ACTIVATED_EVENT, {})
@@ -196,6 +196,8 @@ def on_complete_topology_event(complete_topology_event):
             log.info(
                 "Member initialized [member id] %s, [cluster-id] %s, [service] %s"
                 % (member_id_in_payload, cluster_id_in_payload, service_name_in_payload))
+        else:
+            log.info("Member not initialized in topology.......")
 
     topology = complete_topology_event.get_topology()
     service = topology.get_service(service_name_in_payload)
@@ -266,7 +268,7 @@ def on_member_terminated_event(member_terminated_event):
     )
 
     if not member_initialized:
-        log.error("Member has not initialized, failed to execute member terminated event")
+        log.debug("Member has not initialized, failed to execute member terminated event")
         return
 
     execute_event_extendables(constants.MEMBER_TERMINATED_EVENT, {})
@@ -284,7 +286,7 @@ def on_member_suspended_event(member_suspended_event):
     )
 
     if not member_initialized:
-        log.error("Member has not initialized, failed to execute member suspended event")
+        log.debug("Member has not initialized, failed to execute member suspended event")
         return
 
     execute_event_extendables(constants.MEMBER_SUSPENDED_EVENT, {})
@@ -302,7 +304,7 @@ def on_member_started_event(member_started_event):
     )
 
     if not member_initialized:
-        log.error("Member has not initialized, failed to execute member started event")
+        log.debug("Member has not initialized, failed to execute member started event")
         return
 
     execute_event_extendables(constants.MEMBER_STARTED_EVENT, {})
@@ -317,7 +319,7 @@ def start_server_extension():
         service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
 
     if not member_initialized:
-        log.error("Member has not initialized, failed to execute start server event")
+        log.debug("Member has not initialized, failed to execute start server event")
         return
 
     execute_event_extendables("StartServers", {})
@@ -409,6 +411,7 @@ def execute_event_extendables(event, input_values):
         input_values = add_common_input_values(input_values)
     except Exception as e:
         log.error("Error while adding common input values for event extendables: %s" % e)
+
     input_values["EVENT"] = event
     log.debug("Executing extensions for [event] %s with [input values] %s" % (event, input_values))
     # Execute the extension
@@ -553,12 +556,10 @@ def member_exists_in_topology(service_name, cluster_id, member_id):
 
     member = cluster.get_member(member_id)
     if member is None:
-        raise Exception("Member id not found in topology [member] %s" % member_id)
+        log.debug("Member id not found in topology [member] %s" % member_id)
+        return False
 
-    log.info("Found member: " + member.to_json())
-    if member.status == MemberStatus.Initialized:
-        return True
-    return False
+    return True
 
 
 def mark_member_as_initialized(service_name, cluster_id, member_id):
