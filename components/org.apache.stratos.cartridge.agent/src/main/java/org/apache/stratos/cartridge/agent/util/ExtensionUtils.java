@@ -94,7 +94,7 @@ public class ExtensionUtils {
         envParameters.put("STRATOS_LB_PUBLIC_IP", lbPublicIp);
 
         Topology topology = TopologyManager.getTopology();
-        if (topology.isInitialized()) {
+        if (TopologyManager.isInitialized()) {
             Service service = topology.getService(CartridgeAgentConfiguration.getInstance().getServiceName());
             Cluster cluster = service.getCluster(CartridgeAgentConfiguration.getInstance().getClusterId());
             String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
@@ -473,7 +473,7 @@ public class ExtensionUtils {
 
     public static boolean isTopologyInitialized() {
         TopologyManager.acquireReadLock();
-        boolean active = TopologyManager.getTopology().isInitialized();
+        boolean active = TopologyManager.isInitialized();
         TopologyManager.releaseReadLock();
         return active;
     }

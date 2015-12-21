@@ -26,6 +26,7 @@ import org.apache.stratos.messaging.event.topology.ServiceRemovedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 public class ServiceRemovedMessageProcessor extends MessageProcessor {
@@ -44,7 +45,7 @@ public class ServiceRemovedMessageProcessor extends MessageProcessor {
 
         if (ServiceRemovedEvent.class.getName().equals(type)) {
             // Return if topology has not been initialized
-            if (!topology.isInitialized())
+            if (!TopologyManager.isInitialized())
                 return false;
 
             // Parse complete message and build event

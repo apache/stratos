@@ -176,7 +176,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         if (StringUtils.isEmpty(memberId)) {
             return null;
         }
-        if (TopologyManager.getTopology().isInitialized()) {
+        if (TopologyManager.isInitialized()) {
             try {
                 TopologyManager.acquireReadLock();
                 if (TopologyManager.getTopology().getServices() == null) {

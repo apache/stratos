@@ -27,6 +27,7 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationClustersRemovedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.Set;
@@ -47,7 +48,7 @@ public class ApplicationClustersRemovedMessageProcessor extends MessageProcessor
         Topology topology = (Topology) object;
 
         if (ApplicationClustersRemovedEvent.class.getName().equals(type)) {
-            if (!topology.isInitialized()) {
+            if (!TopologyManager.isInitialized()) {
                 return false;
             }
 

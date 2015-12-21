@@ -31,6 +31,7 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 public class MemberTerminatedMessageProcessor extends MessageProcessor {
@@ -49,7 +50,7 @@ public class MemberTerminatedMessageProcessor extends MessageProcessor {
 
         if (MemberTerminatedEvent.class.getName().equals(type)) {
             // Return if topology has not been initialized
-            if (!topology.isInitialized())
+            if (!TopologyManager.isInitialized())
                 return false;
 
             // Parse complete message and build event
