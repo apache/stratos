@@ -142,6 +142,10 @@ class Config:
     """ :type : bool """
     mb_urls = []
     """ :type : list """
+    mb_ip = None
+    """ :type : str """
+    mb_port = None
+    """ :type : str """
     mb_username = None
     """ :type : str """
     mb_password = None
@@ -363,8 +367,29 @@ class Config:
 
             Config.mb_username = Config.read_property(constants.MB_USERNAME, False)
             Config.mb_password = Config.read_property(constants.MB_PASSWORD, False)
-            Config.mb_urls = Config.read_property(constants.MB_URLS)
-            Config.mb_publisher_timeout = int(Config.read_property(constants.MB_PUBLISHER_TIMEOUT))
+
+            # Check if mb.urls is set, if not get values from mb.ip and mb.port and populate mb.urls.
+            # If both are absent, it's a critical error
+            try:
+                Config.mb_urls = Config.read_property(constants.MB_URLS)
+                first_mb_pair = Config.mb_urls.split(",")[0]
+                Config.mb_ip = first_mb_pair.split(":")[0]
+                Config.mb_port = first_mb_pair.split(":")[1]
+            except ParameterNotFoundException:
+                Config.log.info("Single message broker configuration selected.")
+                try:
+                    Config.mb_ip = Config.read_property(constants.MB_IP)
+                    Config.mb_port = Config.read_property(constants.MB_PORT)
+                    Config.mb_urls = "%s:%s" % (Config.mb_ip, Config.mb_port)
+                except ParameterNotFoundException as ex:
+                    Config.log.exception("Required message broker information missing. "
+                                         "Either \"mb.ip\" and \"mb.port\" or \"mb.urls\" should be provided.")
+                    raise RuntimeError("Required message broker information missing.", ex)
+
+            try:
+                Config.mb_publisher_timeout = int(Config.read_property(constants.MB_PUBLISHER_TIMEOUT))
+            except ParameterNotFoundException:
+                Config.mb_publisher_timeout = 900  # 15 minutes
 
             Config.cep_username = Config.read_property(constants.CEP_SERVER_ADMIN_USERNAME)
             Config.cep_password = Config.read_property(constants.CEP_SERVER_ADMIN_PASSWORD)

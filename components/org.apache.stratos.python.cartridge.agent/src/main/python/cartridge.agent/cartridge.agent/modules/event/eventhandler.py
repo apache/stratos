@@ -590,6 +590,9 @@ def add_common_input_values(plugin_values):
     elif type(plugin_values) != dict:
         plugin_values = {"VALUE1": str(plugin_values)}
 
+    # Values for the plugins to use in case they want to connect to the MB.
+    plugin_values["MB_IP"] = Config.mb_ip
+
     plugin_values["APPLICATION_PATH"] = Config.app_path
     plugin_values["PARAM_FILE_PATH"] = Config.read_property(constants.PARAM_FILE_PATH, False)
     plugin_values["PERSISTENCE_MAPPINGS"] = Config.persistence_mappings

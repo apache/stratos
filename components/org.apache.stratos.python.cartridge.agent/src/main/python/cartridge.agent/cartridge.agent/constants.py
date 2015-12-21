@@ -20,6 +20,8 @@ PLUGINS_DIR = "plugins.dir"
 EXTENSIONS_DIR = "extensions.dir"
 
 MB_URLS = "mb.urls"
+MB_IP = "mb.ip"
+MB_PORT = "mb.port"
 MB_USERNAME = "mb.username"
 MB_PASSWORD = "mb.password"
 MB_PUBLISHER_TIMEOUT = "mb.publisher.timeout"

@@ -20,6 +20,8 @@ from Queue import Queue
 import threading
 import paho.mqtt.client as mqtt
 
+from config import Config
+
 from modules.util.log import LogFactory
 from modules.util.asyncscheduledtask import *
 from modules.util.cartridgeagentutils import IncrementalCeilingListIterator
@@ -80,6 +82,10 @@ class EventSubscriber(threading.Thread):
             # Select an online message broker and connect
             self.__mb_client, connected_mb_ip, connected_mb_port = \
                 EventSubscriber.failover(self.__urls, self.__mb_client)
+
+            # update connected MB details in the config for the plugins to use
+            Config.mb_ip = connected_mb_ip
+            Config.mb_port = connected_mb_port
 
             EventSubscriber.log.info(
                 "Connected to the message broker with address %s:%s" % (connected_mb_ip, connected_mb_port))
