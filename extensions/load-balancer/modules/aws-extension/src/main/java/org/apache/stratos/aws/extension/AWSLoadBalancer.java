@@ -127,7 +127,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 
                         log.info(String.format("Load balancer %s  created for cluster %s " , loadBalancerDNSName, cluster.getClusterId()));
 
-	                    if(addClusterMembersInfo(clusterMembers, loadBalancerName, region)){
+	                    if(addClusterMembersInfo(clusterMembers, loadBalancerName, region,null)){
 		                    activeClusters.add(cluster.getClusterId());
 	                    }
 
@@ -192,7 +192,8 @@ public class AWSLoadBalancer implements LoadBalancer {
         return true;
     }
 
-	private Boolean addClusterMembersInfo(Collection<Member> clusterMembers, String loadBalancerName, String region) {
+	private Boolean addClusterMembersInfo(Collection<Member> clusterMembers, String loadBalancerName, String region,
+	                                      List<Instance> attachedInstances) {
 		Boolean isUpdated=false;
 		// Register instances in the cluster to load balancer
 		List<Instance> instances = new ArrayList<Instance>();
@@ -208,6 +209,22 @@ public class AWSLoadBalancer implements LoadBalancer {
 		    }
 
 		    Instance instance = new Instance();
+
+			if (attachedInstances == null || !attachedInstances.contains(instance)) {
+				instances.add(instance);
+
+				if (log.isDebugEnabled()) {
+					log.debug("Instance " + awsHelper.getAWSInstanceName(member.getInstanceId()) +
+					          " needs to be registered to load balancer " + loadBalancerName);
+				}
+
+				// LB Common Member has a property 'EC2_AVAILABILITY_ZONE' points to the ec2 availability zone
+				// for this member. Use the property value to update the LB about the relevant zone
+				String availabilityZone = getEC2AvaialbilityZoneOfMember(member);
+				if (availabilityZone != null) {
+					availabilityZones.add(availabilityZone);
+				}
+			}
 		    instance.setInstanceId(awsHelper.getAWSInstanceName(instanceId));
 
 		    instances.add(instance);
@@ -220,7 +237,8 @@ public class AWSLoadBalancer implements LoadBalancer {
 
 			// add stickiness policy
 			if (awsHelper.getAppStickySessionCookie() != null && !awsHelper.getAppStickySessionCookie().isEmpty()) {
-				CreateAppCookieStickinessPolicyResult result = awsHelper.createStickySessionPolicy(loadBalancerName, awsHelper.getAppStickySessionCookie(),
+				CreateAppCookieStickinessPolicyResult result = awsHelper.createStickySessionPolicy(loadBalancerName,
+				                                                                                   awsHelper.getAppStickySessionCookie(),
 				                                                                                   Constants.STICKINESS_POLICY,
 				                                                                                   region);
 
@@ -291,7 +309,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 		// clusterMembers stores all the members of a cluster.
 		Collection<Member> clusterMembers = cluster.getMembers();
 
-		isUpdated= addClusterMembersInfo(clusterMembers, loadBalancerName, region);
+		isUpdated= addClusterMembersInfo(clusterMembers, loadBalancerName, region,attachedInstances);
 
 		return isUpdated;
 	}
