@@ -168,9 +168,9 @@ class EventSubscriber(threading.Thread):
                     return mb_client, mb_ip, mb_port
                 except:
                     # The message broker didn't respond well
-                    EventSubscriber.log.debug("Could not connect to the message broker at %s:%s." % (mb_ip, mb_port))
+                    EventSubscriber.log.info("Could not connect to the message broker at %s:%s." % (mb_ip, mb_port))
 
-            EventSubscriber.log.debug(
+            EventSubscriber.log.error(
                 "Could not connect to any of the message brokers provided. Retrying in %s seconds." % retry_interval)
 
             time.sleep(retry_interval)

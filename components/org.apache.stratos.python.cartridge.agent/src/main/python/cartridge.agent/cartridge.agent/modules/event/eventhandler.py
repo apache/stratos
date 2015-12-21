@@ -197,7 +197,7 @@ def on_complete_topology_event(complete_topology_event):
                 "Member initialized [member id] %s, [cluster-id] %s, [service] %s"
                 % (member_id_in_payload, cluster_id_in_payload, service_name_in_payload))
         else:
-            log.info("Member not initialized in topology.......")
+            log.info("Member not initialized in topology.")
 
     topology = complete_topology_event.get_topology()
     service = topology.get_service(service_name_in_payload)

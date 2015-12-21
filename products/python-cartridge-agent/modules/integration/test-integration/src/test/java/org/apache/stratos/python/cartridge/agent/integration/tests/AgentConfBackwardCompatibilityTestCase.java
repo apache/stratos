@@ -123,12 +123,6 @@ public class AgentConfBackwardCompatibilityTestCase extends PythonAgentIntegrati
                                 publishEvent(memberInitializedEvent);
                                 log.info("Member initialized event published");
                             }
-
-                            // Send artifact updated event to activate the instance first
-                            if (line.contains("Artifact repository found")) {
-                                publishEvent(getArtifactUpdatedEventForPrivateRepo());
-                                log.info("Artifact updated event published");
-                            }
                         }
                     }
                     sleep(1000);
@@ -142,21 +136,5 @@ public class AgentConfBackwardCompatibilityTestCase extends PythonAgentIntegrati
             // this will assert whether instance got activated within timeout period; no need for explicit assertions
             sleep(2000);
         }
-    }
-
-    public static ArtifactUpdatedEvent getArtifactUpdatedEventForPrivateRepo() {
-        ArtifactUpdatedEvent privateRepoEvent = createTestArtifactUpdatedEvent();
-        privateRepoEvent.setRepoURL("https://bitbucket.org/testapache2211/testrepo.git");
-        privateRepoEvent.setRepoUserName("testapache2211");
-//        privateRepoEvent.setRepoPassword("+to2qVW16jzy+Xb/zuafQQ==");
-        privateRepoEvent.setRepoPassword("iF7qT+BKKPE3PGV1TeDsJA==");
-        return privateRepoEvent;
-    }
-
-    private static ArtifactUpdatedEvent createTestArtifactUpdatedEvent() {
-        ArtifactUpdatedEvent artifactUpdatedEvent = new ArtifactUpdatedEvent();
-        artifactUpdatedEvent.setClusterId(CLUSTER_ID);
-        artifactUpdatedEvent.setTenantId(TENANT_ID);
-        return artifactUpdatedEvent;
     }
 }

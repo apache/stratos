@@ -257,10 +257,10 @@ class Config:
         return value_string
 
     @staticmethod
-    def read_property(property_key, critical=True):
+    def read_property(property_key, mandatory=True):
         """
         Returns the value of the provided property
-        :param critical: If absence of this value should throw an error
+        :param mandatory: If absence of this value should throw an error
         :param str property_key: the name of the property to be read
         :return: Value of the property
         :exception: ParameterNotFoundException if the provided property cannot be found
@@ -280,7 +280,7 @@ class Config:
                 return real_value
 
         # real value is None
-        if critical:
+        if mandatory:
             raise ParameterNotFoundException("Cannot find the value of required parameter: %r" % property_key)
         else:
             return None
