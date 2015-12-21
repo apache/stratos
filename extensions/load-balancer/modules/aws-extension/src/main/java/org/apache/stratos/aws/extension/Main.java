@@ -74,13 +74,13 @@ public class Main {
 						}
 						mainThread.join();
 					} catch (Exception e) {
-						log.error(e);
+						log.error("Error occurred while shutting down the aws lb extension",e);
 					}
 				}
 			});
 		} catch (LoadBalancerExtensionException e) {
 			if (log.isErrorEnabled()) {
-				log.error("Error occurred while running the aws lb extension");
+				log.error("Error occurred while running the aws lb extension",e);
 			}
 			if (extension != null) {
 				log.info("Shutting aws extension...");
