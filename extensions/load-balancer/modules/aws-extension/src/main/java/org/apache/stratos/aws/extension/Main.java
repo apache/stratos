@@ -36,8 +36,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class Main {
 	private static final Log log = LogFactory.getLog(Main.class);
 	private static ThreadPoolExecutor executor;
-	public static final String AWS_EXTENSION_THREAD_POOL = "aws.extension.thread.pool";
-	public static final int THREAD_POOL_SIZE = 10;
+//	public static final String AWS_EXTENSION_THREAD_POOL = "aws.extension.thread.pool";
+//	public static final int THREAD_POOL_SIZE = 10;
 
 	public static void main(String[] args) {
 
