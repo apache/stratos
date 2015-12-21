@@ -209,4 +209,3 @@ class EventExecutor(threading.Thread):
 
     def terminate(self):
         self.terminate()
-
