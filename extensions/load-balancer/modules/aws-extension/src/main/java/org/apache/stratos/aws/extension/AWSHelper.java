@@ -19,24 +19,8 @@
 
 package org.apache.stratos.aws.extension;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.ec2.model.*;
-import com.amazonaws.services.elasticloadbalancing.model.Instance;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.common.domain.*;
-import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
@@ -45,8 +29,24 @@ import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.*;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
 import com.amazonaws.services.elasticloadbalancing.model.*;
+import com.amazonaws.services.elasticloadbalancing.model.Instance;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.common.domain.Member;
+import org.apache.stratos.load.balancer.common.domain.Port;
+import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AWSHelper {
     private String awsAccessKey;
@@ -124,11 +124,6 @@ public class AWSHelper {
                 throw new LoadBalancerExtensionException("Either security group name or security " +
                         "group id is required");
             }
-
-//            if (this.lbSecurityGroupName.isEmpty() || this.lbSecurityGroupName.length() >
-//                    Constants.SECURITY_GROUP_NAME_MAX_LENGTH) {
-//                throw new LoadBalancerExtensionException("Invalid load balancer security group name.");
-//            }
 
             // Read the SSL certificate Id. This is mandatory if only we are using HTTPS as the front end protocol.
             // http://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/using-elb-listenerconfig-quickref.html
@@ -270,12 +265,6 @@ public class AWSHelper {
 
         createLoadBalancerRequest.setListeners(listeners);
 
-        // don't need this now since we are anyway updating zone according to the member
-//		Set<String> availabilityZones = new HashSet<String>();
-//		availabilityZones.add(getAvailabilityZoneFromRegion(region));
-//
-//		createLoadBalancerRequest.setAvailabilityZones(availabilityZones);
-        
 
         try {
             if (inVPC) {
@@ -365,10 +354,11 @@ public class AWSHelper {
             log.info(instance.getInstanceId());
         }
 
-        RegisterInstancesWithLoadBalancerRequest registerInstancesWithLoadBalancerRequest = new RegisterInstancesWithLoadBalancerRequest(
-                loadBalancerName, instances);
+	    RegisterInstancesWithLoadBalancerRequest registerInstancesWithLoadBalancerRequest =
+			    new RegisterInstancesWithLoadBalancerRequest(
+					    loadBalancerName, instances);
 
-        RegisterInstancesWithLoadBalancerResult registerInstancesWithLBRes = null;
+	    RegisterInstancesWithLoadBalancerResult registerInstancesWithLBRes = null;
 
         try {
             elbClient.setEndpoint(String.format(
@@ -969,10 +959,10 @@ public class AWSHelper {
             int instancePort = port.getValue();
             int proxyPort = port.getProxy();
             String protocol = port.getProtocol().toUpperCase();
-            String instanceProtocol = protocol;
+
 
             Listener listener = new Listener(protocol, proxyPort, instancePort);
-            listener.setInstanceProtocol(instanceProtocol);
+            listener.setInstanceProtocol(protocol);
             if ("HTTPS".equalsIgnoreCase(protocol) || "SSL".equalsIgnoreCase(protocol)) {
                 // if the SSL certificate is not configured in the aws.properties file, can't continue
                 if (getSslCertificateId() == null || getSslCertificateId().isEmpty()) {
@@ -996,7 +986,7 @@ public class AWSHelper {
     /**
      * Constructs name of the load balancer to be associated with the cluster
      *
-     * @param clusterId
+     * @param serviceName
      * @return name of the load balancer
      * @throws LoadBalancerExtensionException
      */

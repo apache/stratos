@@ -36,7 +36,7 @@ import java.util.concurrent.ExecutorService;
 public class Main {
 	private static final Log log = LogFactory.getLog(Main.class);
 	public static final String AWS_EXTENSION_THREAD_POOL = "aws.extension.thread.pool";
-	public static final int THREAD_POOL_SIZE = 10;
+	public static final int THREAD_POOL_SIZE =2;
 	private static ExecutorService executorService;
 
 	public static void main(String[] args) {
@@ -73,13 +73,13 @@ public class Main {
 						}
 						mainThread.join();
 					} catch (Exception e) {
-						log.error(e);
+						log.error("Error occurred while shutting down the aws lb extension",e);
 					}
 				}
 			});
 		} catch (LoadBalancerExtensionException e) {
 			if (log.isErrorEnabled()) {
-				log.error("Error occurred while running the aws lb extension");
+				log.error("Error occurred while running the aws lb extension",e);
 			}
 			if (extension != null) {
 				log.info("Shutting aws extension...");
