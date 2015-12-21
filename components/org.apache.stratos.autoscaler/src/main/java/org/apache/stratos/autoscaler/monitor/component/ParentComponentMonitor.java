@@ -68,8 +68,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     private static final Log log = LogFactory.getLog(ParentComponentMonitor.class);
 
     //Scheduler executor service to execute this monitor in a thread
-    private final ScheduledThreadPoolExecutor scheduler = StratosThreadPool.getScheduledExecutorService(
-            "autoscaler.monitor.scheduler.thread.pool", 100);
+    private final ScheduledThreadPoolExecutor scheduler;
     //The monitors dependency tree with all the start-able/kill-able dependencies
     protected DependencyTree startupDependencyTree;
     //The monitors dependency tree with all the scaling dependencies
@@ -95,6 +94,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         terminatingInstancesMap = new ConcurrentHashMap<String, List<String>>();
         pendingChildMonitorsList = new ArrayList<String>();
         id = component.getUniqueIdentifier();
+        scheduler = StratosThreadPool.getScheduledExecutorService(id, 2);
 
         // Building the startup dependencies for this monitor within the immediate children
         startupDependencyTree = DependencyBuilder.getInstance().buildDependency(component);
@@ -126,7 +126,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     /**
      * Starting the scheduler for the monitor
      */
-    public void startScheduler() {
+    public synchronized void startScheduler() {
         int monitoringIntervalMilliseconds = 60000;
         schedulerFuture = scheduler.scheduleAtFixedRate(this, 0,
                 monitoringIntervalMilliseconds, TimeUnit.MILLISECONDS);
@@ -1066,5 +1066,10 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     public void removeMonitor(String id) {
         this.aliasToActiveChildMonitorsMap.remove(id);
+    }
+
+    public void cleanup () {
+        // shutdown thread pools
+        StratosThreadPool.shutDownScheduledThreadPoolGracefully(id);
     }
 }

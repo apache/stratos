@@ -38,7 +38,8 @@ public final class AutoscalerConstants {
     public static final String AUTOSCALER_SCHEDULER_ID = "autoscaler.scheduler.thread.pool";
     public static final String SCHEDULER_THREAD_POOL_SIZE_KEY = "autoscaler.scheduler.thread.pool.size";
     public static final int AUTOSCALER_SCHEDULER_THREAD_POOL_SIZE = 5;
-    public static final int AUTOSCALER_THREAD_POOL_SIZE = 50;
+    //public static final int AUTOSCALER_THREAD_POOL_SIZE = 50;
+    public static final int AUTOSCALER_THREAD_POOL_SIZE = 10;
     public static final String COMPONENTS_CONFIG = CarbonUtils.getCarbonConfigDirPath() +
             File.separator + "stratos-config.xml";
 

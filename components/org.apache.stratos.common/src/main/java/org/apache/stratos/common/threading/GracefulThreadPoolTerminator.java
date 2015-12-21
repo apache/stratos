@@ -41,6 +41,7 @@ public class GracefulThreadPoolTerminator implements Callable<String> {
     @Override
     public String call() {
         // try to shut down gracefully
+        log.info("Attempting to gracefully shut down thread pool " +  threadPoolId);
         executor.shutdown();
         // wait 10 secs till terminated
         try {
@@ -53,6 +54,7 @@ public class GracefulThreadPoolTerminator implements Callable<String> {
             // interrupted, shutdown now
             executor.shutdownNow();
         }
+        log.info("Successfully shut down thread pool " +  threadPoolId);
         return threadPoolId;
     }
 }

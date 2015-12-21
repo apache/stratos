@@ -216,4 +216,6 @@ public abstract class Monitor implements EventHandler, Runnable {
     public enum MonitorType {
         Application, Group, Cluster
     }
+
+    public abstract void cleanup ();
 }

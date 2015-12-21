@@ -1027,6 +1027,7 @@ public class AutoscalerUtil {
         while(monitorsIter.hasNext()) {
             Monitor monitor = monitorsIter.next();
             monitor.destroy();
+            monitor.cleanup();
             Iterator<Instance> instances = monitor.getInstances().iterator();
             while(instances.hasNext()) {
                 Instance instance = instances.next();

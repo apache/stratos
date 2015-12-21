@@ -329,10 +329,12 @@ public class ApplicationBuilder {
                                 getAliasToActiveChildMonitorsMap().values()) {
                             //destroying the drools
                             monitor1.destroy();
+                            monitor1.cleanup();
                         }
                     }
                     // stopping application thread
                     applicationMonitor.destroy();
+                    applicationMonitor.cleanup();
                     AutoscalerContext.getInstance().removeAppMonitor(applicationId);
                     // Remove network partition algorithm context
                     AutoscalerContext.getInstance().removeNetworkPartitionAlgorithmContext(applicationId);
@@ -454,6 +456,7 @@ public class ApplicationBuilder {
                                 getAliasToActiveChildMonitorsMap().values()) {
                             //destroying the drools
                             monitor1.destroy();
+                            monitor1.cleanup();
                         }
                     }
                     org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext networkPartitionContext =

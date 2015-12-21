@@ -86,8 +86,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ClusterMonitor extends Monitor {
 
     private static final Log log = LogFactory.getLog(ClusterMonitor.class);
-    private final ScheduledThreadPoolExecutor scheduler;
-    private final ThreadPoolExecutor executor;
+    private ScheduledThreadPoolExecutor scheduler;
+    private ThreadPoolExecutor executor;
     protected boolean hasFaultyMember = false;
     protected ClusterContext clusterContext;
     protected String serviceType;
@@ -107,11 +107,11 @@ public class ClusterMonitor extends Monitor {
     public ClusterMonitor(Cluster cluster, boolean hasScalingDependents, boolean groupScalingEnabledSubtree,
                           String deploymentPolicyId) {
 
-        scheduler = StratosThreadPool.getScheduledExecutorService(AutoscalerConstants.CLUSTER_MONITOR_SCHEDULER_ID, 50);
         int threadPoolSize = Integer.getInteger(AutoscalerConstants.MONITOR_THREAD_POOL_SIZE, 100);
         executor = StratosThreadPool.getExecutorService(
                 AutoscalerConstants.MONITOR_THREAD_POOL_ID, ((int)Math.ceil(threadPoolSize/3)), threadPoolSize);
         this.clusterId = cluster.getClusterId();
+        scheduler = StratosThreadPool.getScheduledExecutorService(clusterId, 2);
         readConfigurations();
         this.groupScalingEnabledSubtree = groupScalingEnabledSubtree;
         this.setCluster(new Cluster(cluster));
@@ -147,7 +147,7 @@ public class ClusterMonitor extends Monitor {
         return MonitorType.Cluster;
     }
 
-    public void startScheduler() {
+    public synchronized void startScheduler() {
         schedulerFuture = scheduler.scheduleAtFixedRate(this, 0,
                 getMonitorIntervalMilliseconds(), TimeUnit.MILLISECONDS);
     }
@@ -1539,5 +1539,10 @@ public class ClusterMonitor extends Monitor {
 
     public String getDeploymentPolicyId() {
         return deploymentPolicyId;
+    }
+
+    public void cleanup () {
+        // shutdown thread pools
+        StratosThreadPool.shutDownScheduledThreadPoolGracefully(clusterId);
     }
 }

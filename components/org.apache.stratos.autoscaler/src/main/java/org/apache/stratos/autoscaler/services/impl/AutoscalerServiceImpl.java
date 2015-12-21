@@ -935,6 +935,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 getAppMonitor(applicationId);
         if (applicationMonitor != null) {
             applicationMonitor.destroy();
+            applicationMonitor.cleanup();
 
             if (applicationMonitor.hasInstance()) {
                 Map<String, Monitor> monitors = applicationMonitor.
@@ -966,6 +967,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                             getClusterMonitor(clusterId);
                     if (clusterMonitor != null) {
                         clusterMonitor.destroy();
+                        clusterMonitor.cleanup();
                     } else {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(
@@ -977,6 +979,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                         Collection<ClusterInstance> allClusterInstances = cluster.getClusterInstances();
 
                         if (allClusterInstances.isEmpty() && clusterMonitor != null) {
+                            clusterMonitor.destroy();
+                            clusterMonitor.cleanup();
                             AutoscalerContext.getInstance().removeClusterMonitor(clusterId);
                         }
 
@@ -1007,6 +1011,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 ApplicationContext applicationContext = AutoscalerContext.getInstance().
                         getApplicationContext(applicationId);
                 applicationMonitor.destroy();
+                applicationMonitor.cleanup();
                 AutoscalerContext.getInstance().removeAppMonitor(applicationId);
                 // Remove network partition algorithm context
                 AutoscalerContext.getInstance().removeNetworkPartitionAlgorithmContext(applicationId);

@@ -204,6 +204,7 @@ public class AutoscalerTopologyEventReceiver {
                 }
                 //changing the status in the monitor, will notify its parent monitor
                 monitor.destroy();
+                monitor.cleanup();
                 monitor.notifyParentMonitor(ClusterStatus.Created, instanceId);
 
             }
@@ -316,6 +317,7 @@ public class AutoscalerTopologyEventReceiver {
                 if (!monitor.hasInstance() && (appMonitor != null && appMonitor.isTerminating())) {
                     //Destroying and Removing the Cluster monitor
                     monitor.destroy();
+                    monitor.cleanup();
                     AutoscalerContext.getInstance().removeClusterMonitor(clusterId);
                 }
 

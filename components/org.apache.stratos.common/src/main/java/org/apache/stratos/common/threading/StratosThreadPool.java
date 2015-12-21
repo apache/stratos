@@ -35,8 +35,8 @@ public class StratosThreadPool {
 
     private static final Log log = LogFactory.getLog(StratosThreadPool.class);
 
-    private static Map<String, ThreadPoolExecutor> executorMap = new ConcurrentHashMap<>();
-    private static Map<String, ScheduledThreadPoolExecutor> scheduledExecutorMap = new ConcurrentHashMap<>();
+    private static volatile Map<String, ThreadPoolExecutor> executorMap = new ConcurrentHashMap<>();
+    private static volatile Map<String, ScheduledThreadPoolExecutor> scheduledExecutorMap = new ConcurrentHashMap<>();
     private static final Object executorServiceMapLock = new Object();
     private static final Object scheduledServiceMapLock = new Object();
 
@@ -47,14 +47,14 @@ public class StratosThreadPool {
      * @param maxSize Thread pool size
      * @return ThreadPoolExecutor
      */
-    public static ThreadPoolExecutor getExecutorService(String identifier, int initialSize, int
-            maxSize) {
+    public static ThreadPoolExecutor getExecutorService(String identifier, int initialSize, int maxSize) {
         ThreadPoolExecutor executor = executorMap.get(identifier);
         if (executor == null) {
             synchronized (executorServiceMapLock) {
                 if (executor == null) {
+                    int taskQueueSize = initialSize > 3 ? (int)Math.ceil(initialSize/3) : 1;
                     executor = new ThreadPoolExecutor(initialSize, maxSize, 60L, TimeUnit.SECONDS,
-                            new LinkedBlockingQueue<Runnable>(), new StratosThreadFactory(identifier));
+                            new LinkedBlockingQueue<Runnable>(taskQueueSize), new StratosThreadFactory(identifier));
                     executorMap.put(identifier, executor);
                     log.info(String.format("Thread pool created: [type] Executor [id] %s " +
                             "[initial size] %d [max size] %d", identifier, initialSize, maxSize));
@@ -88,6 +88,43 @@ public class StratosThreadPool {
         return scheduledExecutor;
     }
 
+    /**
+     * Stops the executor with the specified id in a graceful manner
+     *
+     * @param threadPoolId thread pool id
+     */
+    public static void shutDownThreadPoolGracefully (String threadPoolId) {
+
+        ThreadPoolExecutor executor = executorMap.get(threadPoolId);
+        if (executor == null) {
+            log.warn("No thread pool found for id " + threadPoolId + ", unable to shut down");
+            return;
+        }
+
+        new GracefulThreadPoolTerminator(threadPoolId, executor).call();
+        removeThreadPoolFromCache(threadPoolId);
+    }
+
+    /**
+     * Stops the scheduled executor with the specified id in a graceful manner
+     *
+     * @param threadPoolId thread pool id
+     */
+    public static void shutDownScheduledThreadPoolGracefully (String threadPoolId) {
+
+        ScheduledThreadPoolExecutor scheduledExecutor = scheduledExecutorMap.get(threadPoolId);
+        if (scheduledExecutor == null) {
+            log.warn("No scheduled thread pool found for id " + threadPoolId + ", unable to shut down");
+            return;
+        }
+
+        new GracefulThreadPoolTerminator(threadPoolId, scheduledExecutor).call();
+        removeScheduledThreadPoolFromCache(threadPoolId);
+    }
+
+    /**
+     * Stop all executors in a graceful manner
+     */
     public static void shutDownAllThreadPoolsGracefully () {
 
         int threadPoolCount = executorMap.size();
@@ -129,6 +166,9 @@ public class StratosThreadPool {
         }
     }
 
+    /**
+     * Stop all scheduled executors in a graceful manner
+     */
     public static void shutDownAllScheduledExecutorsGracefully () {
 
         int threadPoolCount = scheduledExecutorMap.size();
@@ -170,6 +210,11 @@ public class StratosThreadPool {
         }
     }
 
+    /**
+     * Removes the thread pool with id terminatedPoolId from the executorMap
+     *
+     * @param terminatedPoolId thread pool id
+     */
     private static void removeThreadPoolFromCache(String terminatedPoolId) {
         if (executorMap.remove(terminatedPoolId) != null) {
             log.info("Thread pool [id] " + terminatedPoolId + " is successfully shut down" +
@@ -177,6 +222,11 @@ public class StratosThreadPool {
         }
     }
 
+    /**
+     * Removes the scheduled thread pool with id terminatedPoolId from the scheduledExecutorMap
+     *
+     * @param terminatedPoolId thread pool id
+     */
     private static void removeScheduledThreadPoolFromCache(String terminatedPoolId) {
         if (scheduledExecutorMap.remove(terminatedPoolId) != null) {
             log.info("Scheduled Thread pool [id] " + terminatedPoolId + " is successfully shut down" +
