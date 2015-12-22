@@ -237,18 +237,18 @@ public class TopologyHandler {
     private void assertTopologyInitialized() {
         log.info(String.format("Asserting topology initialization within %d ms", TOPOLOGY_INIT_TIMEOUT));
         long startTime = System.currentTimeMillis();
-        while (!TopologyManager.getTopology().isInitialized()) {
+        while (!TopologyManager.isInitialized()) {
             log.info("Waiting for topology to be initialized...");
             sleep(1000);
             if ((System.currentTimeMillis() - startTime) > TOPOLOGY_INIT_TIMEOUT) {
                 break;
             }
         }
-        if (TopologyManager.getTopology().isInitialized()) {
+        if (TopologyManager.isInitialized()) {
             log.info(String.format("Topology initialized under %d ms", (System.currentTimeMillis() - startTime)));
         }
         assertTrue(String.format("Topology didn't get initialized within %d ms", TOPOLOGY_INIT_TIMEOUT),
-                TopologyManager.getTopology().isInitialized());
+                TopologyManager.isInitialized());
     }
 
     private void assertTenantInitialized() {

@@ -19,8 +19,6 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.locking.TopologyLockHierarchy;
 
 import java.io.Serializable;
@@ -37,12 +35,9 @@ public class Topology implements Serializable {
     // Key: Service.serviceName
     private Map<String, Service> serviceMap;
 
-    private boolean initialized;
-    private static Log log = LogFactory.getLog(Topology.class);
-
     public Topology() {
-        this.serviceMap = new HashMap<String, Service>();
-        this.clusterMap = new HashMap<String, Cluster>();
+        this.serviceMap = new HashMap<>();
+        this.clusterMap = new HashMap<>();
     }
 
     public Collection<Service> getServices() {
@@ -92,16 +87,8 @@ public class Topology implements Serializable {
         this.clusterMap.clear();
     }
 
-    public void setInitialized(boolean initialized) {
-        this.initialized = initialized;
-    }
-
-    public boolean isInitialized() {
-        return initialized;
-    }
-
     @Override
     public String toString() {
-        return "Topology [serviceMap=" + serviceMap + ", initialized=" + initialized + "]";
+        return "Topology [serviceMap=" + serviceMap + "]";
     }
 }

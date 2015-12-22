@@ -297,8 +297,13 @@ class AgentGitHandler:
             return
 
         if git_repo.scheduled_update_task is None:
+            AgentGitHandler.log.info(
+                "ADC configuration: [auto-commit] %s, [auto-checkout] %s, [interval] %s",
+                auto_commit, auto_checkout, update_interval)
+
             artifact_update_task = ArtifactUpdateTask(repo_info, auto_checkout, auto_commit)
             async_task = ScheduledExecutor(update_interval, artifact_update_task)
+            AgentGitHandler.log.info("Starting a Scheduled Executor thread for Git polling task")
 
             git_repo.scheduled_update_task = async_task
             async_task.start()

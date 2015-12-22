@@ -23,4 +23,8 @@
 # event is received by the cartridge agent.
 # --------------------------------------------------------------
 #
-echo `date`": Create LVS dummy interface shell extension executed"
+
+modprobe dummy numdummies=1
+ifconfig dummy0 ${STRATOS_LVS_DUMMY_VIRTUAL_IP} netmask ${STRATOS_LVS_SUBNET_MASK}
+
+echo "update the dummy interface with ${STRATOS_LVS_DUMMY_VIRTUAL_IP} and ${STRATOS_LVS_SUBNET_MASK}"

@@ -31,6 +31,7 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
             // Parse complete message and build event
             CompleteTopologyEvent event = (CompleteTopologyEvent) MessagingUtil.jsonToObject(message, CompleteTopologyEvent.class);
 
-            if (!topology.isInitialized()) {
+            if (!TopologyManager.isInitialized()) {
                 TopologyUpdater.acquireWriteLock();
 
                 try {
@@ -141,6 +142,6 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
         }
 
         // Set topology initialized
-        topology.setInitialized(true);
+        TopologyManager.setInitialized(true);
     }
 }

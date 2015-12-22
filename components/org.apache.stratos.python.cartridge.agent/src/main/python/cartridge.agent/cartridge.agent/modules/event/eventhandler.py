@@ -133,20 +133,13 @@ def on_artifact_updated_event(artifacts_updated_event):
     update_artifacts = Config.read_property(constants.ENABLE_ARTIFACT_UPDATE, True)
     auto_commit = Config.is_commits_enabled
     auto_checkout = Config.is_checkout_enabled
-    log.info("ADC configuration: [update_artifacts] %s, [auto-commit] %s, [auto-checkout] %s"
-             % (update_artifacts, auto_commit, auto_checkout))
 
     if update_artifacts:
         try:
             update_interval = int(Config.artifact_update_interval)
         except ValueError:
-            log.exception("Invalid artifact sync interval specified: %s" % ValueError)
+            log.debug("Invalid artifact sync interval specified: %s, defaulting to 10 seconds" % ValueError)
             update_interval = 10
-
-        log.info("Artifact updating task enabled, update interval: %s seconds" % update_interval)
-
-        log.info("Auto Commit is turned %s " % ("on" if auto_commit else "off"))
-        log.info("Auto Checkout is turned %s " % ("on" if auto_checkout else "off"))
 
         AgentGitHandler.schedule_artifact_update_task(
             repo_info,
@@ -178,7 +171,7 @@ def on_member_activated_event(member_activated_event):
         member_activated_event.member_id)
 
     if not member_initialized:
-        log.error("Member has not initialized, failed to execute member activated event")
+        log.debug("Member has not initialized, failed to execute member activated event")
         return
 
     execute_event_extendables(constants.MEMBER_ACTIVATED_EVENT, {})
@@ -203,6 +196,8 @@ def on_complete_topology_event(complete_topology_event):
             log.info(
                 "Member initialized [member id] %s, [cluster-id] %s, [service] %s"
                 % (member_id_in_payload, cluster_id_in_payload, service_name_in_payload))
+        else:
+            log.info("Member not initialized in topology.")
 
     topology = complete_topology_event.get_topology()
     service = topology.get_service(service_name_in_payload)
@@ -273,7 +268,7 @@ def on_member_terminated_event(member_terminated_event):
     )
 
     if not member_initialized:
-        log.error("Member has not initialized, failed to execute member terminated event")
+        log.debug("Member has not initialized, failed to execute member terminated event")
         return
 
     execute_event_extendables(constants.MEMBER_TERMINATED_EVENT, {})
@@ -291,7 +286,7 @@ def on_member_suspended_event(member_suspended_event):
     )
 
     if not member_initialized:
-        log.error("Member has not initialized, failed to execute member suspended event")
+        log.debug("Member has not initialized, failed to execute member suspended event")
         return
 
     execute_event_extendables(constants.MEMBER_SUSPENDED_EVENT, {})
@@ -309,7 +304,7 @@ def on_member_started_event(member_started_event):
     )
 
     if not member_initialized:
-        log.error("Member has not initialized, failed to execute member started event")
+        log.debug("Member has not initialized, failed to execute member started event")
         return
 
     execute_event_extendables(constants.MEMBER_STARTED_EVENT, {})
@@ -324,7 +319,7 @@ def start_server_extension():
         service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
 
     if not member_initialized:
-        log.error("Member has not initialized, failed to execute start server event")
+        log.debug("Member has not initialized, failed to execute start server event")
         return
 
     execute_event_extendables("StartServers", {})
@@ -416,6 +411,7 @@ def execute_event_extendables(event, input_values):
         input_values = add_common_input_values(input_values)
     except Exception as e:
         log.error("Error while adding common input values for event extendables: %s" % e)
+
     input_values["EVENT"] = event
     log.debug("Executing extensions for [event] %s with [input values] %s" % (event, input_values))
     # Execute the extension
@@ -436,6 +432,8 @@ def execute_plugins_for_event(event, input_values):
             for plugin_info in plugins_for_event:
                 log.debug("Executing plugin %s for event %s" % (plugin_info.name, event))
                 plugin_thread = PluginExecutor(plugin_info, input_values)
+                plugin_thread.setName("PluginExecutorThreadForPlugin%s" % plugin_info.name)
+                log.debug("Starting a PluginExecutor Thread for event %s" % event.__class__.__name__)
                 plugin_thread.start()
 
                 # block till plugin run completes.
@@ -456,6 +454,8 @@ def execute_extension_for_event(event, extension_values):
         if Config.extension_executor is not None:
             log.debug("Executing extension for event [%s]" % event)
             extension_thread = PluginExecutor(Config.extension_executor, extension_values)
+            extension_thread.setName("ExtensionExecutorThreadForExtension%s" % event.__class__.__name__)
+            log.debug("Starting a PluginExecutor Thread for event extension %s" % event.__class__.__name__)
             extension_thread.start()
 
             # block till plugin run completes.
@@ -535,13 +535,16 @@ def is_member_initialized_in_topology(service_name, cluster_id, member_id):
         if member is None:
             raise Exception("Member id not found in topology [member] %s" % member_id)
 
-        log.info("Found member: " + member.to_json())
+        log.debug("Found member: " + member.to_json())
         if member.status == MemberStatus.Initialized:
             return True
+
+    log.debug("Member doesn't exist in topology")
     return False
 
 
 def member_exists_in_topology(service_name, cluster_id, member_id):
+    log.debug("Checking if member exists in topology : %s, %s, %s, " % (service_name, cluster_id, member_id))
     topology = TopologyContext.get_topology()
     service = topology.get_service(service_name)
     if service is None:
@@ -551,9 +554,9 @@ def member_exists_in_topology(service_name, cluster_id, member_id):
     if cluster is None:
         raise Exception("Cluster id not found in topology [cluster] %s" % cluster_id)
 
-    activated_member = cluster.get_member(member_id)
-    if activated_member is None:
-        log.error("Member id not found in topology [member] %s" % member_id)
+    member = cluster.get_member(member_id)
+    if member is None:
+        log.debug("Member id not found in topology [member] %s" % member_id)
         return False
 
     return True
@@ -586,6 +589,9 @@ def add_common_input_values(plugin_values):
         plugin_values = {}
     elif type(plugin_values) != dict:
         plugin_values = {"VALUE1": str(plugin_values)}
+
+    # Values for the plugins to use in case they want to connect to the MB.
+    plugin_values["MB_IP"] = Config.mb_ip
 
     plugin_values["APPLICATION_PATH"] = Config.app_path
     plugin_values["PARAM_FILE_PATH"] = Config.read_property(constants.PARAM_FILE_PATH, False)
@@ -685,8 +691,10 @@ class PluginExecutor(Thread):
         self.__plugin_info = plugin_info
         self.__values = values
         self.__log = LogFactory().get_log(__name__)
+        self.setDaemon(True)
 
     def run(self):
+        self.__log.debug("Starting the PluginExecutor thread")
         try:
             self.__plugin_info.plugin_object.run_plugin(self.__values)
         except Exception as e:

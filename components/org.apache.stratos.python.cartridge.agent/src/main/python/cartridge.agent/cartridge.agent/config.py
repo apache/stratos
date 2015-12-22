@@ -21,8 +21,6 @@ import sys
 
 from yapsy.PluginManager import PluginManager
 
-from yapsy.PluginManager import PluginManager
-
 from modules.util.log import LogFactory
 from exception import ParameterNotFoundException, InvalidConfigValueException
 import constants
@@ -146,6 +144,10 @@ class Config:
     """ :type : bool """
     mb_urls = []
     """ :type : list """
+    mb_ip = None
+    """ :type : str """
+    mb_port = None
+    """ :type : str """
     mb_username = None
     """ :type : str """
     mb_password = None
@@ -257,10 +259,10 @@ class Config:
         return value_string
 
     @staticmethod
-    def read_property(property_key, critical=True):
+    def read_property(property_key, mandatory=True):
         """
         Returns the value of the provided property
-        :param critical: If absence of this value should throw an error
+        :param mandatory: If absence of this value should throw an error
         :param str property_key: the name of the property to be read
         :return: Value of the property
         :exception: ParameterNotFoundException if the provided property cannot be found
@@ -280,7 +282,7 @@ class Config:
                 return real_value
 
         # real value is None
-        if critical:
+        if mandatory:
             raise ParameterNotFoundException("Cannot find the value of required parameter: %r" % property_key)
         else:
             return None
@@ -368,8 +370,29 @@ class Config:
 
             Config.mb_username = Config.read_property(constants.MB_USERNAME, False)
             Config.mb_password = Config.read_property(constants.MB_PASSWORD, False)
-            Config.mb_urls = Config.read_property(constants.MB_URLS)
-            Config.mb_publisher_timeout = int(Config.read_property(constants.MB_PUBLISHER_TIMEOUT))
+
+            # Check if mb.urls is set, if not get values from mb.ip and mb.port and populate mb.urls.
+            # If both are absent, it's a critical error
+            try:
+                Config.mb_urls = Config.read_property(constants.MB_URLS)
+                first_mb_pair = Config.mb_urls.split(",")[0]
+                Config.mb_ip = first_mb_pair.split(":")[0]
+                Config.mb_port = first_mb_pair.split(":")[1]
+            except ParameterNotFoundException:
+                Config.log.info("Single message broker configuration selected.")
+                try:
+                    Config.mb_ip = Config.read_property(constants.MB_IP)
+                    Config.mb_port = Config.read_property(constants.MB_PORT)
+                    Config.mb_urls = "%s:%s" % (Config.mb_ip, Config.mb_port)
+                except ParameterNotFoundException as ex:
+                    Config.log.exception("Required message broker information missing. "
+                                         "Either \"mb.ip\" and \"mb.port\" or \"mb.urls\" should be provided.")
+                    raise RuntimeError("Required message broker information missing.", ex)
+
+            try:
+                Config.mb_publisher_timeout = int(Config.read_property(constants.MB_PUBLISHER_TIMEOUT))
+            except ParameterNotFoundException:
+                Config.mb_publisher_timeout = 900  # 15 minutes
 
             Config.cep_username = Config.read_property(constants.CEP_SERVER_ADMIN_USERNAME)
             Config.cep_password = Config.read_property(constants.CEP_SERVER_ADMIN_PASSWORD)

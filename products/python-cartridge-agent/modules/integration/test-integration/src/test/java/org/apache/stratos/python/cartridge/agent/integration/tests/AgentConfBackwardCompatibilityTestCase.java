@@ -21,7 +21,8 @@ package org.apache.stratos.python.cartridge.agent.integration.tests;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.ServiceType;
+import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
 import org.apache.stratos.messaging.event.topology.MemberInitializedEvent;
@@ -34,28 +35,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Test validation for application path input on the PCA
+ * Test to verify backward compatibility of the Python Cartridge Agent against
+ * older configuration options.
  */
-public class ADCValidationTestCase extends PythonAgentIntegrationTest {
-    private static final int ADC_TEST_TIMEOUT = 300000;
-    private final Log log = LogFactory.getLog(ADCValidationTestCase.class);
-//    private final String INVALID_APP_PATH = "ddd/ffs/ss";
-    private static final String CLUSTER_ID = "tomcat.domain";
-    private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-2";
-    private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-2";
-    private static final String APP_ID = "application-2";
-    private static final String MEMBER_ID = "tomcat.member-1";
+public class AgentConfBackwardCompatibilityTestCase extends PythonAgentIntegrationTest {
+    public AgentConfBackwardCompatibilityTestCase() throws IOException {
+    }
+
+    private static final Log log = LogFactory.getLog(AgentConfBackwardCompatibilityTestCase.class);
+    private static final int TIMEOUT = 5 * 60000;
+    private static final String CLUSTER_ID = "php.php.domain";
+    private static final String APPLICATION_PATH = "/tmp/AgentConfBackwardCompatibilityTestCase";
+    private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-1";
+    private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-1";
+    private static final String APP_ID = "application-1";
+    private static final String MEMBER_ID = "php.member-1";
     private static final String INSTANCE_ID = "instance-1";
     private static final String CLUSTER_INSTANCE_ID = "cluster-1-instance-1";
     private static final String NETWORK_PARTITION_ID = "network-partition-1";
     private static final String PARTITION_ID = "partition-1";
     private static final String TENANT_ID = "-1234";
-    private static final String SERVICE_NAME = "tomcat";
-
-    private boolean logDetected = false;
-
-    public ADCValidationTestCase() throws IOException {
-    }
+    private static final String SERVICE_NAME = "php";
 
     @Override
     protected String getClassName() {
@@ -63,26 +63,28 @@ public class ADCValidationTestCase extends PythonAgentIntegrationTest {
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setUp() throws Exception {
-        log.info("Setting up ADCTestCase");
-        // Set jndi.properties.dir system property for initializing event publishers and receivers
+    public void setupCompatibilityTest() throws Exception {
         System.setProperty("jndi.properties.dir", getCommonResourcesPath());
 
-        super.setup(ADC_TEST_TIMEOUT);
-        startServerSocket(8080);
+        // start Python agent with configurations provided in resource path
+        super.setup(TIMEOUT);
 
+        // Simulate server socket
+        startServerSocket(8080);
     }
 
     @AfterMethod(alwaysRun = true)
-    public void tearDownADC(){
-        tearDown();
+    public void tearDownCompatibilityTest(){
+        tearDown(APPLICATION_PATH);
     }
 
-    @Test(timeOut = ADC_TEST_TIMEOUT, groups = {"smoke"})
-    public void testAppPathValidation(){
-        log.info("Testing app path validation for ADC");
+    @Test(timeOut = TIMEOUT, groups = { "smoke" })
+    public void testConfigCompatibility(){
         startCommunicatorThread();
+        assertAgentActivation();
+    }
 
+    private void assertAgentActivation() {
         Thread startupTestThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -90,7 +92,7 @@ public class ADCValidationTestCase extends PythonAgentIntegrationTest {
                     sleep(1000);
                 }
                 List<String> outputLines = new ArrayList<>();
-                while (!outputStream.isClosed() && !logDetected) {
+                while (!outputStream.isClosed()) {
                     List<String> newLines = getNewLines(outputLines, outputStream.toString());
                     if (newLines.size() > 0) {
                         for (String line : newLines) {
@@ -109,7 +111,6 @@ public class ADCValidationTestCase extends PythonAgentIntegrationTest {
                                         NETWORK_PARTITION_ID,
                                         PARTITION_ID,
                                         ServiceType.SingleTenant);
-
                                 CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
                                 publishEvent(completeTopologyEvent);
                                 log.info("Complete topology event published");
@@ -122,17 +123,6 @@ public class ADCValidationTestCase extends PythonAgentIntegrationTest {
                                 publishEvent(memberInitializedEvent);
                                 log.info("Member initialized event published");
                             }
-
-                            // Send artifact updated event to activate the instance first
-                            if (line.contains("Artifact repository found")) {
-                                publishEvent(getArtifactUpdatedEventForPrivateRepo());
-                                log.info("Artifact updated event published");
-                            }
-
-                            if (line.contains("Repository path cannot be accessed, or is invalid.")){
-                                logDetected = true;
-                                log.info("PCA Event handler failed validation for an invalid app path.");
-                            }
                         }
                     }
                     sleep(1000);
@@ -141,23 +131,10 @@ public class ADCValidationTestCase extends PythonAgentIntegrationTest {
         });
         startupTestThread.start();
 
-        while (!logDetected) {
-            sleep(1000);
+        while (!instanceStarted || !instanceActivated) {
+            // wait until the instance activated event is received.
+            // this will assert whether instance got activated within timeout period; no need for explicit assertions
+            sleep(2000);
         }
-    }
-
-    public static ArtifactUpdatedEvent getArtifactUpdatedEventForPrivateRepo() {
-        ArtifactUpdatedEvent privateRepoEvent = createTestArtifactUpdatedEvent();
-        privateRepoEvent.setRepoURL("https://bitbucket.org/testapache2211/testrepo.git");
-        privateRepoEvent.setRepoUserName("testapache2211");
-        privateRepoEvent.setRepoPassword("iF7qT+BKKPE3PGV1TeDsJA==");
-        return privateRepoEvent;
-    }
-
-    private static ArtifactUpdatedEvent createTestArtifactUpdatedEvent() {
-        ArtifactUpdatedEvent artifactUpdatedEvent = new ArtifactUpdatedEvent();
-        artifactUpdatedEvent.setClusterId(CLUSTER_ID);
-        artifactUpdatedEvent.setTenantId(TENANT_ID);
-        return artifactUpdatedEvent;
     }
 }

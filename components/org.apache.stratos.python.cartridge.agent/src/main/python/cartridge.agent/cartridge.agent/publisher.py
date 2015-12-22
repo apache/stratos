@@ -94,8 +94,8 @@ def publish_instance_activated_event():
 
             publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_ACTIVATED_EVENT)
             publisher.publish(instance_activated_event)
+            log.info("Instance activated event published")
 
-            log.info("Starting health statistics notifier")
             health_stat_publishing_enabled = Config.read_property(constants.CEP_PUBLISHER_ENABLED, True)
 
             if health_stat_publishing_enabled:
@@ -231,6 +231,9 @@ class EventPublisher(object):
 
                 # start a thread to execute publish event
                 publisher_thread = Thread(target=self.__publish_event, args=(event, mb_ip, mb_port, auth, payload))
+                publisher_thread.setDaemon(True)
+                publisher_thread.setName("MBEventPublisherThreadForEvent%s" % event.__class__.__name__)
+                self.__log.debug("Starting a publisher thread for event %s " % event.__class__.__name__)
                 publisher_thread.start()
 
                 # give sometime for the thread to complete

@@ -65,6 +65,8 @@ public class TopologyManager {
     private static volatile TopologyLockHierarchy topologyLockHierarchy =
             TopologyLockHierarchy.getInstance();
 
+    private static boolean initialized = false;
+
     /**
      * Acquires read lock for the Complete Topology
      */
@@ -220,5 +222,13 @@ public class TopologyManager {
             }
         }
         return topology;
+    }
+
+    public static void setInitialized(boolean initialized){
+        TopologyManager.initialized = initialized;
+    }
+
+    public static boolean isInitialized(){
+        return TopologyManager.initialized;
     }
 }

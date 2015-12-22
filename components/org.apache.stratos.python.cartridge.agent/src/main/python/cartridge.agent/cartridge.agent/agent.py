@@ -16,6 +16,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import os
+import time
+
+from threading import Thread
+
 import publisher
 from logpublisher import *
 from modules.event.application.signup.events import *
@@ -43,8 +48,6 @@ class CartridgeAgent(object):
         self.__topology_event_subscriber = EventSubscriber(constants.TOPOLOGY_TOPIC, mb_urls, mb_uname, mb_pwd)
 
     def run_agent(self):
-        self.__log.info("Starting Cartridge Agent...")
-
         # Start topology event receiver thread
         self.register_topology_event_listeners()
 
@@ -192,7 +195,7 @@ class CartridgeAgent(object):
             time.sleep(1)
 
     def wait_for_complete_topology(self):
-        while not TopologyContext.topology.initialized:
+        while not TopologyContext.initialized:
             self.__log.info("Waiting for complete topology event...")
             time.sleep(5)
         self.__log.info("Complete topology event received")
@@ -239,7 +242,7 @@ class Handlers(object):
         Handlers.__log.debug("Member initialized event received: %r" % msg.payload)
         event_obj = MemberInitializedEvent.create_from_json(msg.payload)
 
-        if not TopologyContext.topology.initialized:
+        if not TopologyContext.initialized:
             return
 
         event_handler.on_member_initialized_event(event_obj)
@@ -247,7 +250,7 @@ class Handlers(object):
     @staticmethod
     def on_member_activated(msg):
         Handlers.__log.debug("Member activated event received: %r" % msg.payload)
-        if not TopologyContext.topology.initialized:
+        if not TopologyContext.initialized:
             return
 
         event_obj = MemberActivatedEvent.create_from_json(msg.payload)
@@ -256,7 +259,7 @@ class Handlers(object):
     @staticmethod
     def on_member_terminated(msg):
         Handlers.__log.debug("Member terminated event received: %r" % msg.payload)
-        if not TopologyContext.topology.initialized:
+        if not TopologyContext.initialized:
             return
 
         event_obj = MemberTerminatedEvent.create_from_json(msg.payload)
@@ -265,7 +268,7 @@ class Handlers(object):
     @staticmethod
     def on_member_suspended(msg):
         Handlers.__log.debug("Member suspended event received: %r" % msg.payload)
-        if not TopologyContext.topology.initialized:
+        if not TopologyContext.initialized:
             return
 
         event_obj = MemberSuspendedEvent.create_from_json(msg.payload)
@@ -275,9 +278,9 @@ class Handlers(object):
     def on_complete_topology(msg):
         event_obj = CompleteTopologyEvent.create_from_json(msg.payload)
         TopologyContext.update(event_obj.topology)
-        if not TopologyContext.topology.initialized:
+        if not TopologyContext.initialized:
+            TopologyContext.initialized = True
             Handlers.__log.info("Topology initialized from complete topology event")
-            TopologyContext.topology.initialized = True
             event_handler.on_complete_topology_event(event_obj)
 
         Handlers.__log.debug("Topology context updated with [topology] %r" % event_obj.topology.json_str)
@@ -285,7 +288,7 @@ class Handlers(object):
     @staticmethod
     def on_member_started(msg):
         Handlers.__log.debug("Member started event received: %r" % msg.payload)
-        if not TopologyContext.topology.initialized:
+        if not TopologyContext.initialized:
             return
 
         event_obj = MemberStartedEvent.create_from_json(msg.payload)
@@ -327,12 +330,31 @@ class Handlers(object):
         event_handler.on_application_signup_removed_event(event_obj)
 
 
+def check_termination(agent_obj):
+    terminate = False
+    terminator_file_path = os.path.abspath(os.path.dirname(__file__)) + "/terminator.txt"
+    while not terminate:
+        time.sleep(60)
+        try:
+            with open(terminator_file_path, 'r') as f:
+                file_output = f.read()
+                terminate = True if "true" in file_output else False
+        except IOError:
+            pass
+
+    log.info("Shutting down Stratos cartridge agent...")
+    agent_obj.terminate()
+
+
 if __name__ == "__main__":
     log = LogFactory().get_log(__name__)
+    cartridge_agent = CartridgeAgent()
     try:
         log.info("Starting Stratos cartridge agent...")
-        cartridge_agent = CartridgeAgent()
+        task_thread = Thread(target=check_termination, args=(cartridge_agent,))
+        task_thread.start()
         cartridge_agent.run_agent()
     except Exception as e:
         log.exception("Cartridge Agent Exception: %r" % e)
-        # cartridge_agent.terminate()
+        log.info("Terminating Stratos cartridge agent...")
+        cartridge_agent.terminate()
