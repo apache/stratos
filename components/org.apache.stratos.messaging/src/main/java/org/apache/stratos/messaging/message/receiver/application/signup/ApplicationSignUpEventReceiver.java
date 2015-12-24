@@ -43,9 +43,6 @@ public class ApplicationSignUpEventReceiver extends StratosEventReceiver {
     private static volatile ApplicationSignUpEventReceiver instance;
 
     private ApplicationSignUpEventReceiver() {
-        // TODO: make pool size configurable
-        this.threadPoolId = "application-signup-event-receiver";
-        this.executorService = StratosThreadPool.getExecutorService(threadPoolId, 20);
         ApplicationSignUpEventMessageQueue messageQueue = new ApplicationSignUpEventMessageQueue();
         this.messageDelegator = new ApplicationSignUpEventMessageDelegator(messageQueue);
         this.messageListener = new ApplicationSignUpEventMessageListener(messageQueue);
@@ -66,6 +63,10 @@ public class ApplicationSignUpEventReceiver extends StratosEventReceiver {
 
     public void addEventListener(EventListener eventListener) {
         messageDelegator.addEventListener(eventListener);
+    }
+
+    public void removeEventListener(EventListener eventListener) {
+        messageDelegator.removeEventListener(eventListener);
     }
 
     private void execute() {
@@ -117,6 +118,5 @@ public class ApplicationSignUpEventReceiver extends StratosEventReceiver {
     public void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
-        StratosThreadPool.shutdown(threadPoolId);
     }
 }

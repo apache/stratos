@@ -26,7 +26,6 @@ import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-import java.util.concurrent.ExecutorService;
 
 public class InitializerEventReceiver extends StratosEventReceiver {
     private static final Log log = LogFactory.getLog(InitializerEventReceiver.class);
@@ -38,9 +37,6 @@ public class InitializerEventReceiver extends StratosEventReceiver {
     //private ExecutorService executorService;
 
     private InitializerEventReceiver() {
-        // TODO: make pool size configurable
-        this.threadPoolId = "initializer-event-receiver";
-        this.executorService = StratosThreadPool.getExecutorService(threadPoolId, 20);
         InitializerEventMessageQueue initializerEventMessageQueue = new InitializerEventMessageQueue();
         this.messageDelegator = new InitializerEventMessageDelegator(initializerEventMessageQueue);
         this.messageListener = new InitializerEventMessageListener(initializerEventMessageQueue);
@@ -61,6 +57,10 @@ public class InitializerEventReceiver extends StratosEventReceiver {
 
     public void addEventListener(EventListener eventListener) {
         messageDelegator.addEventListener(eventListener);
+    }
+
+    public void removeEventListener(EventListener eventListener) {
+        messageDelegator.removeEventListener(eventListener);
     }
 
     private void execute() {
@@ -85,6 +85,5 @@ public class InitializerEventReceiver extends StratosEventReceiver {
     public void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
-        StratosThreadPool.shutdown(threadPoolId);
     }
 }

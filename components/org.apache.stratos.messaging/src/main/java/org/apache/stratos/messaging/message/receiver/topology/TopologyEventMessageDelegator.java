@@ -47,6 +47,10 @@ class TopologyEventMessageDelegator implements Runnable {
         processorChain.addEventListener(eventListener);
     }
 
+    public void removeEventListener(EventListener eventListener) {
+        processorChain.removeEventListener(eventListener);
+    }
+
     @Override
     public void run() {
         try {

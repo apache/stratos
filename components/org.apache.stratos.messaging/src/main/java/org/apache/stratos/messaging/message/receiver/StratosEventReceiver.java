@@ -19,13 +19,71 @@
 
 package org.apache.stratos.messaging.message.receiver;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.messaging.listener.EventListener;
+
 import java.util.concurrent.ExecutorService;
 
-public class StratosEventReceiver {
+/**
+ * Abstraction for Event Receivers used in Stratos
+ */
+public abstract class StratosEventReceiver {
 
-    protected ExecutorService executorService;
+    private static final Log log = LogFactory.getLog(StratosEventReceiver.class);
+
+    /**
+     * Thread pool information for all StratosEventReceiver implementations
+     */
+
+    public static String STRATOS_EVENT_RECEIEVER_THREAD_POOL_ID = "stratos-event-receiver-pool";
+    private static String STRATOS_EVENT_RECEIEVER_THREAD_POOL_SIZE = "stratos.event.receiver.pool.size";
+
+    // thread pool id
     protected String threadPoolId;
+    // executor service used
+    protected ExecutorService executorService;
+    // pool size
+    protected static int threadPoolSize = 15;
+
+    static {
+        // check if the thread pool size is given as a system parameter
+        String poolSize = System.getProperty(STRATOS_EVENT_RECEIEVER_THREAD_POOL_SIZE);
+        if (poolSize != null) {
+            try {
+                threadPoolSize = Integer.parseInt(poolSize);
+            } catch (NumberFormatException e) {
+                log.error("Invalid configuration found for StratosEventReceiver thread pool size", e);
+                threadPoolSize = 15;
+            }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Number of threads used in pool " + STRATOS_EVENT_RECEIEVER_THREAD_POOL_ID + " : " + threadPoolSize);
+        }
+    }
 
     public StratosEventReceiver () {
+        this.threadPoolId = STRATOS_EVENT_RECEIEVER_THREAD_POOL_ID;
+        this.executorService = StratosThreadPool.getExecutorService(threadPoolId, threadPoolSize);
     }
+
+    /**
+     * Adds an EventListener to this StratosEventReceiver instance
+     *
+     * @param eventListener EventListener instance to add
+     */
+    public abstract void addEventListener(EventListener eventListener);
+
+    /**
+     * Removed an EventListener from this StratosEventReceiver instance
+     *
+     * @param eventListener EventListener instance to remove
+     */
+    public abstract void removeEventListener(EventListener eventListener);
+
+    /**
+     * Terminates this StratosEventReceiver instance
+     */
+    public abstract void terminate();
 }

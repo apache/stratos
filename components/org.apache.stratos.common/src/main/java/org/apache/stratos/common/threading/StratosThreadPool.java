@@ -104,6 +104,9 @@ public class StratosThreadPool {
             executorService.shutdownNow();
         }
 
+        // remove from the map
+        executorServiceMap.remove(identifier);
+
         log.info("Successfully shutdown thread pool associated with id: " + identifier);
     }
 }

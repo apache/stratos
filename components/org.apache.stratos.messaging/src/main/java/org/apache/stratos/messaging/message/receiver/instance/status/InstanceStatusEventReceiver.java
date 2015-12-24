@@ -38,9 +38,6 @@ public class InstanceStatusEventReceiver extends StratosEventReceiver {
     private static volatile InstanceStatusEventReceiver instance;
 
     private InstanceStatusEventReceiver() {
-        // TODO: make pool size configurable
-        this.threadPoolId = "instance-status_event-reciever";
-        this.executorService = StratosThreadPool.getExecutorService(threadPoolId, 20);
         InstanceStatusEventMessageQueue messageQueue = new InstanceStatusEventMessageQueue();
         this.messageDelegator = new InstanceStatusEventMessageDelegator(messageQueue);
         this.messageListener = new InstanceStatusEventMessageListener(messageQueue);
@@ -63,6 +60,9 @@ public class InstanceStatusEventReceiver extends StratosEventReceiver {
         messageDelegator.addEventListener(eventListener);
     }
 
+    public void removeEventListener(EventListener eventListener) {
+        messageDelegator.removeEventListener(eventListener);
+    }
 
     private void execute() {
         try {
@@ -92,6 +92,5 @@ public class InstanceStatusEventReceiver extends StratosEventReceiver {
     public void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
-        StratosThreadPool.shutdown(threadPoolId);
     }
 }
