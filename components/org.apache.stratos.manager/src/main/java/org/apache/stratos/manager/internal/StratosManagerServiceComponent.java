@@ -327,5 +327,8 @@ public class StratosManagerServiceComponent {
         // Close event publisher connections to message broker
         EventPublisherPool.close(MessagingUtil.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName());
         EventPublisherPool.close(MessagingUtil.Topics.TENANT_TOPIC.getTopicName());
+
+        // shut down the scheduled thread pool
+        StratosThreadPool.shutdown(THREAD_POOL_ID);
     }
 }

@@ -21,6 +21,8 @@ package org.apache.stratos.messaging.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
 import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpEventReceiver;
 import org.apache.stratos.messaging.message.receiver.cluster.status.ClusterStatusEventReceiver;
@@ -40,8 +42,20 @@ public class MessagingServiceComponent {
     private static final Log log = LogFactory.getLog(MessagingServiceComponent.class);
 
     protected void activate(ComponentContext context) {
+        // activate all message receivers
         try {
-            log.info("Messaging Service bundle activated");
+            ApplicationSignUpEventReceiver.getInstance();
+            ApplicationsEventReceiver.getInstance();
+            ClusterStatusEventReceiver.getInstance();
+            DomainMappingEventReceiver.getInstance();
+            HealthStatEventReceiver.getInstance();
+            InitializerEventReceiver.getInstance();
+            TenantEventReceiver.getInstance();
+            TopologyEventReceiver.getInstance();
+
+            if (log.isDebugEnabled()) {
+                log.debug("Messaging Service bundle activated");
+            }
         } catch (Exception e) {
             log.error("Could not activate Messaging Service component", e);
         }
@@ -58,7 +72,10 @@ public class MessagingServiceComponent {
             InitializerEventReceiver.getInstance().terminate();
             TenantEventReceiver.getInstance().terminate();
             TopologyEventReceiver.getInstance().terminate();
-            log.info("Messaging Service component is deactivated");
+            StratosThreadPool.shutdown(StratosEventReceiver.STRATOS_EVENT_RECEIEVER_THREAD_POOL_ID);
+            if (log.isDebugEnabled()) {
+                log.debug("Messaging Service component is deactivated");
+            }
         } catch (Exception e) {
             log.error("Could not de-activate Messaging Service component", e);
         }

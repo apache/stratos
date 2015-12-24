@@ -21,7 +21,6 @@ package org.apache.stratos.messaging.message.receiver.domain.mapping;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.receiver.StratosEventReceiver;
@@ -40,8 +39,6 @@ public class DomainMappingEventReceiver extends StratosEventReceiver {
     private static volatile DomainMappingEventReceiver instance;
 
     private DomainMappingEventReceiver() {
-        // TODO: make pool size configurable
-        this.executor = StratosThreadPool.getExecutorService("messaging-event-receiver", 35, 150);
         DomainMappingEventMessageQueue messageQueue = new DomainMappingEventMessageQueue();
         this.messageDelegator = new DomainMappingEventMessageDelegator(messageQueue);
         this.messageListener = new DomainMappingEventMessageListener(messageQueue);
@@ -50,6 +47,10 @@ public class DomainMappingEventReceiver extends StratosEventReceiver {
 
     public void addEventListener(EventListener eventListener) {
         messageDelegator.addEventListener(eventListener);
+    }
+
+    public void removeEventListener(EventListener eventListener) {
+        messageDelegator.removeEventListener(eventListener);
     }
 
     public static DomainMappingEventReceiver getInstance () {
@@ -67,7 +68,6 @@ public class DomainMappingEventReceiver extends StratosEventReceiver {
     public void terminate() {
         eventSubscriber.terminate();
         messageDelegator.terminate();
-        StratosThreadPool.shutdown(threadPoolId);
     }
 
     private void execute() {
