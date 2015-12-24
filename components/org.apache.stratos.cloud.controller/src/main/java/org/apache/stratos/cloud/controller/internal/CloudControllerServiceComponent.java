@@ -229,5 +229,8 @@ public class CloudControllerServiceComponent {
         } catch (Exception e) {
             log.warn("An error occurred while closing cloud controller topology event publisher", e);
         }
+
+        // shutdown TopologyEventSync task
+        StratosThreadPool.shutdown(THREAD_POOL_ID);
     }
 }

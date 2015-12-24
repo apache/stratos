@@ -38,8 +38,6 @@ public class ApplicationsEventReceiver extends StratosEventReceiver{
     private static volatile ApplicationsEventReceiver instance;
 
     private ApplicationsEventReceiver() {
-        // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("application-event-receiver", 100);
         ApplicationsEventMessageQueue messageQueue = new ApplicationsEventMessageQueue();
         this.messageDelegator = new ApplicationsEventMessageDelegator(messageQueue);
         this.messageListener = new ApplicationsEventMessageListener(messageQueue);
@@ -66,7 +64,7 @@ public class ApplicationsEventReceiver extends StratosEventReceiver{
         messageDelegator.removeEventListener(eventListener);
     }
 
-    public void execute() {
+    private void execute() {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.APPLICATION_TOPIC.getTopicName(),

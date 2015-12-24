@@ -39,8 +39,6 @@ public class HealthStatEventReceiver extends StratosEventReceiver {
     private static volatile HealthStatEventReceiver instance;
 
     private HealthStatEventReceiver() {
-        // TODO: make pool size configurable
-        this.executorService = StratosThreadPool.getExecutorService("healthstat-event-receiver", 100);
         HealthStatEventMessageQueue messageQueue = new HealthStatEventMessageQueue();
         this.messageDelegator = new HealthStatEventMessageDelegator(messageQueue);
         this.messageListener = new HealthStatEventMessageListener(messageQueue);
@@ -63,6 +61,9 @@ public class HealthStatEventReceiver extends StratosEventReceiver {
         messageDelegator.addEventListener(eventListener);
     }
 
+    public void removeEventListener(EventListener eventListener) {
+        messageDelegator.removeEventListener(eventListener);
+    }
 
     private void execute() {
         try {

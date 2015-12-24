@@ -24,10 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 
 /**
  * Utility class for Stratos thread pool
@@ -37,7 +34,7 @@ public class StratosThreadPool {
     private static final Log log = LogFactory.getLog(StratosThreadPool.class);
 
     private static volatile Map<String, ExecutorService> executorServiceMap = new ConcurrentHashMap<>();
-    private static volatile Map<String, ScheduledExecutorService> scheduledServiceMap = new ConcurrentHashMap<String, ScheduledExecutorService>();
+    private static volatile Map<String, ScheduledExecutorService> scheduledServiceMap = new ConcurrentHashMap<>();
     private static Object executorServiceMapLock = new Object();
     private static Object scheduledServiceMapLock = new Object();
 
@@ -83,5 +80,33 @@ public class StratosThreadPool {
 
         }
         return scheduledExecutorService;
+    }
+
+    public static void shutdown (String identifier) {
+
+        ExecutorService executorService = executorServiceMap.get(identifier);
+        if (executorService == null) {
+            log.warn("No executor service found for id " + identifier + ", unable to shut down");
+            return;
+        }
+
+        // try to shut down gracefully
+        executorService.shutdown();
+        // wait 10 secs till terminated
+        try {
+            if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+                log.info("Thread Pool [id] " + identifier + " did not finish all tasks before " +
+                        "timeout, forcefully shutting down");
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            // interrupted, shutdown now
+            executorService.shutdownNow();
+        }
+
+        // remove from the map
+        executorServiceMap.remove(identifier);
+
+        log.info("Successfully shutdown thread pool associated with id: " + identifier);
     }
 }
