@@ -230,6 +230,7 @@ public class CloudControllerServiceComponent {
         }
 
         // shutdown TopologyEventSync task
-        StratosThreadPool.shutdown(THREAD_POOL_ID);
+        StratosThreadPool.shutDownThreadPoolGracefully(THREAD_POOL_ID);
+        StratosThreadPool.shutDownScheduledThreadPoolGracefully(SCHEDULER_THREAD_POOL_ID);
     }
 }

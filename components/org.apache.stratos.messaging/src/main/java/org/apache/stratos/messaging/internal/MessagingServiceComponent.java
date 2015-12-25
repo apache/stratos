@@ -72,7 +72,7 @@ public class MessagingServiceComponent {
             InitializerEventReceiver.getInstance().terminate();
             TenantEventReceiver.getInstance().terminate();
             TopologyEventReceiver.getInstance().terminate();
-            StratosThreadPool.shutdown(StratosEventReceiver.STRATOS_EVENT_RECEIEVER_THREAD_POOL_ID);
+            StratosThreadPool.shutDownThreadPoolGracefully(StratosEventReceiver.STRATOS_EVENT_RECEIEVER_THREAD_POOL_ID);
             if (log.isDebugEnabled()) {
                 log.debug("Messaging Service component is deactivated");
             }

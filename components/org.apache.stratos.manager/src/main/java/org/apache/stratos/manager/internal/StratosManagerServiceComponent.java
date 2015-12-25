@@ -329,6 +329,7 @@ public class StratosManagerServiceComponent {
         EventPublisherPool.close(MessagingUtil.Topics.TENANT_TOPIC.getTopicName());
 
         // shut down the scheduled thread pool
-        StratosThreadPool.shutdown(THREAD_POOL_ID);
+        StratosThreadPool.shutDownThreadPoolGracefully(THREAD_POOL_ID);
+        StratosThreadPool.shutDownScheduledThreadPoolGracefully(SCHEDULER_THREAD_POOL_ID);
     }
 }
