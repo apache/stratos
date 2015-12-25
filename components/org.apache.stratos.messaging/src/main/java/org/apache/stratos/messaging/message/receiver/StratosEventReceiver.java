@@ -47,7 +47,7 @@ public abstract class StratosEventReceiver {
     // executor service used
     protected ExecutorService executorService;
     // pool size
-    protected static int threadPoolSize = 15;
+    protected static int threadPoolSize = 25;
 
     static {
         // check if the thread pool size is given as a system parameter
@@ -57,7 +57,7 @@ public abstract class StratosEventReceiver {
                 threadPoolSize = Integer.parseInt(poolSize);
             } catch (NumberFormatException e) {
                 log.error("Invalid configuration found for StratosEventReceiver thread pool size", e);
-                threadPoolSize = 15;
+                threadPoolSize = 25;
             }
         }
         if (log.isDebugEnabled()) {
