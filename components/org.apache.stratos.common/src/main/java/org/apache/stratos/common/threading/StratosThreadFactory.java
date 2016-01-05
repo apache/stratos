@@ -20,17 +20,18 @@
 package org.apache.stratos.common.threading;
 
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class StratosThreadFactory implements ThreadFactory {
     private String prefix;
-    private int counter;
+    private final AtomicInteger threadNumber;
 
     public StratosThreadFactory(String prefix) {
         this.prefix = prefix;
-        this.counter = 0;
+        this.threadNumber = new AtomicInteger(1);
     }
 
     public Thread newThread(Runnable r) {
-        return new Thread(r, prefix + "-" + (++counter));
+        return new Thread(r, prefix + "-" + threadNumber.getAndIncrement());
     }
 }
