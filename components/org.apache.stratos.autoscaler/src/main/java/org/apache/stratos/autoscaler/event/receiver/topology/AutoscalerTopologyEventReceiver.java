@@ -47,8 +47,6 @@ import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * Autoscaler topology receiver.
  */
@@ -62,15 +60,6 @@ public class AutoscalerTopologyEventReceiver {
         this.topologyEventReceiver = TopologyEventReceiver.getInstance();
         addEventListeners();
     }
-
-//    public void execute() {
-//        //FIXME this activated before autoscaler deployer activated.
-//       // topologyEventReceiver.setExecutor(getExecutor());
-//        //topologyEventReceiver.execute();
-//        if (log.isInfoEnabled()) {
-//            log.info("Autoscaler topology receiver thread started");
-//        }
-//    }
 
     private void addEventListeners() {
         // Listen to topology events that affect clusters

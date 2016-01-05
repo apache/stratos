@@ -28,12 +28,9 @@ import org.apache.stratos.messaging.listener.initializer.CompleteApplicationSign
 import org.apache.stratos.messaging.listener.initializer.CompleteTenantRequestEventListener;
 import org.apache.stratos.messaging.message.receiver.initializer.InitializerEventReceiver;
 
-import java.util.concurrent.ExecutorService;
-
 public class StratosManagerInitializerTopicReceiver {
     private static final Log log = LogFactory.getLog(StratosManagerInitializerTopicReceiver.class);
     private InitializerEventReceiver initializerEventReceiver;
-    //private ExecutorService executor;
     private ApplicationSignUpHandler applicationSignUpHandler;
 
     public StratosManagerInitializerTopicReceiver() {
@@ -41,14 +38,6 @@ public class StratosManagerInitializerTopicReceiver {
         applicationSignUpHandler = new ApplicationSignUpHandler();
         addEventListeners();
     }
-
-//    public void execute() {
-//        initializerEventReceiver.setExecutorService(executor);
-//        initializerEventReceiver.execute();
-//        if (log.isInfoEnabled()) {
-//            log.info("Stratos manager initializer topic receiver started");
-//        }
-//    }
 
     private void addEventListeners() {
         initializerEventReceiver.addEventListener(new CompleteTenantRequestEventListener() {
@@ -80,12 +69,4 @@ public class StratosManagerInitializerTopicReceiver {
             }
         });
     }
-
-//    public ExecutorService getExecutorService() {
-//        return executor;
-//    }
-//
-//    public void setExecutorService(ExecutorService executor) {
-//        this.executor = executor;
-//    }
 }

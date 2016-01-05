@@ -124,7 +124,6 @@ public abstract class PythonAgentIntegrationTest {
         }
 
         topologyEventReceiver = TopologyEventReceiver.getInstance();
-
         instanceStatusEventReceiver = InstanceStatusEventReceiver.getInstance();
 
         instanceStatusEventReceiver.addEventListener(new InstanceStartedEventListener() {

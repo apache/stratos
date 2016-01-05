@@ -21,7 +21,6 @@ package org.apache.stratos.metadata.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.concurrent.locks.ReadWriteLock;
-import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.ApplicationClustersCreatedEvent;
 import org.apache.stratos.messaging.event.topology.ApplicationClustersRemovedEvent;
@@ -29,8 +28,6 @@ import org.apache.stratos.messaging.listener.topology.ApplicationClustersCreated
 import org.apache.stratos.messaging.listener.topology.ApplicationClustersRemovedEventListener;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.metadata.service.registry.MetadataApiRegistry;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * Topology receiver class for metadata service
@@ -42,8 +39,6 @@ public class MetadataTopologyEventReceiver {
 
     public MetadataTopologyEventReceiver() {
         this.topologyEventReceiver = TopologyEventReceiver.getInstance();
-//        //executor = StratosThreadPool.getExecutorService(Constants
-//                .METADATA_SERVICE_THREAD_POOL_ID, 20);
         addEventListeners();
     }
 
@@ -67,24 +62,4 @@ public class MetadataTopologyEventReceiver {
             }
         });
     }
-
-//    public void execute() {
-//        topologyEventReceiver.setExecutorService(getExecutorService());
-//        topologyEventReceiver.execute();
-//
-//        if (log.isInfoEnabled()) {
-//            log.info("Metadata service topology receiver started.");
-//        }
-//    }
-//
-//    public void terminate() {
-//        topologyEventReceiver.terminate();
-//        if (log.isInfoEnabled()) {
-//            log.info("Metadata service topology receiver stopped.");
-//        }
-//    }
-
-//    public ExecutorService getExecutorService() {
-//        return executorService;
-//    }
 }

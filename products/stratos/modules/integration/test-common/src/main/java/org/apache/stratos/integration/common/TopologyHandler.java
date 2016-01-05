@@ -158,7 +158,6 @@ public class TopologyHandler {
                         appInstanceInactivatedEvent.getInstanceId()));
             }
         });
-
     }
 
     /**

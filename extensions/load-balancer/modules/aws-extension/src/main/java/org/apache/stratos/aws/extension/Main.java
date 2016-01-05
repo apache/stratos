@@ -22,10 +22,6 @@ package org.apache.stratos.aws.extension;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
-import org.apache.stratos.common.threading.StratosThreadPool;
-import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
-import org.apache.stratos.load.balancer.extension.api.LoadBalancerExtension;
-import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -38,6 +34,7 @@ public class Main {
 	private static ThreadPoolExecutor executor;
 //	public static final String AWS_EXTENSION_THREAD_POOL = "aws.extension.thread.pool";
 //	public static final int THREAD_POOL_SIZE = 10;
+
 
 	public static void main(String[] args) {
 
@@ -61,7 +58,6 @@ public class Main {
 			extension = new LoadBalancerExtension(new AWSLoadBalancer(),
 					statisticsReader, topologyProvider);
 			extension.setExecutorService(executor);
-			extension.execute();
 
 			// Add shutdown hook
 			final Thread mainThread = Thread.currentThread();

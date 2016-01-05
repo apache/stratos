@@ -26,8 +26,6 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.initializer.CompleteTopologyRequestEventListener;
 import org.apache.stratos.messaging.message.receiver.initializer.InitializerEventReceiver;
 
-import java.util.concurrent.ExecutorService;
-
 public class InitializerTopicReceiver {
     private static final Log log = LogFactory.getLog(InitializerTopicReceiver.class);
     private InitializerEventReceiver initializerEventReceiver;
@@ -37,14 +35,6 @@ public class InitializerTopicReceiver {
         this.initializerEventReceiver = InitializerEventReceiver.getInstance();
         addEventListeners();
     }
-
-//    public void execute() {
-//        initializerEventReceiver.setExecutorService(executor);
-//        initializerEventReceiver.execute();
-//        if (log.isInfoEnabled()) {
-//            log.info("Autoscaler initializer topic receiver started");
-//        }
-//    }
 
     private void addEventListeners() {
         initializerEventReceiver.addEventListener(new CompleteTopologyRequestEventListener() {
@@ -61,12 +51,4 @@ public class InitializerTopicReceiver {
             }
         });
     }
-
-//    public ExecutorService getExecutor() {
-//        return executor;
-//    }
-//
-//    public void setExecutorService(ExecutorService executor) {
-//        this.executor = executor;
-//    }
 }

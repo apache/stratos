@@ -124,8 +124,7 @@ public class LoadBalancerExtension {
         addTopologyEventListeners(topologyEventReceiver);
         // Add default topology provider event listeners
         topologyEventReceiver.addEventListeners();
-//        topologyEventReceiver.setExecutorService(executor);
-//        topologyEventReceiver.execute();
+
         if (log.isInfoEnabled()) {
             log.info("Topology receiver thread started");
         }
@@ -150,8 +149,7 @@ public class LoadBalancerExtension {
 
     private void startApplicationEventReceiver() {
         applicationsEventReceiver = ApplicationsEventReceiver.getInstance();
-//        applicationsEventReceiver.setExecutorService(executor);
-//        applicationsEventReceiver.execute();
+
         if (log.isInfoEnabled()) {
             log.info("Application event receiver thread started");
         }
@@ -160,7 +158,6 @@ public class LoadBalancerExtension {
     /**
      * Start domain mapping event receiver thread.
      *
-     * @param executorService  executor service instance
      * @param topologyProvider topology receiver instance
      */
     private void startDomainMappingEventReceiver(TopologyProvider topologyProvider) {
@@ -170,8 +167,7 @@ public class LoadBalancerExtension {
         addDomainMappingsEventListeners(domainMappingEventReceiver);
         // Add default domain mapping event listeners
         domainMappingEventReceiver.addEventListeners();
-//        domainMappingEventReceiver.setExecutorService(executor);
-//        domainMappingEventReceiver.execute();
+
         if (log.isInfoEnabled()) {
             log.info("Domain mapping event receiver thread started");
         }

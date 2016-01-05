@@ -120,9 +120,12 @@ public class LoadBalancerServiceComponent {
             // Configure topology filters
             TopologyFilterConfigurator.configure(configuration);
 
+<<<<<<< HEAD
 //            int threadPoolSize = Integer.getInteger(LoadBalancerConstants.LOAD_BALANCER_THREAD_POOL_SIZE_KEY,
 //                    LoadBalancerConstants.LOAD_BALANCER_DEFAULT_THREAD_POOL_SIZE);
 
+=======
+>>>>>>> stratos-4.1.x
             TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
             if (topologyProvider == null) {
                 topologyProvider = new TopologyProvider();
@@ -161,8 +164,12 @@ public class LoadBalancerServiceComponent {
         }
     }
 
+<<<<<<< HEAD
     private void startDomainMappingEventReceiver( TopologyProvider topologyProvider) {
 
+=======
+    private void startDomainMappingEventReceiver(TopologyProvider topologyProvider) {
+>>>>>>> stratos-4.1.x
         if (domainMappingEventReceiver != null) {
             return;
         }

@@ -21,7 +21,6 @@ package org.apache.stratos.metadata.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.concurrent.locks.ReadWriteLock;
-import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.Applications;
@@ -32,7 +31,6 @@ import org.apache.stratos.messaging.message.receiver.application.ApplicationsEve
 import org.apache.stratos.metadata.service.registry.MetadataApiRegistry;
 
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Application receiver class for metadata service
@@ -40,12 +38,9 @@ import java.util.concurrent.ExecutorService;
 public class MetadataApplicationEventReceiver {
     private static final Log log = LogFactory.getLog(MetadataApplicationEventReceiver.class);
     private ApplicationsEventReceiver applicationsEventReceiver;
-    //private ExecutorService executor;
 
     public MetadataApplicationEventReceiver() {
         this.applicationsEventReceiver = ApplicationsEventReceiver.getInstance();
-        //executor = StratosThreadPool.getExecutorService(Constants
-        //        .METADATA_SERVICE_THREAD_POOL_ID, 20);
         addEventListeners();
     }
 
@@ -71,24 +66,11 @@ public class MetadataApplicationEventReceiver {
         });
     }
 
-//    public void execute() {
-//        applicationsEventReceiver.setExecutorService(getExecutorService());
-//        applicationsEventReceiver.execute();
-//
-//        if (log.isInfoEnabled()) {
-//            log.info("Metadata service application receiver started.");
-//        }
-//    }
-
     public void terminate() {
         applicationsEventReceiver.terminate();
         if (log.isInfoEnabled()) {
             log.info("Metadata service application receiver stopped.");
         }
     }
-
- //   public ExecutorService getExecutorService() {
-//        return executor;
-//    }
 
 }

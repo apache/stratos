@@ -27,28 +27,15 @@ import org.apache.stratos.messaging.listener.cluster.status.*;
 import org.apache.stratos.messaging.message.receiver.cluster.status.ClusterStatusEventReceiver;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
-import java.util.concurrent.ExecutorService;
-
 public class ClusterStatusTopicReceiver {
     private static final Log log = LogFactory.getLog(ClusterStatusTopicReceiver.class);
 
     private ClusterStatusEventReceiver clusterStatusEventReceiver;
-    //private boolean terminated;
-    //private ExecutorService executor;
 
     public ClusterStatusTopicReceiver() {
         this.clusterStatusEventReceiver = ClusterStatusEventReceiver.getInstance();
         addEventListeners();
     }
-
-//    public void execute() {
-//        clusterStatusEventReceiver.setExecutorService(executor);
-//        clusterStatusEventReceiver.execute();
-//        if (log.isInfoEnabled()) {
-//            log.info("Cloud controller Cluster status thread started");
-//        }
-//
-//    }
 
     private void addEventListeners() {
         // Listen to topology events that affect clusters
@@ -114,16 +101,4 @@ public class ClusterStatusTopicReceiver {
             }
         });
     }
-
-//    public void setTerminated(boolean terminated) {
-//        this.terminated = terminated;
-//    }
-//
-//    public ExecutorService getExecutor() {
-//        return executor;
-//    }
-//
-//    public void setExecutorService(ExecutorService executor) {
-//        this.executor = executor;
-//    }
 }

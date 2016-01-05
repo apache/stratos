@@ -148,8 +148,6 @@ public class MockInstance implements Serializable {
                 }
             }
         });
-//        topologyEventReceiver.setExecutorService(eventListenerExecutor);
-//        topologyEventReceiver.execute();
         if (log.isDebugEnabled()) {
             log.debug(String.format(
                     "Mock instance topology event message receiver started for mock member [member-id] %s",
@@ -180,19 +178,6 @@ public class MockInstance implements Serializable {
                 }
             }
         });
-        // TODO: Fix InstanceNotifierEventReceiver to use executor service
-        // do not remove this since execute() is a blocking call
-//        eventListenerExecutor.submit(new Runnable() {
-//            @Override
-//            public void run() {
-//                instanceNotifierEventReceiver.execute();
-//            }
-//        });
-//        if (log.isDebugEnabled()) {
-//            log.debug(String.format(
-//                    "Mock instance instance notifier event message receiver started for mock member [member-id] %s",
-//                    mockInstanceContext.getMemberId()));
-//        }
     }
 
     private void handleMemberTermination() {

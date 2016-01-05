@@ -95,5 +95,4 @@ public class ClusterStatusEventReceiver extends StratosEventReceiver {
     public boolean isSubscribed() {
         return ((eventSubscriber != null) && (eventSubscriber.isSubscribed()));
     }
-
 }
