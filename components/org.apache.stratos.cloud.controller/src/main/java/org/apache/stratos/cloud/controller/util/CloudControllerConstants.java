@@ -349,4 +349,6 @@ public final class CloudControllerConstants {
     public static final String IAAS_TYPE_EC2 = "ec2";
     public static final String INSTANCE_CTXT_EC2_REGION = "EC2_REGION";
     public static final String INSTANCE_CTXT_EC2_AVAILABILITY_ZONE = "EC2_AVAILABILITY_ZONE";
+
+    public static final String CC_THREAD_POOL_SIZE = "cc.thread.pool.size";
 }

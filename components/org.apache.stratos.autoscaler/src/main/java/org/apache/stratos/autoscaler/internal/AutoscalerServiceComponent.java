@@ -45,6 +45,7 @@ import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.Component;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
 import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
@@ -94,8 +95,10 @@ public class AutoscalerServiceComponent {
             XMLConfiguration conf = ConfUtil.getInstance(AutoscalerConstants.COMPONENTS_CONFIG).getConfiguration();
             int threadPoolSize = conf
                     .getInt(AutoscalerConstants.THREAD_POOL_SIZE_KEY, AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
+            Integer ratio = Integer.getInteger(StratosConstants.THREAD_POOL_INITIAL_MIN_MAX_RATIO);
+            int divisor = ratio != null && ratio >= 1 ? ratio : StratosConstants.DEFAULT_THREAD_POOL_MIN_MAX_RATIO;
             executor = StratosThreadPool.getExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID, ((int) Math
-                    .ceil(threadPoolSize / 3)), threadPoolSize);
+                    .ceil(threadPoolSize / divisor)), threadPoolSize);
 
             int schedulerThreadPoolSize = conf.getInt(AutoscalerConstants.SCHEDULER_THREAD_POOL_SIZE_KEY,
                     AutoscalerConstants.AUTOSCALER_SCHEDULER_THREAD_POOL_SIZE);

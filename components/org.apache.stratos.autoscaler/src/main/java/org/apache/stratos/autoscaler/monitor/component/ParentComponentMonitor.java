@@ -109,8 +109,11 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
 
         // Create the executor service with identifier and thread pool size
+        Integer ratio = Integer.getInteger(StratosConstants.THREAD_POOL_INITIAL_MIN_MAX_RATIO);
+        int divisor = ratio != null && ratio >= 1 ? ratio : StratosConstants.DEFAULT_THREAD_POOL_MIN_MAX_RATIO;
         executor = StratosThreadPool.getExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID,
-                ((int)Math.ceil(AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE/3)),AutoscalerConstants
+                ((int)Math.ceil(AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE/divisor)),
+                AutoscalerConstants
                         .AUTOSCALER_THREAD_POOL_SIZE);
         networkPartitionContextsMap = new ConcurrentHashMap<String, NetworkPartitionContext>();
     }

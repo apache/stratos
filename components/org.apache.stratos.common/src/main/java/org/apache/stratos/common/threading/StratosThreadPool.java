@@ -52,12 +52,12 @@ public class StratosThreadPool {
         if (executor == null) {
             synchronized (executorServiceMapLock) {
                 if (executor == null) {
-                    int taskQueueSize = initialSize > 3 ? (int)Math.ceil(initialSize/3) : 1;
+                    int taskQueueSize = initialSize > 4 ? (int)Math.ceil(initialSize/4) : 1;
                     executor = new ThreadPoolExecutor(initialSize, maxSize, 60L, TimeUnit.SECONDS,
                             new LinkedBlockingQueue<Runnable>(taskQueueSize), new StratosThreadFactory(identifier));
                     executorMap.put(identifier, executor);
                     log.info(String.format("Thread pool created: [type] Executor [id] %s " +
-                            "[initial size] %d [max size] %d", identifier, initialSize, maxSize));
+                            "[initial size] %d [max size] %d [queue length] %d", identifier, initialSize, maxSize, taskQueueSize));
                 }
             }
         }

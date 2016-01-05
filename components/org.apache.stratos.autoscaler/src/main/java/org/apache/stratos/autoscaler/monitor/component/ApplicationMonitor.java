@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.monitor.component;
 
+import org.apache.commons.configuration.SystemConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.algorithms.NetworkPartitionAlgorithm;
@@ -79,8 +80,10 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         super(application);
 
         int threadPoolSize = Integer.getInteger(AutoscalerConstants.MONITOR_THREAD_POOL_SIZE, 100);
+        Integer ratio = Integer.getInteger(StratosConstants.THREAD_POOL_INITIAL_MIN_MAX_RATIO);
+        int divisor = ratio != null && ratio >= 1 ? ratio : StratosConstants.DEFAULT_THREAD_POOL_MIN_MAX_RATIO;
         this.executor = StratosThreadPool.getExecutorService(AutoscalerConstants.MONITOR_THREAD_POOL_ID,
-                ((int)Math.ceil(threadPoolSize/3)), threadPoolSize);
+                ((int)Math.ceil(threadPoolSize/divisor)), threadPoolSize);
 
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();

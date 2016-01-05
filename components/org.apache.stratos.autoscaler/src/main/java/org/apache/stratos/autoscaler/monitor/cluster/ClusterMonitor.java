@@ -108,8 +108,11 @@ public class ClusterMonitor extends Monitor {
                           String deploymentPolicyId) {
 
         int threadPoolSize = Integer.getInteger(AutoscalerConstants.MONITOR_THREAD_POOL_SIZE, 100);
+        Integer ratio = Integer.getInteger(StratosConstants.THREAD_POOL_INITIAL_MIN_MAX_RATIO);
+        int divisor = ratio != null && ratio >= 1 ? ratio : StratosConstants.DEFAULT_THREAD_POOL_MIN_MAX_RATIO;
         executor = StratosThreadPool.getExecutorService(
-                AutoscalerConstants.MONITOR_THREAD_POOL_ID, ((int)Math.ceil(threadPoolSize/3)), threadPoolSize);
+                AutoscalerConstants.MONITOR_THREAD_POOL_ID, ((int)Math.ceil(threadPoolSize/divisor)),
+                threadPoolSize);
         this.clusterId = cluster.getClusterId();
         scheduler = StratosThreadPool.getScheduledExecutorService(clusterId, 2);
         readConfigurations();

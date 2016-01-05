@@ -212,5 +212,7 @@ public class StratosConstants {
 
     public static final String NOT_DEFINED = "not-defined";
     public static final String CLUSTER_INSTANCE_ID = "cluster.instance.id";
+    public static final String THREAD_POOL_INITIAL_MIN_MAX_RATIO = "thread.pool.initial.min.max.ratio";
+    public static final int DEFAULT_THREAD_POOL_MIN_MAX_RATIO = 3;
 }
 

@@ -35,6 +35,7 @@ import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -63,8 +64,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     private ThreadPoolExecutor executor;
 
     public CloudControllerServiceImpl() {
+        Integer ratio = Integer.getInteger(StratosConstants.THREAD_POOL_INITIAL_MIN_MAX_RATIO);
+        int divisor = ratio != null && ratio >= 1 ? ratio : StratosConstants.DEFAULT_THREAD_POOL_MIN_MAX_RATIO;
         executor = StratosThreadPool.getExecutorService("cloud.controller.instance.manager.thread" +
-                ".pool", 20, 50);
+                ".pool", 50/divisor, 50);
 
     }
 

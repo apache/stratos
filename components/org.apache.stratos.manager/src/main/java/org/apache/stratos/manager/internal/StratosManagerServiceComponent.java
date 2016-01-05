@@ -19,9 +19,11 @@
 package org.apache.stratos.manager.internal;
 
 import com.hazelcast.core.HazelcastInstance;
+import org.apache.commons.lang.IncompleteArgumentException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.Component;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
 import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
@@ -36,6 +38,7 @@ import org.apache.stratos.manager.messaging.receiver.StratosManagerTopologyEvent
 import org.apache.stratos.manager.user.management.TenantUserRoleManager;
 import org.apache.stratos.manager.user.management.exception.UserManagerException;
 import org.apache.stratos.common.util.CartridgeConfigFileReader;
+import org.apache.stratos.manager.utils.StratosManagerConstants;
 import org.apache.stratos.manager.utils.UserRoleCreator;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.util.MessagingUtil;
@@ -98,8 +101,14 @@ public class StratosManagerServiceComponent {
             log.debug("Activating StratosManagerServiceComponent...");
         }
         try {
-            executor = StratosThreadPool.getExecutorService(THREAD_POOL_ID, ((int)Math.ceil(THREAD_POOL_SIZE/3))
-                    , THREAD_POOL_SIZE);
+            Integer smThreadPoolSize = Integer.getInteger(StratosManagerConstants.SM_THREAD_POOL_SIZE);
+            if (smThreadPoolSize == null || smThreadPoolSize <= 0) {
+                smThreadPoolSize = THREAD_POOL_SIZE;
+            }
+            Integer ratio = Integer.getInteger(StratosConstants.THREAD_POOL_INITIAL_MIN_MAX_RATIO);
+            int divisor = ratio != null && ratio >= 1 ? ratio : StratosConstants.DEFAULT_THREAD_POOL_MIN_MAX_RATIO;
+            executor = StratosThreadPool.getExecutorService(THREAD_POOL_ID, ((int)Math.ceil(smThreadPoolSize/divisor))
+                    , smThreadPoolSize);
             scheduler = StratosThreadPool
                     .getScheduledExecutorService(SCHEDULER_THREAD_POOL_ID, SCHEDULER_THREAD_POOL_SIZE);
 

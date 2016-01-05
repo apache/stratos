@@ -27,6 +27,7 @@ import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.InstanceMetadata;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
@@ -52,8 +53,11 @@ public class DASMemberInformationPublisher extends MemberInformationPublisher {
 
     private DASMemberInformationPublisher() {
         super(createStreamDefinition(), DAS_THRIFT_CLIENT_NAME);
+        Integer ratio = Integer.getInteger(StratosConstants.THREAD_POOL_INITIAL_MIN_MAX_RATIO);
+        int divisor = ratio != null && ratio >= 1 ? ratio : StratosConstants.DEFAULT_THREAD_POOL_MIN_MAX_RATIO;
         executor = StratosThreadPool.getExecutorService(CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_ID,
-                ((int)Math.ceil(CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_SIZE/3)), CloudControllerConstants
+                ((int)Math.ceil(CloudControllerConstants.STATS_PUBLISHER_THREAD_POOL_SIZE/divisor)),
+                CloudControllerConstants
                         .STATS_PUBLISHER_THREAD_POOL_SIZE);
     }
 

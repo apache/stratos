@@ -33,7 +33,9 @@ import org.apache.stratos.cloud.controller.messaging.receiver.initializer.Initia
 import org.apache.stratos.cloud.controller.messaging.receiver.instance.status.InstanceStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.common.Component;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
 import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
@@ -88,8 +90,14 @@ public class CloudControllerServiceComponent {
             log.debug("Activating CloudControllerServiceComponent...");
         }
         try {
+            Integer ccThreadPoolSize = Integer.getInteger(CloudControllerConstants.CC_THREAD_POOL_SIZE);
+            if (ccThreadPoolSize == null || ccThreadPoolSize <= 0) {
+                ccThreadPoolSize = THREAD_POOL_SIZE;
+            }
+            Integer ratio = Integer.getInteger(StratosConstants.THREAD_POOL_INITIAL_MIN_MAX_RATIO);
+            int divisor = ratio != null && ratio >= 1 ? ratio : StratosConstants.DEFAULT_THREAD_POOL_MIN_MAX_RATIO;
             executor = StratosThreadPool.getExecutorService(THREAD_POOL_ID, ((int)Math.ceil
-                    (THREAD_POOL_SIZE/3)),THREAD_POOL_SIZE);
+                    (ccThreadPoolSize/divisor)),ccThreadPoolSize);
             scheduler = StratosThreadPool
                     .getScheduledExecutorService(SCHEDULER_THREAD_POOL_ID, SCHEDULER_THREAD_POOL_SIZE);
 

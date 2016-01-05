@@ -22,6 +22,7 @@ package org.apache.stratos.autoscaler.statistics.publisher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
@@ -46,8 +47,11 @@ public class DASScalingDecisionPublisher extends ScalingDecisionPublisher {
 
     public DASScalingDecisionPublisher() {
         super(createStreamDefinition(), DAS_THRIFT_CLIENT_NAME);
+        Integer ratio = Integer.getInteger(StratosConstants.THREAD_POOL_INITIAL_MIN_MAX_RATIO);
+        int divisor = ratio != null && ratio >= 1 ? ratio : StratosConstants.DEFAULT_THREAD_POOL_MIN_MAX_RATIO;
         executor = StratosThreadPool.getExecutorService(AutoscalerConstants.STATS_PUBLISHER_THREAD_POOL_ID,
-                ((int)Math.ceil(STATS_PUBLISHER_THREAD_POOL_SIZE/3)), STATS_PUBLISHER_THREAD_POOL_SIZE);
+                ((int)Math.ceil(STATS_PUBLISHER_THREAD_POOL_SIZE/divisor)),
+                STATS_PUBLISHER_THREAD_POOL_SIZE);
     }
 
     public static DASScalingDecisionPublisher getInstance() {

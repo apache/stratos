@@ -24,9 +24,5 @@ package org.apache.stratos.manager.utils;
  */
 public class StratosManagerConstants {
 
-    public static final String DEFAULT_CRON = "1 * * * * ? *";
-    public static final String TENANT_SYNC_TASK_TYPE = "TENANT_SYNC_TASK_TYPE";
-    public static final String TENANT_SYNC_TASK_NAME = "TENANT_SYNC_TASK";
-    public static final String APPLICATION_SIGNUP_SYNC_TASK_TYPE = "APPLICATION_SIGNUP_SYNC_TASK_TYPE";
-    public static final String APPLICATION_SIGNUP_SYNC_TASK_NAME = "APPLICATION_SIGNUP_SYNC_TASK";
+    public static final String  SM_THREAD_POOL_SIZE = "sm.thread.pool.size";
 }

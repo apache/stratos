@@ -41,20 +41,26 @@ public class GracefulThreadPoolTerminator implements Callable<String> {
     @Override
     public String call() {
         // try to shut down gracefully
-        log.info("Attempting to gracefully shut down thread pool " +  threadPoolId);
+        if(log.isDebugEnabled()) {
+            log.debug("Attempting to gracefully shut down thread pool " + threadPoolId);
+        }
         executor.shutdown();
         // wait 10 secs till terminated
         try {
             if (!executor.awaitTermination(10, TimeUnit.SECONDS)) {
-                log.info("Thread Pool [id] " + threadPoolId + " did not finish all tasks before " +
-                        "timeout, forcefully shutting down");
+                if(log.isDebugEnabled()) {
+                    log.debug("Thread Pool [id] " + threadPoolId + " did not finish all tasks before " +
+                            "timeout, forcefully shutting down");
+                }
                 executor.shutdownNow();
             }
         } catch (InterruptedException e) {
             // interrupted, shutdown now
             executor.shutdownNow();
         }
-        log.info("Successfully shut down thread pool " +  threadPoolId);
+        if (log.isDebugEnabled()) {
+            log.debug("Successfully shut down thread pool " + threadPoolId);
+        }
         return threadPoolId;
     }
 }

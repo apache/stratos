@@ -20,6 +20,7 @@ package org.apache.stratos.load.balancer.statistics;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 
@@ -38,8 +39,11 @@ public class LoadBalancerStatisticsExecutor {
     private ThreadPoolExecutor executor;
 
     private LoadBalancerStatisticsExecutor() {
+        Integer ratio = Integer.getInteger(StratosConstants.THREAD_POOL_INITIAL_MIN_MAX_RATIO);
+        int divisor = ratio != null && ratio >= 1 ? ratio : StratosConstants.DEFAULT_THREAD_POOL_MIN_MAX_RATIO;
         executor = StratosThreadPool.getExecutorService(LoadBalancerConstants.LOAD_BALANCER_THREAD_POOL_ID,
-                ((int)Math.ceil(LoadBalancerConstants.LOAD_BALANCER_DEFAULT_THREAD_POOL_SIZE/3)), LoadBalancerConstants
+                ((int)Math.ceil(LoadBalancerConstants.LOAD_BALANCER_DEFAULT_THREAD_POOL_SIZE/divisor)),
+                LoadBalancerConstants
                         .LOAD_BALANCER_DEFAULT_THREAD_POOL_SIZE);
     }
 

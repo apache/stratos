@@ -22,6 +22,7 @@ package org.apache.stratos.messaging.message.receiver;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.listener.EventListener;
 
@@ -63,7 +64,9 @@ public abstract class StratosEventReceiver {
 
     public StratosEventReceiver () {
         this.threadPoolId = STRATOS_EVENT_RECEIEVER_THREAD_POOL_ID;
-        this.executor = StratosThreadPool.getExecutorService(threadPoolId, (int)Math.ceil(threadPoolSize/3),
+        Integer ratio = Integer.getInteger(StratosConstants.THREAD_POOL_INITIAL_MIN_MAX_RATIO);
+        int divisor = ratio != null && ratio >= 1 ? ratio : StratosConstants.DEFAULT_THREAD_POOL_MIN_MAX_RATIO;
+        this.executor = StratosThreadPool.getExecutorService(threadPoolId, (int)Math.ceil(threadPoolSize/divisor),
                 threadPoolSize);
     }
 
