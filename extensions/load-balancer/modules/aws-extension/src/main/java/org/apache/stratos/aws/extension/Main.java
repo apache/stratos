@@ -22,6 +22,10 @@ package org.apache.stratos.aws.extension;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
+import org.apache.stratos.load.balancer.extension.api.LoadBalancerExtension;
+import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
