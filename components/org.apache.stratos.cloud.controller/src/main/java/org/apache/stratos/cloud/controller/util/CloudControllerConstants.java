@@ -351,4 +351,5 @@ public final class CloudControllerConstants {
     public static final String INSTANCE_CTXT_EC2_AVAILABILITY_ZONE = "EC2_AVAILABILITY_ZONE";
 
     public static final String CC_THREAD_POOL_SIZE = "cc.thread.pool.size";
+    public static final String INSTANCE_MGT_THREAD_POOL_SIZE = "cloud.controller.instance.manager.thread.pool.size";
 }

@@ -86,7 +86,7 @@ public class StratosManagerServiceComponent {
     private static final String THREAD_POOL_ID = "stratos.manager.thread.pool";
     private static final String SCHEDULER_THREAD_POOL_ID = "stratos.manager.scheduler.thread.pool";
     private static final String STRATOS_MANAGER_COORDINATOR_LOCK = "stratos.manager.coordinator.lock";
-    private static final int THREAD_POOL_SIZE = 20;
+    private static final int THREAD_POOL_SIZE = 10;
     private static final int SCHEDULER_THREAD_POOL_SIZE = 5;
 
     private StratosManagerTopologyEventReceiver topologyEventReceiver;

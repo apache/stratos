@@ -66,8 +66,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public CloudControllerServiceImpl() {
         Integer ratio = Integer.getInteger(StratosConstants.THREAD_POOL_INITIAL_MIN_MAX_RATIO);
         int divisor = ratio != null && ratio >= 1 ? ratio : StratosConstants.DEFAULT_THREAD_POOL_MIN_MAX_RATIO;
-        executor = StratosThreadPool.getExecutorService("cloud.controller.instance.manager.thread" +
-                ".pool", 50/divisor, 50);
+        Integer ccInstanceMgtThreadCount = Integer.getInteger(CloudControllerConstants.INSTANCE_MGT_THREAD_POOL_SIZE);
+        if (ccInstanceMgtThreadCount == null || ccInstanceMgtThreadCount <= 0) {
+            ccInstanceMgtThreadCount = 50;
+        }
+        executor = StratosThreadPool.getExecutorService("cloud.controller.instance.manager.thread.pool",
+                ((int)Math.ceil(ccInstanceMgtThreadCount/divisor)), ccInstanceMgtThreadCount);
 
     }
 
