@@ -220,7 +220,6 @@ public class LoadBalancerExtension {
                     if (log.isErrorEnabled()) {
                         log.error("Could not start load balancer", e);
                     }
-                    stop();
                 }
             }
         });
