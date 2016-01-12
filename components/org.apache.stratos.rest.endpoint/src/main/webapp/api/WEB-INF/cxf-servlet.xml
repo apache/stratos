@@ -152,6 +152,7 @@
                 <value>floatingNetworks</value>
                 <value>scalingDependents</value>
                 <value>aliases</value>
+                <value>loadBalancerIps</value>
             </list>
         </property>
     </bean>
