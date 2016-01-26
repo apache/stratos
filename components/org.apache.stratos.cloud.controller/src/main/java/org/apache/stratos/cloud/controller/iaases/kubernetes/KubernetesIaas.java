@@ -68,15 +68,18 @@ public class KubernetesIaas extends Iaas {
     private static final String KUBERNETES_CONTAINER_MEMORY_DEFAULT = "kubernetes.container.memory.default";
     public static final String POD_ID_PREFIX = "pod";
     public static final String SERVICE_NAME_PREFIX = "service";
+    public static final String IMAGE_PULL_SECRETS = "IMAGE_PULL_SECRETS";
 
     private PartitionValidator partitionValidator;
     private List<NameValuePair> payload;
     private Long podActivationTimeout;
+    private List<String> imagePullSecrets;
 
     public KubernetesIaas(IaasProvider iaasProvider) {
         super(iaasProvider);
         partitionValidator = new KubernetesPartitionValidator();
-        payload = new ArrayList<NameValuePair>();
+        payload = new ArrayList<>();
+        imagePullSecrets = new ArrayList<>();
 
         podActivationTimeout = Long.getLong("stratos.pod.activation.timeout");
         if (podActivationTimeout == null) {
@@ -104,19 +107,17 @@ public class KubernetesIaas extends Iaas {
         if (payloadByteArray != null) {
             String payloadString = new String(payloadByteArray);
             String[] parameterArray = payloadString.split(PAYLOAD_PARAMETER_SEPARATOR);
-            if (parameterArray != null) {
-                for (String parameter : parameterArray) {
-                    if (parameter != null) {
-                        String[] nameValueArray = parameter.split(PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR, 2);
-                        if ((nameValueArray != null) && (nameValueArray.length == 2)) {
-                            NameValuePair nameValuePair = new NameValuePair(nameValueArray[0], nameValueArray[1]);
-                            payload.add(nameValuePair);
-                        }
+            for (String parameter : parameterArray) {
+                if (parameter != null) {
+                    String[] nameValueArray = parameter.split(PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR, 2);
+                    if (nameValueArray.length == 2) {
+                        NameValuePair nameValuePair = new NameValuePair(nameValueArray[0], nameValueArray[1]);
+                        payload.add(nameValuePair);
                     }
                 }
-                if (log.isDebugEnabled()) {
-                    log.debug("Dynamic payload is set: " + payload.toString());
-                }
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("Dynamic payload is set: " + payload.toString());
             }
         }
     }
@@ -209,6 +210,10 @@ public class KubernetesIaas extends Iaas {
                         if (property.getName().startsWith(PAYLOAD_PARAMETER_PREFIX)) {
                             String name = property.getName().replace(PAYLOAD_PARAMETER_PREFIX, "");
                             payload.add(new NameValuePair(name, property.getValue()));
+                        }else{
+                            if (property.getName().equals(IMAGE_PULL_SECRETS)){
+                                imagePullSecrets.add(property.getValue());
+                            }
                         }
                     }
                 }
@@ -449,7 +454,7 @@ public class KubernetesIaas extends Iaas {
         podAnnotations.put(CloudControllerConstants.MEMBER_ID_LABEL, memberContext.getMemberId());
 
         kubernetesApi.createPod(podId, podName, podLabels, podAnnotations, dockerImage, cpu, memory, ports,
-                environmentVariables);
+                environmentVariables, imagePullSecrets);
 
         log.info(String.format("Pod started successfully: [application] %s [cartridge] %s [member] %s "
                         + "[pod] %s [pod-label] %s [cpu] %s [memory] %s", memberContext.getApplicationId(),

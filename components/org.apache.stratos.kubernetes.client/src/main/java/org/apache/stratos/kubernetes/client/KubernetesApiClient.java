@@ -54,12 +54,13 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * @param memory               Memory allocation in megabytes
      * @param ports                Ports exposed by the pod
      * @param environmentVariables Environment variables to be passed to the pod
+     * @param imagePullSecrets     Image Pull Secret to be passed to the pod
      * @throws KubernetesClientException
      */
     @Override
     public void createPod(String podId, String podName, Map<String, String> podLabels, Map<String, String> annotations,
-                          String dockerImage, String cpu,
-                          String memory, List<ContainerPort> ports, List<EnvVar> environmentVariables)
+                          String dockerImage, String cpu, String memory, List<ContainerPort> ports,
+                          List<EnvVar> environmentVariables, List<String> imagePullSecrets)
             throws KubernetesClientException {
 
         try {
@@ -87,6 +88,19 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             List<Container> containerTemplates = new ArrayList<Container>();
             containerTemplates.add(containerTemplate);
             pod.getSpec().setContainers(containerTemplates);
+
+            // set imagePullSecrets
+            if ((imagePullSecrets != null) && (imagePullSecrets.size() > 0)) {
+                List<LocalObjectReference> imagePullSecretsRefs = new ArrayList<>();
+                for (String pullSecret : imagePullSecrets){
+                    if (pullSecret != null){
+                        imagePullSecretsRefs.add(new LocalObjectReference(pullSecret));
+                    }
+                }
+                if (imagePullSecretsRefs.size() > 0) {
+                    pod.getSpec().setImagePullSecrets(imagePullSecretsRefs);
+                }
+            }
 
             // Set resource limits
             ResourceRequirements resources = new ResourceRequirements();

@@ -44,11 +44,12 @@ public interface KubernetesAPIClientInterface {
      * @param memory               memory allocation in mega bytes
      * @param ports                ports to be opened
      * @param environmentVariables environment variables
+     * @param imagePullSecrets     Image Pull Secret to be passed to the pod
      * @throws KubernetesClientException
      */
     public void createPod(String podId, String podName, Map<String, String> podLabels, Map<String, String> annotations,
                           String dockerImage, String cpu, String memory, List<ContainerPort> ports,
-                          List<EnvVar> environmentVariables)
+                          List<EnvVar> environmentVariables, List<String> imagePullSecrets)
             throws KubernetesClientException;
 
     /**

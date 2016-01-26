@@ -35,4 +35,5 @@ public class KubernetesConstants {
     public static final String NODE_PORT = "NodePort";
     public static final String CLUSTER_IP = "ClusterIP";
     public static final int MAX_LABEL_LENGTH = 63;
+    public static final String SECRET_TYPE_DOCKERCFG = "kubernetes.io/dockercfg";
 }
