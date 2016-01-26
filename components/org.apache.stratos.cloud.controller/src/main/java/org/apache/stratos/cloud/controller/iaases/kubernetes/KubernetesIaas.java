@@ -210,10 +210,6 @@ public class KubernetesIaas extends Iaas {
                         if (property.getName().startsWith(PAYLOAD_PARAMETER_PREFIX)) {
                             String name = property.getName().replace(PAYLOAD_PARAMETER_PREFIX, "");
                             payload.add(new NameValuePair(name, property.getValue()));
-                        }else{
-                            if (property.getName().equals(IMAGE_PULL_SECRETS)){
-                                imagePullSecrets.add(property.getValue());
-                            }
                         }
                     }
                 }
@@ -401,6 +397,11 @@ public class KubernetesIaas extends Iaas {
         Property memoryProperty = cartridge.getProperties().getProperty(KUBERNETES_CONTAINER_MEMORY);
         if (memoryProperty != null) {
             memory = memoryProperty.getValue();
+        }
+
+        Property imagePullSecretsProperty = cartridge.getProperties().getProperty(IMAGE_PULL_SECRETS);
+        if (imagePullSecretsProperty != null){
+            imagePullSecrets.add(imagePullSecretsProperty.getValue());
         }
 
         IaasProvider iaasProvider = CloudControllerContext.getInstance()
