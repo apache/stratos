@@ -125,12 +125,13 @@ public class AbstractLiveTest extends TestCase {
     }
 
     protected void createPod(String podId, String podName, Map<String, String> labelMap, Map<String, String>
-            annotations, String containerPortName, String cpu, String memory, List<String> imagePullSecrets)
+            annotations, String containerPortName, String cpu, String memory, List<String> imagePullSecrets,
+                             String imagePullPolicy)
             throws KubernetesClientException {
 
         log.info("Creating pod: [pod] " + podId);
         List<ContainerPort> ports = createPorts(containerPortName);
-        client.createPod(podId, podName, annotations, labelMap, dockerImage, cpu, memory, ports, null, imagePullSecrets);
+        client.createPod(podId, podName, annotations, labelMap, dockerImage, cpu, memory, ports, null, imagePullSecrets, imagePullPolicy);
         podIdList.add(podId);
 
         sleep(2000);

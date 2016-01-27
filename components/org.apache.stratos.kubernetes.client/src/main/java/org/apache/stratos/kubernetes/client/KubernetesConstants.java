@@ -26,6 +26,8 @@ public class KubernetesConstants {
 
     public static final String POD_STATUS_RUNNING = "Running";
     public static final String POLICY_PULL_IF_NOT_PRESENT = "IfNotPresent";
+    public static final String POLICY_PULL_ALWAYS = "Always";
+    public static final String POLICY_PULL_NEVER = "Never";
     public static final String SESSION_AFFINITY_CLIENT_IP = "ClientIP";
     public static final String KIND_POD = "Pod";
     public static final String KIND_SERVICE = "Service";

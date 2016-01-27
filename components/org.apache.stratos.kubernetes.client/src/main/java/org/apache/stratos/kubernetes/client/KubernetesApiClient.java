@@ -55,12 +55,13 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * @param ports                Ports exposed by the pod
      * @param environmentVariables Environment variables to be passed to the pod
      * @param imagePullSecrets     Image Pull Secret to be passed to the pod
+     * @param imagePullPolicy      Image Pull policy to be passed to the pod
      * @throws KubernetesClientException
      */
     @Override
     public void createPod(String podId, String podName, Map<String, String> podLabels, Map<String, String> annotations,
                           String dockerImage, String cpu, String memory, List<ContainerPort> ports,
-                          List<EnvVar> environmentVariables, List<String> imagePullSecrets)
+                          List<EnvVar> environmentVariables, List<String> imagePullSecrets, String imagePullPolicy)
             throws KubernetesClientException {
 
         try {
@@ -111,7 +112,21 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             containerTemplate.setResources(resources);
 
             containerTemplate.setPorts(ports);
-            containerTemplate.setImagePullPolicy(KubernetesConstants.POLICY_PULL_IF_NOT_PRESENT);
+
+            if (imagePullPolicy == null) {
+                // default pull policy
+                imagePullPolicy = KubernetesConstants.POLICY_PULL_IF_NOT_PRESENT;
+            } else if (
+                        !imagePullPolicy.equals(KubernetesConstants.POLICY_PULL_ALWAYS) &&
+                        !imagePullPolicy.equals(KubernetesConstants.POLICY_PULL_NEVER) &&
+                        !imagePullPolicy.equals(KubernetesConstants.POLICY_PULL_IF_NOT_PRESENT)) {
+                
+                // pull policy validation failed
+                throw new KubernetesClientException("Invalid Image Pull Policy defined : " + imagePullPolicy);
+            }
+
+            containerTemplate.setImagePullPolicy(imagePullPolicy);
+
             if (environmentVariables != null) {
                 containerTemplate.setEnv(environmentVariables);
             }

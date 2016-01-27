@@ -69,17 +69,16 @@ public class KubernetesIaas extends Iaas {
     public static final String POD_ID_PREFIX = "pod";
     public static final String SERVICE_NAME_PREFIX = "service";
     public static final String IMAGE_PULL_SECRETS = "IMAGE_PULL_SECRETS";
+    public static final String IMAGE_PULL_POLICY = "IMAGE_PULL_POLICY";
 
     private PartitionValidator partitionValidator;
     private List<NameValuePair> payload;
     private Long podActivationTimeout;
-    private List<String> imagePullSecrets;
 
     public KubernetesIaas(IaasProvider iaasProvider) {
         super(iaasProvider);
         partitionValidator = new KubernetesPartitionValidator();
         payload = new ArrayList<>();
-        imagePullSecrets = new ArrayList<>();
 
         podActivationTimeout = Long.getLong("stratos.pod.activation.timeout");
         if (podActivationTimeout == null) {
@@ -360,6 +359,9 @@ public class KubernetesIaas extends Iaas {
             KubernetesApiClient kubernetesApi, KubernetesClusterContext kubernetesClusterContext)
             throws KubernetesClientException, RegistryException {
 
+        List<String> imagePullSecrets = new ArrayList<>();
+        String imagePullPolicy = null;
+
         String applicationId = memberContext.getApplicationId();
         String cartridgeType = memberContext.getCartridgeType();
         String clusterId = memberContext.getClusterId();
@@ -402,6 +404,11 @@ public class KubernetesIaas extends Iaas {
         Property imagePullSecretsProperty = cartridge.getProperties().getProperty(IMAGE_PULL_SECRETS);
         if (imagePullSecretsProperty != null){
             imagePullSecrets.add(imagePullSecretsProperty.getValue());
+        }
+
+        Property imagePullPolicyProperty = cartridge.getProperties().getProperty(IMAGE_PULL_POLICY);
+        if (imagePullPolicyProperty != null){
+            imagePullPolicy = imagePullPolicyProperty.getValue();
         }
 
         IaasProvider iaasProvider = CloudControllerContext.getInstance()
@@ -455,7 +462,7 @@ public class KubernetesIaas extends Iaas {
         podAnnotations.put(CloudControllerConstants.MEMBER_ID_LABEL, memberContext.getMemberId());
 
         kubernetesApi.createPod(podId, podName, podLabels, podAnnotations, dockerImage, cpu, memory, ports,
-                environmentVariables, imagePullSecrets);
+                environmentVariables, imagePullSecrets, imagePullPolicy);
 
         log.info(String.format("Pod started successfully: [application] %s [cartridge] %s [member] %s "
                         + "[pod] %s [pod-label] %s [cpu] %s [memory] %s", memberContext.getApplicationId(),
