@@ -27,7 +27,7 @@
         OPTIONS (tableName "AVERAGE_LOAD_AVERAGE_STATS");
 
         create temporary table average_load_average_stats_new
-        using CarbonJDBC options (dataSource "WSO2_ANALYTICS_EVENT_STORE_DB", tableName "AVERAGE_LOAD_AVERAGE_STATS");
+        using CarbonJDBC options (dataSource "WSO2_ANALYTICS_EVENT_STORE_DB", tableName "AVG_LOAD_AVERAGE_STATS");
 
         INSERT OVERWRITE TABLE average_load_average_stats_new select timestamp, cluster_id, cluster_instance_id,
         network_partition_id, average_load_average from average_load_average_stats;
@@ -37,7 +37,7 @@
         OPTIONS (tableName "MEMBER_AVERAGE_LOAD_AVERAGE_STATS");
 
         create temporary table member_average_load_average_stats_new
-        using CarbonJDBC options (dataSource "WSO2_ANALYTICS_EVENT_STORE_DB", tableName "MEMBER_AVERAGE_LOAD_AVERAGE_STATS");
+        using CarbonJDBC options (dataSource "WSO2_ANALYTICS_EVENT_STORE_DB", tableName "M_AVG_LOAD_AVERAGE_STATS");
 
         INSERT OVERWRITE TABLE member_average_load_average_stats_new select timestamp, member_id, cluster_id, cluster_instance_id,
         network_partition_id, member_average_load_average from member_average_load_average_stats;

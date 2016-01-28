@@ -28,8 +28,8 @@
             <directory>../artifacts/</directory>
             <outputDirectory>${project.artifactId}-${project.version}</outputDirectory>
             <includes>
-                <include>metering-dashboard/jaggery-files/*.jag</include>
-                <include>monitoring-dashboard/jaggery-files/*.jag</include>
+                <include>metering-dashboard/jaggery-files/**/*.jag</include>
+                <include>monitoring-dashboard/jaggery-files/**/*.jag</include>
                 <include>metering-dashboard/ues-patch/*.*</include>
                 <include>**/*.sql</include>
                 <include>**/*.md</include>

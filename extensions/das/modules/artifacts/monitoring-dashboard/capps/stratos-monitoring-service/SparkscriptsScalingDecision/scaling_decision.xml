@@ -22,14 +22,14 @@
 <Analytics>
     <Name>scaling_decision</Name>
     <Script>
-        CREATE TEMPORARY TABLE scalingdecision
+        CREATE TEMPORARY TABLE scaling_decision
         USING CarbonAnalytics
         OPTIONS (tableName "SCALING_DECISION");
 
         create temporary table scaling_details
         using CarbonJDBC options (dataSource "WSO2_ANALYTICS_EVENT_STORE_DB", tableName "SCALING_DETAILS");
 
-        INSERT OVERWRITE TABLE scaling_details select * from scalingdecision;
+        INSERT OVERWRITE TABLE scaling_details select * from scaling_decision;
     </Script>
     <CronExpression>0/15 * * * * ?</CronExpression>
 </Analytics>
