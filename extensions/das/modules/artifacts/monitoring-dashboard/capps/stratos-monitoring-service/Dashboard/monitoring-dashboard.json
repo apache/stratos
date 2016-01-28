@@ -152,7 +152,12 @@
                   "health-stats-filter": {
                     "type": "address",
                     "description": "Used to filter based on state",
-                    "on": []
+                    "on": [
+                      {
+                        "from": "8nfqbaxvjc8cwhfr",
+                        "event": "health-stats-filter"
+                      }
+                    ]
                   },
                   "auto-update": {
                     "type": "boolean",
