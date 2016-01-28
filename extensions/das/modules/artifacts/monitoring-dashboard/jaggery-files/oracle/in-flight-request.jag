@@ -28,7 +28,6 @@ include("monitoring-authentication.jag");
     var TIME_INTERVAL_3 = '1 Day';
     var TIME_INTERVAL_4 = '1 Week';
     var TIME_INTERVAL_5 = '1 Month';
-    var ALL_MEMBERS = 'All Members';
 
     var content = request.getContent();
     var contentAsString = null;
@@ -45,40 +44,44 @@ include("monitoring-authentication.jag");
         var result;
 
         var timeInterval = request.getParameter("time");
-        var interval = 1800000;
+        var interval = 1800;
         var x_axis_interval;
         var time_format;
         if (timeInterval === TIME_INTERVAL_1) {
-            interval = 1800000;
+            interval = 1800;
             x_axis_interval = 60;
-            time_format = '%h:%i';
+            time_format = 'hh24:mi';
         } else if (timeInterval === TIME_INTERVAL_2) {
-            interval = 3600000;
+            interval = 3600;
             x_axis_interval = 120;
-            time_format = '%h:%i';
+            time_format = 'hh24:mi';
         } else if (timeInterval === TIME_INTERVAL_3) {
-            interval = 86400000;
+            interval = 86400;
             x_axis_interval = 2880;
-            time_format = '%Y:%m:%d %h:%i';
+            time_format = 'yyyy-mm-dd hh24:mi';
         } else if (timeInterval === TIME_INTERVAL_4) {
-            interval = 604800000;
+            interval = 604800;
             x_axis_interval = 20160;
-            time_format = '%Y:%m:%d %h:%i';
+            time_format = 'yyyy-mm-dd hh24:mi';
         } else if (timeInterval === TIME_INTERVAL_5) {
-            interval = 2419200000;
+            interval = 2419200;
             x_axis_interval = 80640;
-            time_format = '%Y:%m:%d';
+            time_format = 'yyyy-mm-dd';
         }
 
         var clusterId = request.getParameter("clusterId");
-        var memberId = request.getParameter("memberId");
-
-       if (memberId == ALL_MEMBERS) {
-            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, AVG(Value) AS Value FROM AVERAGE_LOAD_AVERAGE_STATS WHERE ClusterId=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '%Y:%m:%d %h:%i'), ClusterId", clusterId);
-       }else{
-            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, AVG(Value) AS Value FROM MEMBER_AVERAGE_LOAD_AVERAGE_STATS WHERE ClusterId=? AND MemberId=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '%Y:%m:%d %h:%i'), ClusterId, MemberId", clusterId, memberId);
-       }
-       print(result);
+        result = db.query("SELECT TO_CHAR((TIMESTAMP '1970-01-01 00:00:00' AT TIME ZONE 'UTC' + NUMTODSINTERVAL(CEIL" +
+                "(Time/(" + x_axis_interval + " * 1000)) * " + x_axis_interval + ", 'second')) AT LOCAL, '" +
+                time_format + "') \"Time\", AVG(Count) AS \"Count\" FROM AVG_IN_FLIGHT_REQUESTS WHERE ClusterId=? AND" +
+                " TO_CHAR((TIMESTAMP '1970-01-01 00:00:00' AT TIME ZONE 'UTC' + NUMTODSINTERVAL(Time/1000,'second')) " +
+                "AT LOCAL, 'yyyy-mm-dd hh24:mi') BETWEEN TO_CHAR(LOCALTIMESTAMP - NUMTODSINTERVAL(" + interval + ", " +
+                "'second'),'yyyy-mm-dd hh24:mi') AND TO_CHAR(LOCALTIMESTAMP,'yyyy-mm-dd hh24:mi') GROUP BY TO_CHAR(" +
+                "(TIMESTAMP '1970-01-01 00:00:00' AT TIME ZONE 'UTC' + NUMTODSINTERVAL(CEIL(Time/(" + x_axis_interval
+                + " * 1000)) * " + x_axis_interval + ", 'second')) AT LOCAL, '" + time_format + "'), ClusterId ORDER " +
+                "BY TO_CHAR((TIMESTAMP '1970-01-01 00:00:00' AT TIME ZONE 'UTC' + NUMTODSINTERVAL(CEIL(Time/(" +
+                x_axis_interval + " * 1000)) * " + x_axis_interval + ", 'second')) AT LOCAL, '" + time_format + "')",
+                clusterId);
+        print(result);
 
     }
     catch (e) {

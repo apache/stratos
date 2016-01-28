@@ -25,8 +25,8 @@ include("monitoring-authentication.jag");
     var db = new Database("WSO2_ANALYTICS_EVENT_STORE_DB");
 
     try {
-        var clusterInstanceId = request.getParameter('clusterInstanceId');
-        var result = db.query("SELECT DISTINCT ClusterId FROM AVERAGE_MEMORY_CONSUMPTION_STATS");
+        var clusterId = request.getParameter('clusterId');
+        var result = db.query("SELECT DISTINCT MemberId FROM M_AVG_MEMORY_CONSUMPTION_STATS WHERE ClusterId=?", clusterId);
 
         if (result != null) {
             print(result);

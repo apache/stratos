@@ -27,7 +27,7 @@
         OPTIONS (tableName "AVERAGE_MEMORY_CONSUMPTION_STATS");
 
         create temporary table average_memory_consumption_stats_new
-        using CarbonJDBC options (dataSource "WSO2_ANALYTICS_EVENT_STORE_DB", tableName "AVERAGE_MEMORY_CONSUMPTION_STATS");
+        using CarbonJDBC options (dataSource "WSO2_ANALYTICS_EVENT_STORE_DB", tableName "AVG_MEMORY_CONSUMPTION_STATS");
 
         INSERT OVERWRITE TABLE average_memory_consumption_stats_new select timestamp, cluster_id, cluster_instance_id,
         network_partition_id, average_memory_consumption from average_memory_consumption_stats;
@@ -37,7 +37,7 @@
         OPTIONS (tableName "MEMBER_AVERAGE_MEMORY_CONSUMPTION_STATS");
 
         create temporary table member_average_memory_consumption_stats_new
-        using CarbonJDBC options (dataSource "WSO2_ANALYTICS_EVENT_STORE_DB", tableName "MEMBER_AVERAGE_MEMORY_CONSUMPTION_STATS");
+        using CarbonJDBC options (dataSource "WSO2_ANALYTICS_EVENT_STORE_DB", tableName "M_AVG_MEMORY_CONSUMPTION_STATS");
 
         INSERT OVERWRITE TABLE member_average_memory_consumption_stats_new select timestamp, member_id, cluster_id, cluster_instance_id,
         network_partition_id, member_average_memory_consumption from member_average_memory_consumption_stats;

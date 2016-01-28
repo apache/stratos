@@ -18,15 +18,13 @@
  * under the License.
  *
  */
-include("monitoring-authentication.jag");
+include('metering-authentication.jag');
 
 (function () {
-
-    var db = new Database("WSO2_ANALYTICS_EVENT_STORE_DB");
+    var db = new Database("WSO2_ANALYTICS_PROCESSED_DATA_STORE_DB");
 
     try {
-        var clusterId = request.getParameter('clusterId');
-        var result = db.query("SELECT DISTINCT MemberId FROM MEMBER_AVERAGE_MEMORY_CONSUMPTION_STATS WHERE ClusterId=?", clusterId);
+        var result = db.query("SELECT DISTINCT ApplicationId \"ApplicationId\" FROM MEMBER_COUNT");
 
         if (result != null) {
             print(result);

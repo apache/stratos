@@ -74,9 +74,9 @@ include("monitoring-authentication.jag");
         var memberId = request.getParameter("memberId");
 
         if (memberId == ALL_MEMBERS) {
-            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, AVG(Value) AS Value FROM AVERAGE_MEMORY_CONSUMPTION_STATS WHERE ClusterId=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '%Y:%m:%d %h:%i'), ClusterId", clusterId);
+            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, AVG(Value) AS Value FROM AVG_MEMORY_CONSUMPTION_STATS WHERE ClusterId=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '%Y:%m:%d %h:%i'), ClusterId", clusterId);
         } else {
-            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, AVG(Value) AS Value FROM MEMBER_AVERAGE_MEMORY_CONSUMPTION_STATS WHERE ClusterId=? AND MemberId=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '%Y:%m:%d %h:%i'), ClusterId, MemberId", clusterId, memberId);
+            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, AVG(Value) AS Value FROM M_AVG_MEMORY_CONSUMPTION_STATS WHERE ClusterId=? AND MemberId=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '%Y:%m:%d %h:%i'), ClusterId, MemberId", clusterId, memberId);
         }
         print(result);
 

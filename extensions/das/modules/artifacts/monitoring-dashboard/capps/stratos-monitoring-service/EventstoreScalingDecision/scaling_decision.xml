@@ -30,7 +30,7 @@
         </ColumnDefinition>
         <ColumnDefinition>
             <Name>scaling_decision_id</Name>
-            <EnableIndexing>true</EnableIndexing>
+            <EableIndexing>false</EableIndexing>
             <IsPrimaryKey>true</IsPrimaryKey>
             <EnableScoreParam>false</EnableScoreParam>
             <Type>STRING</Type>

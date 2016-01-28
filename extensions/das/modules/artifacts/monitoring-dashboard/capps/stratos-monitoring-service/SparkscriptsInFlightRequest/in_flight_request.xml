@@ -27,7 +27,7 @@
         OPTIONS (tableName "AVERAGE_IN_FLIGHT_REQUESTS");
 
         create temporary table average_in_flight_requests_new
-        using CarbonJDBC options (dataSource "WSO2_ANALYTICS_EVENT_STORE_DB", tableName "AVERAGE_IN_FLIGHT_REQUESTS");
+        using CarbonJDBC options (dataSource "WSO2_ANALYTICS_EVENT_STORE_DB", tableName "AVG_IN_FLIGHT_REQUESTS");
 
         INSERT OVERWRITE TABLE average_in_flight_requests_new select * from average_in_flight_requests;
     </Script>

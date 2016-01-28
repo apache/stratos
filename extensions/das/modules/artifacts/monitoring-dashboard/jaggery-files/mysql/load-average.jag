@@ -28,6 +28,7 @@ include("monitoring-authentication.jag");
     var TIME_INTERVAL_3 = '1 Day';
     var TIME_INTERVAL_4 = '1 Week';
     var TIME_INTERVAL_5 = '1 Month';
+    var ALL_MEMBERS = 'All Members';
 
     var content = request.getContent();
     var contentAsString = null;
@@ -70,8 +71,14 @@ include("monitoring-authentication.jag");
         }
 
         var clusterId = request.getParameter("clusterId");
-        result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, AVG(Count) AS Count FROM AVERAGE_IN_FLIGHT_REQUESTS WHERE ClusterId=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '%Y:%m:%d %h:%i'), ClusterId", clusterId);
-        print(result);
+        var memberId = request.getParameter("memberId");
+
+       if (memberId == ALL_MEMBERS) {
+            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, AVG(Value) AS Value FROM AVG_LOAD_AVERAGE_STATS WHERE ClusterId=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '%Y:%m:%d %h:%i'), ClusterId", clusterId);
+       }else{
+            result = db.query("SELECT FROM_UNIXTIME(CEILING( Time/('" + x_axis_interval + "'*1000)) *'" + x_axis_interval + "', '" + time_format + "') AS Time, AVG(Value) AS Value FROM M_AVG_LOAD_AVERAGE_STATS WHERE ClusterId=? AND MemberId=? AND Time > ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000-'" + interval + "' ) AND Time <= ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000) GROUP BY FROM_UNIXTIME( CEILING( Time/('" + x_axis_interval + "'*1000)) *'"+x_axis_interval+"', '%Y:%m:%d %h:%i'), ClusterId, MemberId", clusterId, memberId);
+       }
+       print(result);
 
     }
     catch (e) {
