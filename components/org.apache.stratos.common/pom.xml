@@ -129,25 +129,12 @@
                             org.apache.stratos.common.*
                         </Export-Package>
                         <Import-Package>
-                            org.wso2.carbon.core.*;version="${carbon.platform.imp.pkg.version.range}",
-                            org.wso2.carbon.caching.impl.*;version="${carbon.platform.imp.pkg.version.range}",
                             org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version.range}",
-                            org.wso2.carbon.user.core.*;version="${carbon.platform.imp.pkg.version.range}",
-                            org.wso2.carbon.user.mgt.*;version="${carbon.platform.imp.pkg.version.range}",
-                            org.wso2.carbon.databridge.commons.*;version="${carbon.platform.imp.pkg.version.range}",
-                            org.wso2.carbon.databridge.agent.thrift.*;version="${carbon.platform.imp.pkg.version.range}",
-                            org.wso2.carbon.user.api.*;version="${carbon.user.api.imp.pkg.version.range}",
+                            org.wso2.carbon.user.core.*,
                             org.wso2.securevault.*;version="0.0.0",
 
-                            org.apache.stratos.cloud.controller.service.stub.*;version="${project.version}",
-                            org.apache.stratos.autoscaler.service.stub.*;version="${project.version}",
-                            org.apache.stratos.manager.service.stub.*;version="${project.version}",
-
-                            org.apache.commons.logging.*;version="${commons.logging.imp.pkg.version.range}",
-                            org.apache.commons.configuration.*;version="${commons.configuration.imp.pkg.version.range}",
                             org.apache.commons.lang.*;version="${commons.lang.imp.pkg.version.range}",
                             org.apache.commons.lang3.*;version="${commons.lang3.imp.pkg.version.range}",
-                            org.apache.commons.codec.*;version="${commons.codec.imp.pkg.version.range}",
                             org.apache.axiom.*; version="${axiom.imp.pkg.version.range}",
                             *;resolution:=optional
                         </Import-Package>

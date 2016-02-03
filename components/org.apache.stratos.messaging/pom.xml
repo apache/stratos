@@ -112,16 +112,10 @@
                             org.apache.stratos.messaging.*;version="${project.version}"
                         </Export-Package>
                         <Import-Package>
-                            org.wso2.carbon.base.*;version="${carbon.base.imp.pkg.version.range}",
-                            org.wso2.carbon.utils.*;version="${carbon.platform.imp.pkg.version.range}",
-
                             org.apache.stratos.common.*;version="${project.version}",
 
                             org.apache.commons.logging.*;version="${commons.logging.imp.pkg.version.range}",
-                            org.apache.commons.lang.*;version="${commons.lang.imp.pkg.version.range}",
                             org.apache.commons.lang3.*;version="${commons.lang3.imp.pkg.version.range}",
-                            org.apache.commons.collections.*;version="${commons.collections.imp.pkg.version.range}",
-                            com.google.gson.*;version="${gson.imp.pkg.version.range}",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
