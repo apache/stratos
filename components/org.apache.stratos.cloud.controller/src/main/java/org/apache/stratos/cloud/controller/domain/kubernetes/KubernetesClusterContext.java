@@ -18,15 +18,15 @@
  */
 package org.apache.stratos.cloud.controller.domain.kubernetes;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.kubernetes.client.KubernetesApiClient;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 
 /**
  * Holds information about a Kubernetes Cluster.
@@ -34,8 +34,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public class KubernetesClusterContext implements Serializable {
 
     private static final long serialVersionUID = -802025758806195791L;
-
-    private static final Log log = LogFactory.getLog(KubernetesClusterContext.class);
 
     private String kubernetesClusterId;
     private int upperPort;
@@ -66,7 +64,11 @@ public class KubernetesClusterContext implements Serializable {
     }
 
     private String getEndpoint(String ip, String port) {
-        return "http://" + ip + ":" + port + "/api/v1beta1/";
+    	StringBuffer endPoint = new StringBuffer().append("http://").append(ip);
+    	if(port != null) {
+    		endPoint.append(":").append(port);	
+    	} 
+        return endPoint.toString();
     }
 
     public String getKubernetesClusterId() {
@@ -171,6 +173,16 @@ public class KubernetesClusterContext implements Serializable {
         }
         return podSeqNo.incrementAndGet();
     }
+    
+
+    public void updateKubClusterContextParams(KubernetesCluster kubernetesCluster) {
+    	this.masterIp = kubernetesCluster.getKubernetesMaster().getPrivateIPAddress();
+    	this.masterPort = CloudControllerUtil
+                .getProperty(kubernetesCluster.getKubernetesMaster().getProperties(),
+                        StratosConstants.KUBERNETES_MASTER_PORT);
+    	this.kubApi = new KubernetesApiClient(getEndpoint(masterIp, masterPort));
+    }
+    
 
     @Override
     public int hashCode() {

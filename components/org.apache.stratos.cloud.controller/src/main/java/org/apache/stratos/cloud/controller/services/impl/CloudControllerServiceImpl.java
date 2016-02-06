@@ -25,6 +25,7 @@ import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
+import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesClusterContext;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
 import org.apache.stratos.cloud.controller.exception.*;
@@ -1280,6 +1281,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
             return true;
         } catch (Exception e) {
+        	log.error("Error occurred when adding kubernetes cluster. " + e.getMessage(), e);
             throw new InvalidKubernetesClusterException(e.getMessage(), e);
         } finally {
             if (lock != null) {
@@ -1306,6 +1308,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             // Updating the information model
             CloudControllerContext.getInstance().updateKubernetesCluster(kubernetesCluster);
+            KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance().
+            		getKubernetesClusterContext(kubernetesCluster.getClusterId());
+            
+            // Update necessary parameters of kubClusterContext using the updated kubCluster
+            kubClusterContext.updateKubClusterContextParams(kubernetesCluster);            
+            CloudControllerContext.getInstance().updateKubernetesClusterContext(kubClusterContext);
             CloudControllerContext.getInstance().persist();
 
             if (log.isInfoEnabled()) {

@@ -199,7 +199,7 @@ public class KubernetesIaas extends Iaas {
             PortRange kubernetesPortRange = kubernetesCluster.getPortRange();
             String kubernetesMasterPort = CloudControllerUtil
                     .getProperty(kubernetesCluster.getKubernetesMaster().getProperties(),
-                            StratosConstants.KUBERNETES_MASTER_PORT, StratosConstants.KUBERNETES_MASTER_DEFAULT_PORT);
+                            StratosConstants.KUBERNETES_MASTER_PORT);
 
             // Add kubernetes cluster payload parameters to payload
             if ((kubernetesCluster.getProperties() != null) && (kubernetesCluster.getProperties().getProperties()
@@ -927,14 +927,6 @@ public class KubernetesIaas extends Iaas {
                 kubernetesMasterPort, lowerPort, upperPort);
         CloudControllerContext.getInstance().addKubernetesClusterContext(kubernetesClusterContext);
         return kubernetesClusterContext;
-    }
-
-    private String readProperty(String property, org.apache.stratos.common.Properties properties, String object) {
-        String propVal = CloudControllerUtil.getProperty(properties, property);
-        handleNullObject(propVal,
-                "Property validation failed. Could not find property: '" + property + " in " + object);
-        return propVal;
-
     }
 
     private void handleNullObject(Object obj, String errorMsg) {
