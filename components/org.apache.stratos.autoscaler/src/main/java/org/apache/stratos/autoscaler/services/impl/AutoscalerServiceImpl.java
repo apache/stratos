@@ -124,14 +124,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.info(String.format("Adding application: [application-id] %s", applicationContext.getApplicationId()));
         }
 
-        ApplicationParser applicationParser = new DefaultApplicationParser();
-        Application application = applicationParser.parse(applicationContext);
-        ApplicationHolder.persistApplication(application);
-
-        List<ApplicationClusterContext> applicationClusterContexts = applicationParser.getApplicationClusterContexts();
-        ApplicationClusterContext[] applicationClusterContextsArray = applicationClusterContexts
-                .toArray(new ApplicationClusterContext[applicationClusterContexts.size()]);
-        applicationContext.getComponents().setApplicationClusterContexts(applicationClusterContextsArray);
+        Application application = parseApplication(applicationContext);
 
         applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
         AutoscalerContext.getInstance().addApplicationContext(applicationContext);
@@ -144,6 +137,29 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
         ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
         return true;
+    }
+
+    /**
+     * Parse application context, generate application cluster contexts with
+     * payload parameters and build the application object.
+     * @param applicationContext
+     * @return
+     * @throws ApplicationDefinitionException
+     * @throws CartridgeGroupNotFoundException
+     * @throws CartridgeNotFoundException
+     */
+    private Application parseApplication(ApplicationContext applicationContext) throws ApplicationDefinitionException,
+            CartridgeGroupNotFoundException, CartridgeNotFoundException {
+
+        ApplicationParser applicationParser = new DefaultApplicationParser();
+        Application application = applicationParser.parse(applicationContext);
+        ApplicationHolder.persistApplication(application);
+
+        List<ApplicationClusterContext> applicationClusterContexts = applicationParser.getApplicationClusterContexts();
+        ApplicationClusterContext[] applicationClusterContextsArray = applicationClusterContexts
+                .toArray(new ApplicationClusterContext[applicationClusterContexts.size()]);
+        applicationContext.getComponents().setApplicationClusterContexts(applicationClusterContextsArray);
+        return application;
     }
 
     @Override
@@ -235,6 +251,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             if (applicationContext == null) {
                 throw new RuntimeException("Application context not found: " + applicationId);
             }
+
+            // Parse application to update payload parameters
+            application = parseApplication(applicationContext);
 
             // validating application policy against the application
             AutoscalerUtil.validateApplicationPolicyAgainstApplication(applicationId, applicationPolicyId);

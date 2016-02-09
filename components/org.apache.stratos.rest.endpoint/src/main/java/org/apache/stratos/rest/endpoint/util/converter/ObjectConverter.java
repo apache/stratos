@@ -19,6 +19,7 @@
 
 package org.apache.stratos.rest.endpoint.util.converter;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
@@ -1567,13 +1568,15 @@ public class ObjectConverter {
      */
     private static DeploymentBean convertDeploymentToDeploymentBean(String[] directories,
                                                                     String baseDir) {
-        if (baseDir == null || directories == null || directories[0] == null) {
+        if (baseDir == null && (directories == null || directories[0] == null)) {
             return null;
         }
 
         DeploymentBean deploymentBean = new DeploymentBean();
         deploymentBean.setBaseDir(baseDir);
-        deploymentBean.setDir(Arrays.asList(baseDir));
+        if (ArrayUtils.isNotEmpty(directories) && (directories[0] != null)) {
+            deploymentBean.setDir(Arrays.asList(directories));
+        }
         return deploymentBean;
     }
 

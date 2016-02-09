@@ -7,6 +7,9 @@
     "privateIPAddress": "172.17.8.101",
     "publicIPAddress": "172.17.8.101",
     "property": [
+	{ "name": "KUBERNETES_MASTER_PORT", 
+          "value": "8080" 
+        }
     ]
   },
   "portRange": {
@@ -19,14 +22,6 @@
       "hostname": "minion-1.dev.kubernetes.org",
       "privateIPAddress": "172.17.8.102",
       "publicIPAddress": "172.17.8.102",
-      "property": [
-      ]
-    },
-    {
-      "hostId": "minion-2",
-      "hostname": "minion-2.dev.kubernetes.org",
-      "privateIPAddress": "172.17.8.103",
-      "publicIPAddress": "172.17.8.103",
       "property": [
       ]
     }
