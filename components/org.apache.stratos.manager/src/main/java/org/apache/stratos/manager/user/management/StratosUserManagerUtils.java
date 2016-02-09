@@ -24,9 +24,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.manager.user.management.exception.UserManagerException;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.UserCoreConstants;
+import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.user.core.tenant.Tenant;
+import org.wso2.carbon.user.core.tenant.TenantManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -204,5 +208,36 @@ public class StratosUserManagerUtils {
             log.error(msg, e);
             throw new UserManagerException(msg, e);
         }
+    }
+
+    public static String getTenantDomain(int tenantId) {
+        if(tenantId == -1234) {
+            return "carbon.super";
+        }
+
+        TenantManager tenantManager = getTenantManager();
+        Tenant[] tenants = null;
+        try {
+            tenants = (Tenant[]) tenantManager.getAllTenants();
+        } catch (Exception e) {
+            String msg = "Error in retrieving the tenant information";
+            log.error(msg, e);
+        }
+
+        if(tenants != null) {
+            for(Tenant tenant : tenants) {
+                if(tenant.getId() == tenantId) {
+                    return tenant.getDomain();
+                }
+            }
+        }
+        log.warn(String.format("Could not find tenant domain: [tenant-id] %d", tenantId));
+        return null;
+    }
+
+    public static TenantManager getTenantManager() {
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        RealmService realmService = (RealmService) carbonContext.getOSGiService(RealmService.class);
+        return realmService.getTenantManager();
     }
 }

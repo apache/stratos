@@ -221,6 +221,92 @@
         },
         "anon": {}
       }
+    },
+    {
+      "id": "tenant-metering",
+      "title": "Tenant Metering",
+      "layout": {
+        "id": "single-column",
+        "title": "Single Column",
+        "description": "This is a layout generated through single-column.io",
+        "thumbnail": "store://layout/single-column/index.png",
+        "url": "store://layout/single-column/index.hbs",
+        "content": "<div class=\"container\">\n<div class=\"row\">\n    <div id=\"a\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"b\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"c\" class=\"col-md-12 ues-component-box\"></div>\n</div>\n</div>\n"
+      },
+      "isanon": false,
+      "content": {
+        "default": {
+          "a": [
+            {
+              "id": "n0dcwgx88xe0zfr",
+              "content": {
+                "id": "Application_Signups_Filter",
+                "title": "",
+                "type": "gadget",
+                "thumbnail": "store://gadget/Application_Signups_Filter/index.png",
+                "data": {
+                  "url": "store://gadget/Application_Signups_Filter/index.xml"
+                },
+                "styles": {
+                  "height": "100",
+                  "borders": false,
+                  "titlePosition": "left",
+                  "title": ""
+                },
+                "notify": {
+                  "application-signups-filter": {
+                    "type": "address",
+                    "description": "This notifies applicationId"
+                  }
+                },
+                "cancel": {
+                  "type": "boolean",
+                  "description": "This notifies cancellation of state selection"
+                },
+                "settings": {}
+              }
+            }
+          ],
+          "b": [
+            {
+              "id": "2s1fvjnbib4t2o6r",
+              "content": {
+                "id": "Application_Signups",
+                "title": "Tenant Metering",
+                "type": "gadget",
+                "thumbnail": "local://images/gadgetIcon.png",
+                "data": {
+                  "url": "local://store/carbon.super/gadget/Application_Signups/index.xml"
+                },
+                "listen": {
+                  "application-signups-filter": {
+                    "type": "address",
+                    "description": "Used to filter based on state",
+                    "on": [
+                      {
+                        "from": "n0dcwgx88xe0zfr",
+                        "event": "application-signups-filter"
+                      }
+                    ]
+                  },
+                  "auto-update": {
+                    "type": "boolean",
+                    "description": "Used to filter based on state"
+                  }
+                },
+                "styles": {
+                  "height": "800",
+                  "borders": true,
+                  "titlePosition": "left",
+                  "title": "Application Signups"
+                },
+                "settings": {}
+              }
+            }
+          ]
+        },
+        "anon": {}
+      }
     }
   ],
   "landing": "member-status",

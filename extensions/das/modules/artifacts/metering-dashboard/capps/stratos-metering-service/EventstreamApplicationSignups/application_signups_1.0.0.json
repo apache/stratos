@@ -1,0 +1,33 @@
+{
+  "streamId": "application_signups:1.0.0",
+  "name": "application_signups",
+  "version": "1.0.0",
+  "nickName": "Application Signup Statistics",
+  "description": "Application signup statistics for generating metering information.",
+  "payloadData": [
+    {
+      "name": "application_id",
+      "type": "STRING"
+    },
+    {
+      "name": "tenant_id",
+      "type": "INT"
+    },
+    {
+      "name": "tenant_domain",
+      "type": "STRING"
+    },
+    {
+      "name": "start_time",
+      "type": "LONG"
+    },
+    {
+      "name": "end_time",
+      "type": "LONG"
+    },
+    {
+      "name": "duration",
+      "type": "LONG"
+    }
+  ]
+}

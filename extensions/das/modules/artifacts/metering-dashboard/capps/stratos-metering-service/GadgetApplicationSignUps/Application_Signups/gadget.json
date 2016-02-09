@@ -1,0 +1,19 @@
+{
+  "id": "Application_Signups",
+  "title": "Tenant Metering",
+  "type": "gadget",
+  "thumbnail": "local://images/gadgetIcon.png",
+  "data": {
+    "url": "local://store/carbon.super/gadget/Application_Signups/index.xml"
+  },
+  "listen": {
+    "application-signups-filter": {
+      "type": "address",
+      "description": "Used to filter based on state"
+    },
+    "auto-update": {
+      "type": "boolean",
+      "description": "Used to filter based on state"
+    }
+  }
+}

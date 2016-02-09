@@ -1,0 +1,23 @@
+{
+  "id": "Application_Signups_Filter",
+  "title": "Application Signups Filter",
+  "type": "gadget",
+  "thumbnail": "store://gadget/Application_Signups_Filter/index.png",
+  "data": {
+    "url": "store://gadget/Application_Signups_Filter/index.xml"
+  },
+  "styles": {
+    "borders": false,
+    "title": false
+  },
+  "notify": {
+    "application-signups-filter": {
+      "type": "address",
+      "description": "This notifies applicationId"
+    }
+  },
+  "cancel": {
+    "type": "boolean",
+    "description": "This notifies cancellation of state selection"
+  }
+}

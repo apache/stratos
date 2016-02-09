@@ -6,7 +6,7 @@
                     <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="artifactRepositories" nillable="true" type="ax249:ArtifactRepository"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="clusterIds" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="domainMappings" nillable="true" type="ax249:DomainMapping"/>
+                    <xs:element minOccurs="0" name="signupAddedTimestamp" type="xs:long"/>
                     <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
                 </xs:sequence>
             </xs:complexType>

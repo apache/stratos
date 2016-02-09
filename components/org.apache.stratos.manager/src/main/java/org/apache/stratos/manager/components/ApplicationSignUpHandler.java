@@ -25,6 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.exception.ApplicationSignUpException;
 import org.apache.stratos.manager.messaging.publisher.ApplicationSignUpEventPublisher;
 import org.apache.stratos.manager.registry.RegistryManager;
+import org.apache.stratos.manager.statistics.publisher.DASApplicationSignUpDataPublisher;
+import org.apache.stratos.manager.user.management.StratosUserManagerUtils;
 import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.domain.application.signup.ArtifactRepository;
 
@@ -37,8 +39,11 @@ import java.util.List;
 public class ApplicationSignUpHandler {
 
     private static final Log log = LogFactory.getLog(ApplicationSignUpHandler.class);
-
     private static final String APPLICATION_SIGNUP_RESOURCE_PATH = "/stratos.manager/application.signups/";
+    private static final long DEFAULT_APPLICATION_SIGNUP_REMOVED_TIMESTAMP = -1;
+    private static final long DEFAULT_APPLICATION_SIGNUP_DURATION = 0;
+    private static DASApplicationSignUpDataPublisher applicationSignUpDataPublisher = DASApplicationSignUpDataPublisher
+            .getInstance();
 
     private String prepareApplicationSignupResourcePath(String applicationId, int tenantId) {
         return APPLICATION_SIGNUP_RESOURCE_PATH + applicationId + "-tenant-" + tenantId;
@@ -67,20 +72,33 @@ public class ApplicationSignUpHandler {
 
         try {
             if (log.isInfoEnabled()) {
-                log.info(String.format("Adding application signup: [application-id] %s [tenant-id] %d",
-                        applicationId, tenantId));
+                log.info(String.format("Adding application signup: [application-id] %s [tenant-id] %d", applicationId,
+                        tenantId));
             }
 
             if (applicationSignUpExist(applicationId, tenantId)) {
-                throw new RuntimeException(String.format("Tenant has already signed up for application: " +
-                        "[application-id] %s [tenant-id] %d", applicationId, tenantId));
+                throw new RuntimeException(String.format(
+                        "Tenant has already signed up for application: " + "[application-id] %s [tenant-id] %d",
+                        applicationId, tenantId));
             }
 
             // Persist application signup
             String resourcePath = prepareApplicationSignupResourcePath(applicationId, tenantId);
+            long signUpAddedTimestamp = System.currentTimeMillis();
+            applicationSignUp.setSignupAddedTimestamp(signUpAddedTimestamp);
+
             RegistryManager.getInstance().persist(resourcePath, applicationSignUp);
 
             ApplicationSignUpEventPublisher.publishApplicationSignUpAddedEvent(applicationId, tenantId, clusterIdList);
+
+            if (applicationSignUpDataPublisher.isEnabled()) {
+                if (log.isInfoEnabled()) {
+                    log.info("Publishing application signup added data to DAS");
+                }
+                String tenantDomain = StratosUserManagerUtils.getTenantDomain(tenantId);
+                applicationSignUpDataPublisher.publish(applicationId, tenantId, tenantDomain, signUpAddedTimestamp,
+                        DEFAULT_APPLICATION_SIGNUP_REMOVED_TIMESTAMP, DEFAULT_APPLICATION_SIGNUP_DURATION);
+            }
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application signup added successfully: [application-id] %s [tenant-id] %d",
@@ -115,6 +133,7 @@ public class ApplicationSignUpHandler {
 
     /**
      * Check application signup availability.
+     *
      * @param applicationId
      * @return
      * @throws ApplicationSignUpException
@@ -151,19 +170,32 @@ public class ApplicationSignUpHandler {
     public void removeApplicationSignUp(String applicationId, int tenantId) throws ApplicationSignUpException {
         try {
             if (log.isInfoEnabled()) {
-                log.info(String.format("Removing application signup: [application-id] %s [tenant-id] %d",
-                        applicationId, tenantId));
+                log.info(String.format("Removing application signup: [application-id] %s [tenant-id] %d", applicationId,
+                        tenantId));
             }
 
             if (!applicationSignUpExist(applicationId, tenantId)) {
-                throw new RuntimeException(String.format("Application signup not found: [application-id] %s " +
-                        "[tenant-id] %d", applicationId, tenantId));
+                throw new RuntimeException(
+                        String.format("Application signup not found: [application-id] %s " + "[tenant-id] %d",
+                                applicationId, tenantId));
             }
 
             String resourcePath = prepareApplicationSignupResourcePath(applicationId, tenantId);
+            long signUpAddedTimestamp = ((ApplicationSignUp) RegistryManager.getInstance().read(resourcePath))
+                    .getSignupAddedTimestamp();
             RegistryManager.getInstance().remove(resourcePath);
 
             ApplicationSignUpEventPublisher.publishApplicationSignUpRemovedEvent(applicationId, tenantId);
+
+            if (applicationSignUpDataPublisher.isEnabled()) {
+                if (log.isInfoEnabled()) {
+                    log.info("Publishing application signup removed data to DAS");
+                }
+                long signUpRemovedTimestamp = System.currentTimeMillis();
+                String tenantDomain = StratosUserManagerUtils.getTenantDomain(tenantId);
+                applicationSignUpDataPublisher.publish(applicationId, tenantId, tenantDomain, signUpAddedTimestamp,
+                        signUpRemovedTimestamp, signUpRemovedTimestamp - signUpAddedTimestamp);
+            }
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application signup removed successfully: [application-id] %s [tenant-id] %d",
@@ -184,19 +216,21 @@ public class ApplicationSignUpHandler {
      * @return
      * @throws ApplicationSignUpException
      */
-    public ApplicationSignUp getApplicationSignUp(String applicationId, int tenantId) throws ApplicationSignUpException {
+    public ApplicationSignUp getApplicationSignUp(String applicationId, int tenantId)
+            throws ApplicationSignUpException {
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Get application signup: [application-id] %s [tenant-id] %d",
-                        applicationId, tenantId));
+                log.debug(String.format("Get application signup: [application-id] %s [tenant-id] %d", applicationId,
+                        tenantId));
             }
 
             String resourcePath = prepareApplicationSignupResourcePath(applicationId, tenantId);
             ApplicationSignUp applicationSignUp = (ApplicationSignUp) RegistryManager.getInstance().read(resourcePath);
             return applicationSignUp;
         } catch (Exception e) {
-            String message = String.format("Could not get application signup: [application-id] %s [tenant-id] %d",
-                    applicationId, tenantId);
+            String message = String
+                    .format("Could not get application signup: [application-id] %s [tenant-id] %d", applicationId,
+                            tenantId);
             log.error(message, e);
             throw new ApplicationSignUpException(message, e);
         }
@@ -224,8 +258,8 @@ public class ApplicationSignUpHandler {
             if (resourcePaths != null) {
                 for (String resourcePath : resourcePaths) {
                     if (resourcePath != null) {
-                        ApplicationSignUp applicationSignUp = (ApplicationSignUp)
-                                RegistryManager.getInstance().read(resourcePath);
+                        ApplicationSignUp applicationSignUp = (ApplicationSignUp) RegistryManager.getInstance()
+                                .read(resourcePath);
                         if (applicationId.equals(applicationSignUp.getApplicationId())) {
                             applicationSignUps.add(applicationSignUp);
                         }
@@ -259,8 +293,8 @@ public class ApplicationSignUpHandler {
             if (resourcePaths != null) {
                 for (String resourcePath : resourcePaths) {
                     if (resourcePath != null) {
-                        ApplicationSignUp applicationSignUp = (ApplicationSignUp)
-                                RegistryManager.getInstance().read(resourcePath);
+                        ApplicationSignUp applicationSignUp = (ApplicationSignUp) RegistryManager.getInstance()
+                                .read(resourcePath);
                         applicationSignUps.add(applicationSignUp);
                     }
                 }
@@ -281,7 +315,8 @@ public class ApplicationSignUpHandler {
      * @return
      * @throws ApplicationSignUpException
      */
-    public List<ApplicationSignUp> getApplicationSignUpsForRepository(String repoUrl) throws ApplicationSignUpException {
+    public List<ApplicationSignUp> getApplicationSignUpsForRepository(String repoUrl)
+            throws ApplicationSignUpException {
         try {
             List<ApplicationSignUp> filteredResult = new ArrayList<ApplicationSignUp>();
 
@@ -322,8 +357,9 @@ public class ApplicationSignUpHandler {
                         applicationId, tenantId));
             }
         } catch (Exception e) {
-            String message = String.format("Could not get application signup: [application-id] %s [tenant-id] %d",
-                    applicationId, tenantId);
+            String message = String
+                    .format("Could not get application signup: [application-id] %s [tenant-id] %d", applicationId,
+                            tenantId);
             log.error(message, e);
             throw new ApplicationSignUpException(message, e);
         }

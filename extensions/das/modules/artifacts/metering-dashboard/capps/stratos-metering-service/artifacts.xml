@@ -21,18 +21,32 @@
 -->
 <artifacts>
     <artifact name="stratos-metering-service" version="1.0.0" type="carbon/application">
+        <dependency artifact="EventstreamApplicationSignUps" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="EventstreamMemberInfo" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="EventstreamMemberLifecycle" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
+
+        <dependency artifact="EventstoreApplicationSignUps" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="EventstoreMemberInfo" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="EventstoreMemberLifecycle" version="1.0.0" include="true"
+                    serverRole="DataAnalyticsServer"/>
+
+        <dependency artifact="EventreceiverApplicationSignUps" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
         <dependency artifact="EventreceiverMemberInfo" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
         <dependency artifact="EventreceiverMemberLifecycle" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
+
+        <dependency artifact="SparkscriptsApplicationSignUps" version="1.0.0" include="true"
+                    serverRole="DataAnalyticsServer"/>
         <dependency artifact="SparkscriptsMemberInfo" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="SparkscriptsMemberLifecycle" version="1.0.0" include="true"
+                    serverRole="DataAnalyticsServer"/>
+
+        <dependency artifact="GadgetApplicationSignUps" version="1.0.0" include="true"
+                    serverRole="DataAnalyticsServer"/>
+        <dependency artifact="GadgetApplicationSignUpsFilter" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
         <dependency artifact="GadgetMemberCount" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="GadgetMemberInformation" version="1.0.0" include="true"
@@ -42,6 +56,7 @@
                     serverRole="DataAnalyticsServer"/>
         <dependency artifact="GadgetMemberDetailsFilter" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
+
         <dependency artifact="Dashboard" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
     </artifact>
 </artifacts>

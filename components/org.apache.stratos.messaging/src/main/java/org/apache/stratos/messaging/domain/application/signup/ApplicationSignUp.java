@@ -33,6 +33,7 @@ public class ApplicationSignUp implements Serializable {
     private ArtifactRepository[] artifactRepositories;
     private DomainMapping[] domainMappings;
     private String[] clusterIds;
+    private long signupAddedTimestamp;
 
     public int getTenantId() {
         return tenantId;
@@ -72,5 +73,13 @@ public class ApplicationSignUp implements Serializable {
 
     public String[] getClusterIds() {
         return clusterIds;
+    }
+
+    public long getSignupAddedTimestamp() {
+        return signupAddedTimestamp;
+    }
+
+    public void setSignupAddedTimestamp(long signupAddedTimestamp) {
+        this.signupAddedTimestamp = signupAddedTimestamp;
     }
 }
