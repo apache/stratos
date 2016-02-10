@@ -32,6 +32,7 @@ maxUpdateValue = gadgetConfig.maxUpdateValue;
 gadgets.HubSettings.onConnect = function () {
     gadgets.Hub.subscribe('application-signups-filter', function (topic, data) {
         applicationId = data['applicationId'];
+        fetchData(drawChart);
     });
 };
 
@@ -64,6 +65,10 @@ function fetchData(callback) {
         var request = {
             applicationId: application,
         };
+
+        jQuery("#placeholder").html("");
+        jQuery("#placeholder").append('<div id="noChart"><table><tr><td><b><p><br/>Updating</p></b></td></tr></table></div>');
+
         $.ajax({
             url: "/portal/apis/application-signups",
             method: "GET",
