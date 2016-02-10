@@ -36,6 +36,7 @@ gadgets.HubSettings.onConnect = function () {
         clusterId = data['clusterId'];
         applicationId = data['applicationId'];
         console.log("Member Filter Value:" + JSON.stringify(data));
+        fetchData(drawChart);
     });
 };
 
@@ -71,6 +72,10 @@ function fetchData(callback) {
             applicationId: application,
             clusterId: cluster
         };
+
+        jQuery("#placeholder").html("");
+        jQuery("#placeholder").append('<div id="noChart"><table><tr><td><b><p><br/>Updating</p></b></td></tr></table></div>');
+
         $.ajax({
             url: "/portal/apis/member-info",
             method: "GET",

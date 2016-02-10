@@ -37,6 +37,7 @@ gadgets.HubSettings.onConnect = function () {
         memberId = data['memberId'];
         timeInterval = data['timeInterval'];
         console.log("Health Stats Filter Value:" + JSON.stringify(data));
+        fetchData(drawChart);
     });
 };
 
@@ -73,6 +74,10 @@ function fetchData(callback) {
             memberId: member,
             time: time
         };
+
+        jQuery("#placeholder").html("");
+        jQuery("#placeholder").append('<div id="noChart"><table><tr><td><b><p><br/>Updating</p></b></td></tr></table></div>');
+
         $.ajax({
             url: "/portal/apis/load-average",
             method: "GET",
