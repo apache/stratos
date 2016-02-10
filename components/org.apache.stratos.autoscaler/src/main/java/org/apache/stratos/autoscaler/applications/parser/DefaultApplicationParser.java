@@ -28,6 +28,7 @@ import org.apache.stratos.autoscaler.applications.ApplicationUtils;
 import org.apache.stratos.autoscaler.applications.ClusterInformation;
 import org.apache.stratos.autoscaler.applications.MTClusterInformation;
 import org.apache.stratos.autoscaler.applications.STClusterInformation;
+import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.payload.PayloadData;
 import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.client.IdentityApplicationManagementServiceClient;
@@ -270,7 +271,19 @@ public class DefaultApplicationParser implements ApplicationParser {
                                                    Map<String, SubscribableInfoContext> subscribableInfoCtxts)
             throws ApplicationDefinitionException, CartridgeGroupNotFoundException, CartridgeNotFoundException {
 
-        Application application = new Application(applicationContext.getApplicationId());
+        Application application;
+
+        // check if application already exists, and get existing key if true
+        ApplicationHolder.acquireReadLock();
+        Applications persistedApplications = ApplicationHolder.getApplications();
+        if (persistedApplications != null && persistedApplications.applicationExists(applicationContext.getApplicationId())) {
+            String existingKey = persistedApplications.getApplication(applicationContext.getApplicationId()).getKey();
+            application = new Application(applicationContext.getApplicationId(), existingKey);
+        } else {
+            application = new Application(applicationContext.getApplicationId());
+        }
+
+        ApplicationHolder.releaseReadLock();
 
         // Set tenant information
         application.setTenantId(applicationContext.getTenantId());

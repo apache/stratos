@@ -61,6 +61,13 @@ public class Application extends ParentComponent<ApplicationInstance> {
         this.setInstanceIdToInstanceContextMap(new HashMap<String, ApplicationInstance>());
     }
 
+    public Application(String id, String key) {
+        super();
+        this.id = id;
+        this.key = key;
+        this.setInstanceIdToInstanceContextMap(new HashMap<String, ApplicationInstance>());
+    }
+
     public String getUniqueIdentifier() {
         return id;
     }
