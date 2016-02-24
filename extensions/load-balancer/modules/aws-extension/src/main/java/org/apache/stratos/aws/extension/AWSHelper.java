@@ -19,6 +19,24 @@
 
 package org.apache.stratos.aws.extension;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.Protocol;
+import com.amazonaws.services.ec2.model.*;
+import com.amazonaws.services.elasticloadbalancing.model.Instance;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.common.domain.*;
+import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
@@ -202,6 +220,7 @@ public class AWSHelper {
 
             awsCredentials = new BasicAWSCredentials(awsAccessKey, awsSecretKey);
             clientConfiguration = new ClientConfiguration();
+            createProxyConfiguration();
 
             elbClient = new AmazonElasticLoadBalancingClient(awsCredentials,
                     clientConfiguration);
@@ -222,6 +241,70 @@ public class AWSHelper {
                 log.warn("Failed to close input stream to aws configuration file.");
             }
         }
+    }
+
+    private void createProxyConfiguration() {
+
+        if (clientConfiguration == null) {
+            log.error("ClientConfiguration is null, hence unable to apply Proxy Settings");
+            return;
+        }
+
+        if (clientConfiguration.getProtocol() == Protocol.HTTPS) {
+            // use HTTPS proxy settings
+            clientConfiguration.setProxyHost(getSystemProperty(Constants.HTTPS_PROXY_HOST));
+            clientConfiguration.setProxyPort(getSystemPropertyAsInteger(Constants.HTTPS_PROXY_PORT));
+            clientConfiguration.setProxyUsername(getSystemProperty(Constants.HTTPS_PROXY_USERNAME));
+            clientConfiguration.setProxyPassword(getSystemProperty(Constants.HTTPS_PROXY_PASSWORD));
+
+        } else {
+            // use HTTP settings
+            clientConfiguration.setProxyHost(getSystemProperty(Constants.HTTP_PROXY_HOST));
+            clientConfiguration.setProxyPort(getSystemPropertyAsInteger(Constants.HTTP_PROXY_PORT));
+            clientConfiguration.setProxyUsername(getSystemProperty(Constants.HTTP_PROXY_USERNAME));
+            clientConfiguration.setProxyPassword(getSystemProperty(Constants.HTTP_PROXY_PASSWORD));
+        }
+
+        // if proxy workstation and domain are null, need to set empty Strings to overcome
+        // https://forums.aws.amazon.com/thread.jspa?messageID=561113&#561113
+        clientConfiguration.setProxyWorkstation("");
+        clientConfiguration.setProxyDomain("");
+
+        String proxyWorkstation = getSystemProperty(Constants.PROXY_WORKSTATION);
+        if (proxyWorkstation != null) {
+            clientConfiguration.setProxyWorkstation(proxyWorkstation);
+        }
+        String proxyDomain = getSystemProperty(Constants.PROXY_DOMAIN);
+        if (proxyDomain != null) {
+            clientConfiguration.setProxyDomain(proxyDomain);
+        }
+
+        // authenticate preemptively
+        clientConfiguration.setPreemptiveBasicProxyAuth(true);
+        if (getSystemProperty(Constants.PREEMPTIVE_AUTHENTICATION) != null) {
+            clientConfiguration.setPreemptiveBasicProxyAuth(getSystemPropertyAsBoolean(Constants.PREEMPTIVE_AUTHENTICATION));
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("Proxy host: '" + clientConfiguration.getProxyHost() + "'");
+            log.debug("Proxy port: '" + clientConfiguration.getProxyPort() + "'");
+            log.debug("Proxy user: '" + clientConfiguration.getProxyUsername() + "'");
+            log.debug("Proxy workstation: '" + clientConfiguration.getProxyWorkstation() + "'");
+            log.debug("Proxy domain: '" + clientConfiguration.getProxyDomain() + "'");
+            log.debug("Proxy preemptive auth: '" + clientConfiguration.isPreemptiveBasicProxyAuth() + "'");
+        }
+    }
+
+    private String getSystemProperty (String key) {
+        return System.getProperty(key);
+    }
+
+    private Integer getSystemPropertyAsInteger (String key) {
+        return Integer.getInteger(key);
+    }
+
+    private boolean getSystemPropertyAsBoolean (String key) {
+        return Boolean.getBoolean(key);
     }
 
 	public AWSHelper(String awsAccessKey, String awsSecretKey){

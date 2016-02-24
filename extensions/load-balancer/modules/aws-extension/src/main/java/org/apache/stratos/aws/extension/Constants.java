@@ -67,4 +67,15 @@ public class Constants {
 	public static final String LB_SCHEME = "load-balancer-scheme";
 	public static final String LB_SCHEME_INTERNAL = "internal";
 	public static final String EC2_AVAILABILITY_ZONE_PROPERTY = "EC2_AVAILABILITY_ZONE";
+	public static final String HTTPS_PROXY_HOST = "https.proxyHost";
+	public static final String HTTP_PROXY_HOST = "http.proxyHost";
+	public static final String HTTPS_PROXY_PORT = "https.proxyPort";
+	public static final String HTTP_PROXY_PORT = "http.proxyPort";
+	public static final String HTTPS_PROXY_USERNAME = "https.proxyUser";
+	public static final String HTTP_PROXY_USERNAME = "http.proxyUser";
+	public static final String HTTPS_PROXY_PASSWORD = "https.proxyPassword";
+	public static final String HTTP_PROXY_PASSWORD = "http.proxyPassword";
+	public static final String PROXY_WORKSTATION = "proxy.workstation";
+	public static final String PROXY_DOMAIN = "proxy.domain";
+	public static final String PREEMPTIVE_AUTHENTICATION = "preemptive.authentication";
 }
