@@ -55,7 +55,6 @@ public class AWSLoadBalancer implements LoadBalancer {
     public AWSLoadBalancer() throws LoadBalancerExtensionException {
         awsHelper = new AWSHelper();
         persistenceManager = new FileBasedPersistenceManager();
-        initialize();
     }
 
     /*
@@ -73,8 +72,21 @@ public class AWSLoadBalancer implements LoadBalancer {
 
         for (Service service : topology.getServices()) {
             for (Cluster cluster : service.getClusters()) {
+                // a unique load balancer name with user-defined prefix and a sequence number.
+                String loadBalancerName = awsHelper.generateLoadBalancerName(cluster.getServiceName());
+                Collection<Member> members = cluster.getMembers();
+                String region;
+                if (members != null && !members.isEmpty()) {
+                    // extract region from one member
+                    region = awsHelper.getAWSRegion(members.iterator().next().getInstanceId());
+                } else {
+                    // cluster is empty, skip
+                    log.info("Cluster " + cluster.getClusterId() + " does not have any members, " +
+                            " hence skipping it");
+                    continue;
+                }
                 // Check if a load balancer is created for this cluster
-                if (clusterIdToLoadBalancerMap.containsKey(cluster.getClusterId())) {
+                if (awsHelper.getLoadBalancerDescription(loadBalancerName, region) != null) {
                     // A load balancer is already present for this cluster
                     // Get the load balancer and update it.
 
@@ -96,10 +108,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 	                    //We assume all the members are in the same region.
                         Member aMember = clusterMembers.iterator().next();
 
-                        // a unique load balancer name with user-defined prefix and a sequence number.
-                        String loadBalancerName = awsHelper.generateLoadBalancerName(cluster.getServiceName());
-
-                        String region = awsHelper.getAWSRegion(aMember.getInstanceId());
+                        region = awsHelper.getAWSRegion(aMember.getInstanceId());
 
                         // list of AWS listeners obtained using port mappings of one of the members of the cluster.
                         List<Listener> listenersForThisCluster = awsHelper.getRequiredListeners(aMember);
@@ -131,18 +140,7 @@ public class AWSLoadBalancer implements LoadBalancer {
 		                    activeClusters.add(cluster.getClusterId());
 	                    }
 
-                        // persist LB info
-
-	                    LBInfoDTO lbInfoDTO = new LBInfoDTO(loadBalancerName, cluster.getClusterId(), region);
-                        try {
-                            persistenceManager.persist(lbInfoDTO);
-
-                        } catch (PersistenceException e) {
-	                        log.error(String.format(
-			                        "Unable to persist LB Information for %s , cluster id %s " + loadBalancerName,
-			                        cluster.getClusterId()));
-                        }
-	                    clusterIdToLoadBalancerMap.put(cluster.getClusterId(), lbInfoDTO);
+	                    clusterIdToLoadBalancerMap.put(cluster.getClusterId(), new LBInfoDTO(loadBalancerName, cluster.getClusterId(), region));
                     }
 
                     pause(3000);
@@ -150,40 +148,31 @@ public class AWSLoadBalancer implements LoadBalancer {
             }
         }
 
-        // if 'terminate.lb.on.cluster.removal' = true in aws-extension.sh
-        if (AWSExtensionContext.getInstance().terminateLBOnClusterRemoval()) {
+        // Find out clusters which were present earlier but are not now.
+        List<String> clustersToRemoveFromMap = new ArrayList<String>();
+        // TODO: improve using an iterator and removing the unwanted cluster id in this loop
+        for (String clusterId : clusterIdToLoadBalancerMap.keySet()) {
+            if (!activeClusters.contains(clusterId)) {
+                clustersToRemoveFromMap.add(clusterId);
 
-            // Find out clusters which were present earlier but are not now.
-            List<String> clustersToRemoveFromMap = new ArrayList<String>();
-            // TODO: improve using an iterator and removing the unwanted cluster id in this loop
-            for (String clusterId : clusterIdToLoadBalancerMap.keySet()) {
-                if (!activeClusters.contains(clusterId)) {
-                    clustersToRemoveFromMap.add(clusterId);
-
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Load balancer for cluster %s needs to be removed.", clusterId));
-                    }
-
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Load balancer for cluster %s needs to be removed.", clusterId));
                 }
+
             }
+        }
 
 
-            // Delete load balancers associated with these clusters.
-            for (String clusterId : clustersToRemoveFromMap) {
+        // Delete load balancers associated with these clusters.
+        for (String clusterId : clustersToRemoveFromMap) {
+            // if 'terminate.lb.on.cluster.removal' = true in aws-extension.sh
+            if (AWSExtensionContext.getInstance().terminateLBOnClusterRemoval()) {
                 // Remove load balancer for this cluster.
                 final String loadBalancerName = clusterIdToLoadBalancerMap.get(clusterId).getName();
                 final String region = clusterIdToLoadBalancerMap.get(clusterId).getRegion();
                 awsHelper.deleteLoadBalancer(loadBalancerName, region);
-                //remove and persist
-                try {
-                    persistenceManager.remove(new LBInfoDTO(loadBalancerName, clusterId, region));
-
-                } catch (PersistenceException e) {
-                    log.error(String.format("Unable to persist LB Information for[Load Balancer Name] %s [Cluster ID] %s"
-                                            ,loadBalancerName, clusterId));
-                }
-                clusterIdToLoadBalancerMap.remove(clusterId);
             }
+            clusterIdToLoadBalancerMap.remove(clusterId);
         }
 
         activeClusters.clear();
@@ -329,40 +318,6 @@ public class AWSLoadBalancer implements LoadBalancer {
         log.info("AWS load balancer extension started.");
     }
 
-    private void initialize() {
-        // load persisted LB information
-        Set<LBInfoDTO> lbInfo = null;
-        try {
-            lbInfo = persistenceManager.retrieve();
-
-        } catch (PersistenceException e) {
-            log.error("Unable to retrieve persisted LB Information", e);
-        }
-
-        if (lbInfo != null) {
-            for (LBInfoDTO lbInfoDTO : lbInfo) {
-                LoadBalancerDescription lbDesc = awsHelper.getLoadBalancerDescription(lbInfoDTO.getName(),
-                        lbInfoDTO.getRegion());
-                if (lbDesc != null) {
-                    clusterIdToLoadBalancerMap.put(lbInfoDTO.getClusterId(),lbInfoDTO);
-                } else {
-                    // make debug
-                    if (log.isInfoEnabled()) {
-                        log.info("Unable to locate LB " + lbInfoDTO.getName());
-                    }
-                    // remove the persisted entry
-                    try {
-                        persistenceManager.remove(new LBInfoDTO(lbInfoDTO.getName(), lbInfoDTO.getClusterId(), lbInfoDTO.getRegion()));
-
-                    } catch (PersistenceException e) {
-                        log.error("Unable to remove persisted LB Information", e);
-                    }
-                }
-
-            }
-        }
-    }
-
     /*
      * reload method is called every time after extension if configured. Does
      * nothing but logs the message.
@@ -383,15 +338,6 @@ public class AWSLoadBalancer implements LoadBalancer {
                 // Remove load balancer
                 awsHelper.deleteLoadBalancer(lbInfoEntry.getValue().getName(),
                         lbInfoEntry.getValue().getRegion());
-
-                // remove the persisted entry
-                try {
-                    persistenceManager.remove(new LBInfoDTO(lbInfoEntry.getValue().getName(), lbInfoEntry.getKey(),
-                            lbInfoEntry.getValue().getRegion()));
-
-                } catch (PersistenceException e) {
-                    log.error("Unable to remove persisted LB Information", e);
-                }
             }
         } else {
             if (log.isInfoEnabled()) {
