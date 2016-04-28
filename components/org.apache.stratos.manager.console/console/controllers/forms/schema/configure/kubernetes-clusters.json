@@ -41,7 +41,7 @@
                     "type":"string",
                     "id": "root/kubernetesMaster/privateIPAddress",
                     "default": "172.17.8.100",
-                    "required":true,
+                    "required":false,
                     "title": "Private IP Address",
                     "name": "Private IP Address"
                 },
@@ -60,6 +60,14 @@
                     "required":false,
                     "title": "Hostname",
                     "name": "Hostname"
+                },
+                "endpoint": {
+                    "type":"string",
+                    "id": "root/kubernetesMaster/endpoint",
+                    "default": "https://master.dev.kubernetes.example.org",
+                    "required":false,
+                    "title": "Endpoint",
+                    "name": "Endpoint"
                 },
                 "property": {
                     "id": "root/kubernetesMaster/property",

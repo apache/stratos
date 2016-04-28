@@ -76,7 +76,7 @@ public class KubernetesIaas extends Iaas {
     public KubernetesIaas(IaasProvider iaasProvider) {
         super(iaasProvider);
         partitionValidator = new KubernetesPartitionValidator();
-        payload = new ArrayList<NameValuePair>();
+        payload = new ArrayList<>();
 
         podActivationTimeout = Long.getLong("stratos.pod.activation.timeout");
         if (podActivationTimeout == null) {
@@ -104,14 +104,12 @@ public class KubernetesIaas extends Iaas {
         if (payloadByteArray != null) {
             String payloadString = new String(payloadByteArray);
             String[] parameterArray = payloadString.split(PAYLOAD_PARAMETER_SEPARATOR);
-            if (parameterArray != null) {
-                for (String parameter : parameterArray) {
-                    if (parameter != null) {
-                        String[] nameValueArray = parameter.split(PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR, 2);
-                        if ((nameValueArray != null) && (nameValueArray.length == 2)) {
-                            NameValuePair nameValuePair = new NameValuePair(nameValueArray[0], nameValueArray[1]);
-                            payload.add(nameValuePair);
-                        }
+            for (String parameter : parameterArray) {
+                if (parameter != null) {
+                    String[] nameValueArray = parameter.split(PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR, 2);
+                    if (nameValueArray.length == 2) {
+                        NameValuePair nameValuePair = new NameValuePair(nameValueArray[0], nameValueArray[1]);
+                        payload.add(nameValuePair);
                     }
                 }
                 if (log.isDebugEnabled()) {
@@ -196,10 +194,11 @@ public class KubernetesIaas extends Iaas {
 
             // Prepare kubernetes context
             String kubernetesMasterIp = kubernetesCluster.getKubernetesMaster().getPrivateIPAddress();
+            String kuberneteEndPoint = kubernetesCluster.getKubernetesMaster().getEndpoint();
             PortRange kubernetesPortRange = kubernetesCluster.getPortRange();
             String kubernetesMasterPort = CloudControllerUtil
                     .getProperty(kubernetesCluster.getKubernetesMaster().getProperties(),
-                            StratosConstants.KUBERNETES_MASTER_PORT, StratosConstants.KUBERNETES_MASTER_DEFAULT_PORT);
+                            StratosConstants.KUBERNETES_MASTER_PORT);
 
             // Add kubernetes cluster payload parameters to payload
             if ((kubernetesCluster.getProperties() != null) && (kubernetesCluster.getProperties().getProperties()
@@ -216,7 +215,7 @@ public class KubernetesIaas extends Iaas {
 
             KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterContext(kubernetesClusterId,
                     kubernetesMasterIp, kubernetesMasterPort, kubernetesPortRange.getUpper(),
-                    kubernetesPortRange.getLower());
+                    kubernetesPortRange.getLower(), kuberneteEndPoint);
 
             // Generate kubernetes service ports and update port mappings in cartridge
             generateKubernetesServicePorts(clusterContext.getApplicationId(), clusterContext.getClusterId(),
@@ -270,9 +269,9 @@ public class KubernetesIaas extends Iaas {
 
         memberContext.setInstanceId(pod.getMetadata().getName());
         memberContext.setDefaultPrivateIP(memberPrivateIPAddress);
-        memberContext.setPrivateIPs(new String[] { memberPrivateIPAddress });
+        memberContext.setPrivateIPs(new String[]{memberPrivateIPAddress});
         memberContext.setDefaultPublicIP(memberPublicIPAddress);
-        memberContext.setPublicIPs(new String[] { memberPublicIPAddress });
+        memberContext.setPublicIPs(new String[]{memberPublicIPAddress});
         memberContext.setInitTime(memberContext.getInitTime());
         memberContext.setProperties(memberContext.getProperties());
     }
@@ -803,7 +802,8 @@ public class KubernetesIaas extends Iaas {
 
         for (Service service : services) {
             for (ServicePort servicePort : service.getSpec().getPorts()) {
-                if (servicePort.getNodePort() == nodePort) {
+                // Need to check node port is null here to avoid unboxing errors
+                if ((servicePort.getNodePort() != null) && (servicePort.getNodePort() == nodePort)) {
                     return false;
                 }
             }
@@ -819,7 +819,7 @@ public class KubernetesIaas extends Iaas {
      * @return
      */
     private ClusterPortMapping findClusterPortMapping(Collection<ClusterPortMapping> clusterPortMappings,
-            PortMapping portMapping) {
+                                                      PortMapping portMapping) {
         for (ClusterPortMapping clusterPortMapping : clusterPortMappings) {
             if (clusterPortMapping.getName().equals(portMapping.getName())) {
                 return clusterPortMapping;
@@ -901,26 +901,21 @@ public class KubernetesIaas extends Iaas {
      * @return
      */
     private KubernetesClusterContext getKubernetesClusterContext(String kubernetesClusterId, String kubernetesMasterIp,
-            String kubernetesMasterPort, int upperPort, int lowerPort) {
+            String kubernetesMasterPort, int upperPort, int lowerPort, String kubernetesEndpoint) {
 
         KubernetesClusterContext kubernetesClusterContext = CloudControllerContext.getInstance().
                 getKubernetesClusterContext(kubernetesClusterId);
         if (kubernetesClusterContext != null) {
             return kubernetesClusterContext;
         }
-
+        log.info("[Kuberentes cluster id]" + kubernetesClusterId);
+        log.info("[Kuberentes cluster master IP]" + kubernetesMasterIp);
+        log.info("[Kuberentes master port]" + kubernetesMasterPort);
+        log.info("[Kuberentes master endpoint]" + kubernetesEndpoint);
         kubernetesClusterContext = new KubernetesClusterContext(kubernetesClusterId, kubernetesMasterIp,
-                kubernetesMasterPort, lowerPort, upperPort);
+                kubernetesMasterPort, lowerPort, upperPort, kubernetesEndpoint);
         CloudControllerContext.getInstance().addKubernetesClusterContext(kubernetesClusterContext);
         return kubernetesClusterContext;
-    }
-
-    private String readProperty(String property, org.apache.stratos.common.Properties properties, String object) {
-        String propVal = CloudControllerUtil.getProperty(properties, property);
-        handleNullObject(propVal,
-                "Property validation failed. Could not find property: '" + property + " in " + object);
-        return propVal;
-
     }
 
     private void handleNullObject(Object obj, String errorMsg) {

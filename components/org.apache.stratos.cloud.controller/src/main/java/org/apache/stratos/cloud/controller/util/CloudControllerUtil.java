@@ -258,25 +258,22 @@ public class CloudControllerUtil {
             throw new InvalidKubernetesHostException("Kubernetes host private IP address has not been set: " +
                     "[host-id] " + kubernetesHost.getHostId());
         }
-        if (!InetAddresses.isInetAddress(kubernetesHost.getPrivateIPAddress())) {
-            throw new InvalidKubernetesHostException(
-                    "Kubernetes host private IP address is invalid: " + kubernetesHost.getPrivateIPAddress());
-        }
-        if (StringUtils.isNotBlank(kubernetesHost.getPublicIPAddress())) {
-            if (!InetAddresses.isInetAddress(kubernetesHost.getPublicIPAddress())) {
-                throw new InvalidKubernetesHostException(
-                        "Kubernetes host public IP address is invalid: " + kubernetesHost.getPrivateIPAddress());
-            }
-        }
     }
 
     public static void validateKubernetesMaster(KubernetesMaster kubernetesMaster)
             throws InvalidKubernetesMasterException {
-        try {
-            validateKubernetesHost(kubernetesMaster);
-        } catch (InvalidKubernetesHostException e) {
-            throw new InvalidKubernetesMasterException(e.getMessage());
+
+        if (StringUtils.isBlank(kubernetesMaster.getEndpoint()) &&
+                StringUtils.isBlank(kubernetesMaster.getPrivateIPAddress())) {
+            throw new InvalidKubernetesMasterException("Kubernetes master private IP address or endpoint has not " +
+                    "been set.");
         }
+        if (StringUtils.isNotBlank(kubernetesMaster.getEndpoint()) &&
+                StringUtils.isNotBlank(kubernetesMaster.getPrivateIPAddress())) {
+            throw new InvalidKubernetesMasterException("Both kubenretes master private IP address and " +
+                    "endpoint has been set. Please set either endpoint or private ip.");
+        }
+
     }
 
     public static LoadBalancingIPType getLoadBalancingIPTypeEnumFromString(String loadBalancingIPType) {

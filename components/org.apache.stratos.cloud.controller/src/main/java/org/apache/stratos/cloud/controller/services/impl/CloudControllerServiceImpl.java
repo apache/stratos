@@ -25,6 +25,7 @@ import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
+import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesClusterContext;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
 import org.apache.stratos.cloud.controller.exception.*;
@@ -44,6 +45,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.locks.Lock;
 
@@ -516,7 +518,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     private MemberContext createMemberContext(String applicationId, String cartridgeType, String memberId,
-            LoadBalancingIPType loadBalancingIPType, InstanceContext instanceContext) {
+                                              LoadBalancingIPType loadBalancingIPType, InstanceContext instanceContext) {
         MemberContext memberContext = new MemberContext(applicationId, cartridgeType, instanceContext.getClusterId(),
                 memberId);
 
@@ -1289,6 +1291,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
             return true;
         } catch (Exception e) {
+            log.error("Error occurred when adding kubernetes cluster. " + e.getMessage(), e);
             throw new InvalidKubernetesClusterException(e.getMessage(), e);
         } finally {
             if (lock != null) {
@@ -1315,6 +1318,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             // Updating the information model
             CloudControllerContext.getInstance().updateKubernetesCluster(kubernetesCluster);
+            KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance().
+                    getKubernetesClusterContext(kubernetesCluster.getClusterId());
+
+            // Update necessary parameters of kubClusterContext using the updated kubCluster
+            if (kubClusterContext != null) {
+                kubClusterContext.updateKubClusterContextParams(kubernetesCluster);
+                CloudControllerContext.getInstance().updateKubernetesClusterContext(kubClusterContext);
+            }
             CloudControllerContext.getInstance().persist();
 
             if (log.isInfoEnabled()) {

@@ -1191,7 +1191,7 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/stratos/domainMappings/manage")
     public Response removeDomainMappings(@PathParam("applicationId") String applicationId,
-            @PathParam("domainName") String domainName) throws RestAPIException {
+                                         @PathParam("domainName") String domainName) throws RestAPIException {
         try {
             StratosApiV41Utils.removeApplicationDomainMapping(applicationId, domainName);
         } catch (StratosManagerServiceDomainMappingExceptionException e) {
@@ -1851,7 +1851,8 @@ public class StratosApiV41 extends AbstractApi {
                     .build();
         } catch (CloudControllerServiceInvalidKubernetesClusterExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, "Kubernetes cluster is invalid"))
+                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, "Kubernetes cluster is invalid "+
+                            e.getFaultMessage().getInvalidKubernetesClusterException().getMessage()))
                     .build();
         }
     }
@@ -1879,7 +1880,8 @@ public class StratosApiV41 extends AbstractApi {
             throw e;
         } catch (CloudControllerServiceInvalidKubernetesClusterExceptionException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, "Kubernetes cluster is invalid"))
+                    .entity(new ResponseMessageBean(ResponseMessageBean.ERROR, "Kubernetes cluster is invalid. " +
+                            e.getFaultMessage().getInvalidKubernetesClusterException().getMessage()))
                     .build();
         }
     }

@@ -999,6 +999,7 @@ public class ObjectConverter {
         kubernetesMaster.setHostId(kubernetesMasterBean.getHostId());
         kubernetesMaster.setPrivateIPAddress(kubernetesMasterBean.getPrivateIPAddress());
         kubernetesMaster.setPublicIPAddress(kubernetesMasterBean.getPublicIPAddress());
+        kubernetesMaster.setEndpoint(kubernetesMasterBean.getEndpoint());
         kubernetesMaster.setHostname(kubernetesMasterBean.getHostname());
         kubernetesMaster.setProperties(convertPropertyBeansToCCStubProperties(kubernetesMasterBean.getProperty()));
 
@@ -1045,6 +1046,7 @@ public class ObjectConverter {
         kubernetesMasterBean.setHostname(kubernetesMaster.getHostname());
         kubernetesMasterBean.setPrivateIPAddress(kubernetesMaster.getPrivateIPAddress());
         kubernetesMasterBean.setPublicIPAddress(kubernetesMaster.getPublicIPAddress());
+        kubernetesMasterBean.setEndpoint(kubernetesMaster.getEndpoint());
         kubernetesMasterBean.setProperty(convertCCStubPropertiesToPropertyBeans(kubernetesMaster.getProperties()));
         return kubernetesMasterBean;
     }

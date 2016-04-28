@@ -23,10 +23,15 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.common.constants.StratosConstants;
 
 /**
  * Holds information about a Kubernetes Cluster.
@@ -35,13 +40,12 @@ public class KubernetesClusterContext implements Serializable {
 
     private static final long serialVersionUID = -802025758806195791L;
 
-    private static final Log log = LogFactory.getLog(KubernetesClusterContext.class);
-
     private String kubernetesClusterId;
     private int upperPort;
     private int lowerPort;
     private String masterIp;
     private String masterPort;
+    private String endpoint;
     private List<Integer> servicePortSequence;
 
     private AtomicLong serviceSeqNo;
@@ -50,7 +54,8 @@ public class KubernetesClusterContext implements Serializable {
     public static final long MAX_POD_ID = 99999999999999L;
     public static final long MAX_SERVICE_ID = 99999999999999L;
 
-    public KubernetesClusterContext(String id, String masterIp, String masterPort, int lowerPort, int upperPort) {
+    public KubernetesClusterContext(String id, String masterIp, String masterPort, int lowerPort, int upperPort,
+                                    String endpoint) {
         this.servicePortSequence = new ArrayList<>();
         serviceSeqNo = new AtomicLong(0);
         podSeqNo = new AtomicLong(0);
@@ -62,11 +67,25 @@ public class KubernetesClusterContext implements Serializable {
         this.kubernetesClusterId = id;
         this.masterIp = masterIp;
         this.masterPort = masterPort;
-        this.setKubApi(new KubernetesApiClient(getEndpoint(masterIp, masterPort)));
+        this.endpoint = endpoint;
+        this.setKubApi(new KubernetesApiClient(prepareEndpoint()));
     }
 
-    private String getEndpoint(String ip, String port) {
-        return "http://" + ip + ":" + port + "/api/v1beta1/";
+    private String prepareEndpoint() {
+        if (endpoint != null) {
+            return endpoint;
+        }
+        URL endpointURL = null;
+        try {
+            if (this.masterPort != null) {
+                endpointURL = new URL("http", this.masterIp, Integer.parseInt(masterPort), "");
+            } else {
+                endpointURL = new URL("http", this.masterIp, "");
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return endpointURL.toString();
     }
 
     public String getKubernetesClusterId() {
@@ -131,7 +150,7 @@ public class KubernetesClusterContext implements Serializable {
 
     public KubernetesApiClient getKubApi() {
         if (kubApi == null) {
-            kubApi = new KubernetesApiClient(getEndpoint(masterIp, masterPort));
+            kubApi = new KubernetesApiClient(prepareEndpoint());
         }
         return kubApi;
     }
@@ -170,6 +189,15 @@ public class KubernetesClusterContext implements Serializable {
             podSeqNo.set(0);
         }
         return podSeqNo.incrementAndGet();
+    }
+
+    public void updateKubClusterContextParams(KubernetesCluster kubernetesCluster) {
+        this.masterIp = kubernetesCluster.getKubernetesMaster().getPrivateIPAddress();
+        this.masterPort = CloudControllerUtil
+                .getProperty(kubernetesCluster.getKubernetesMaster().getProperties(),
+                        StratosConstants.KUBERNETES_MASTER_PORT);
+        this.endpoint = kubernetesCluster.getKubernetesMaster().getEndpoint();
+        this.kubApi = new KubernetesApiClient(prepareEndpoint());
     }
 
     @Override
@@ -226,6 +254,13 @@ public class KubernetesClusterContext implements Serializable {
                 return false;
             }
         } else if (!masterPort.equals(other.masterPort)) {
+            return false;
+        }
+        if (endpoint == null) {
+            if (other.endpoint != null) {
+                return false;
+            }
+        } else if (!endpoint.equals(other.endpoint)) {
             return false;
         }
         if (upperPort != other.upperPort) {
