@@ -31,5 +31,5 @@
 
         INSERT OVERWRITE TABLE scaling_details select * from scaling_decision;
     </Script>
-    <CronExpression>0/15 * * * * ?</CronExpression>
+    <CronExpression>0 0/15 * 1/1 * ? *</CronExpression>
 </Analytics>

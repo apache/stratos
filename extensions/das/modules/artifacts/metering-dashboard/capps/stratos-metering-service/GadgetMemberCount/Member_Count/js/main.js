@@ -20,7 +20,7 @@
  */
 var type, columns, maxUpdateValue;
 
-var REFRESH_INTERVAL = 5000;
+var REFRESH_INTERVAL = 300000;
 var dataLoaded = true;
 var timeInterval = '30 Min';
 var applicationId = '';
@@ -121,7 +121,11 @@ function makeRows(data) {
     var rows = [];
     for (var i = 0; i < data.length; i++) {
         var record = data[i];
+        var format = d3.time.format("%Y-%m-%d %H:%M:%S");
         var row = columns.map(function (column) {
+            if (column.COLUMN_NAME == 'Time') {
+                 record[column.COLUMN_NAME]=format(new Date(parseInt(record[column.COLUMN_NAME])));
+            }
             return record[column.COLUMN_NAME];
         });
         rows.push(row);
@@ -150,12 +154,12 @@ function drawChart(data) {
         } else {
             chart = igviz.setUp("#placeholder", gadgetConfig.chartConfig, dataTable);
             chart.setXAxis({
-                "labelAngle": -35,
-                "labelAlign": "right",
-                "labelDy": 0,
-                "labelDx": 0,
-                "titleDy": 25
-            })
+                    "labelAngle": -35,
+                    "labelAlign": "right",
+                    "labelDy": 0,
+                    "labelDx": 0,
+                    "titleDy": 25
+                })
                 .setYAxis({
                     "titleDy": -30
                 });

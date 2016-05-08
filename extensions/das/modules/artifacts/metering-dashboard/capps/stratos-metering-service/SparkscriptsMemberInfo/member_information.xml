@@ -32,5 +32,5 @@
         INSERT OVERWRITE TABLE member_details select member_id, instance_type, image_id, host_name,
         private_IP_addresses, public_IP_addresses, hypervisor, cpu, ram, os_name, os_version from memberinfo;
     </Script>
-    <CronExpression>29 * * * * ?</CronExpression>
+    <CronExpression>0 0/15 * 1/1 * ? *</CronExpression>
 </Analytics>

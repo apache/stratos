@@ -42,7 +42,10 @@
               display_name="Data Source"
               default_value="/portal/gadgets/bar-chart/datasource/dataFile4.jag">
     </UserPref>
-
+    <!--UserPref name="options"
+              display_name="Chart Options"
+              default_value="/portal/gadgets/bar-chart/js/options-bar.js">
+    </UserPref-->
     <UserPref name="updateGraph"
               display_name="Update Interval (s)"
               default_value="No">

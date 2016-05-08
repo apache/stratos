@@ -25,8 +25,7 @@ include('metering-authentication.jag');
 
     try {
         var applicationId = request.getParameter('applicationId');
-        var result = db.query("SELECT DISTINCT ClusterAlias \"ClusterAlias\" FROM MEMBER_COUNT WHERE ApplicationId = " +
-                "?", applicationId);
+        var result = db.query("SELECT DISTINCT ClusterAlias \"ClusterAlias\" FROM MEMBER_STATUS WHERE ApplicationId=?",applicationId);
 
         if (result != null) {
             print(result);

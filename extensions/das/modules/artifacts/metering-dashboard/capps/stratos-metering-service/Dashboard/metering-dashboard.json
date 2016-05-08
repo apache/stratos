@@ -12,22 +12,47 @@
   },
   "pages": [
     {
-      "id": "member-status",
+      "id": "landing",
       "title": "Member Status",
       "layout": {
-        "id": "single-column",
-        "title": "Single Column",
-        "description": "This is a layout generated through single-column.io",
-        "thumbnail": "store://layout/single-column/index.png",
-        "url": "store://layout/single-column/index.hbs",
-        "content": "<!--\n\n Licensed to the Apache Software Foundation (ASF) under one\n or more contributor license agreements.  See the NOTICE file\n distributed with this work for additional information\n regarding copyright ownership.  The ASF licenses this file\n to you under the Apache License, Version 2.0 (the\n \"License\"); you may not use this file except in compliance\n with the License.  You may obtain a copy of the License at\n\n   http://www.apache.org/licenses/LICENSE-2.0\n\n Unless required by applicable law or agreed to in writing,\n software distributed under the License is distributed on an\n \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n KIND, either express or implied.  See the License for the\n specific language governing permissions and limitations\n under the License.\n\n-->\n<div class=\"container\">\n<div class=\"row\">\n    <div id=\"a\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"b\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"c\" class=\"col-md-12 ues-component-box\"></div>\n</div>\n</div>\n"
+        "content": {
+          "loggedIn": {
+            "blocks": [
+              {
+                "id": "a",
+                "col": 1,
+                "row": 1,
+                "size_x": 12,
+                "size_y": 2,
+                "banner": false
+              },
+              {
+                "id": "b",
+                "col": 1,
+                "row": 3,
+                "size_x": 12,
+                "size_y": 5,
+                "banner": false
+              },
+              {
+                "id": "c",
+                "col": 1,
+                "row": 8,
+                "size_x": 12,
+                "size_y": 7,
+                "banner": false
+              }
+            ]
+          }
+        },
+        "fluidLayout": false
       },
       "isanon": false,
       "content": {
         "default": {
           "a": [
             {
-              "id": "ehng97cyk3kxogvi",
+              "id": "1icvhwkddx3p8gifyhmjpxpqfr",
               "content": {
                 "id": "Member_Status_Filter",
                 "title": "",
@@ -37,10 +62,10 @@
                   "url": "store://gadget/Member_Status_Filter/index.xml"
                 },
                 "styles": {
-                  "title": "",
-                  "height": "100",
+                  "height": "150",
                   "borders": false,
-                  "titlePosition": "left"
+                  "titlePosition": "left",
+                  "title": ""
                 },
                 "notify": {
                   "member-status-filter": {
@@ -52,18 +77,22 @@
                     "description": "This notifies cancellation of state selection"
                   }
                 },
+                "options": {},
+                "locale_titles": {
+                  "en-US": ""
+                },
                 "settings": {}
               }
             }
           ],
           "b": [
             {
-              "id": "q1pf6m8s5bq08uxr",
+              "id": "psipny83avcxvr5fi1dasv2t9",
               "content": {
                 "id": "Member_Count",
                 "title": "Member Count",
                 "type": "gadget",
-                "thumbnail": "local://store/carbon.super/gadget/usa-business-revenue/index.png",
+                "thumbnail": "local://images/gadgetIcon.png",
                 "data": {
                   "url": "local://store/carbon.super/gadget/Member_Count/index.xml"
                 },
@@ -73,7 +102,7 @@
                     "description": "Used to filter based on state",
                     "on": [
                       {
-                        "from": "ehng97cyk3kxogvi",
+                        "from": "1icvhwkddx3p8gifyhmjpxpqfr",
                         "event": "member-status-filter"
                       }
                     ]
@@ -85,10 +114,13 @@
                   }
                 },
                 "styles": {
-                  "title": "",
                   "height": "400",
                   "borders": true,
-                  "titlePosition": "left"
+                  "titlePosition": "left",
+                  "title": "Member Count"
+                },
+                "locale_titles": {
+                  "en-US": "Member Count"
                 },
                 "settings": {}
               }
@@ -96,7 +128,7 @@
           ],
           "c": [
             {
-              "id": "qf9lnn9oiv1pds4i",
+              "id": "2rq4foxv69spc286s1dx1rlik9",
               "content": {
                 "id": "Member_Update",
                 "title": "Member Status",
@@ -111,7 +143,7 @@
                     "description": "Used to filter based on state",
                     "on": [
                       {
-                        "from": "ehng97cyk3kxogvi",
+                        "from": "1icvhwkddx3p8gifyhmjpxpqfr",
                         "event": "member-status-filter"
                       }
                     ]
@@ -123,10 +155,13 @@
                   }
                 },
                 "styles": {
-                  "title": "",
                   "height": "800",
                   "borders": true,
-                  "titlePosition": "left"
+                  "titlePosition": "left",
+                  "title": "Member Status"
+                },
+                "locale_titles": {
+                  "en-US": "Member Status"
                 },
                 "settings": {}
               }
@@ -140,19 +175,36 @@
       "id": "member-details",
       "title": "Member Details",
       "layout": {
-        "id": "single-column",
-        "title": "Single Column",
-        "description": "This is a layout generated through single-column.io",
-        "thumbnail": "store://layout/single-column/index.png",
-        "url": "store://layout/single-column/index.hbs",
-        "content": "<!--\n\n Licensed to the Apache Software Foundation (ASF) under one\n or more contributor license agreements.  See the NOTICE file\n distributed with this work for additional information\n regarding copyright ownership.  The ASF licenses this file\n to you under the Apache License, Version 2.0 (the\n \"License\"); you may not use this file except in compliance\n with the License.  You may obtain a copy of the License at\n\n   http://www.apache.org/licenses/LICENSE-2.0\n\n Unless required by applicable law or agreed to in writing,\n software distributed under the License is distributed on an\n \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n KIND, either express or implied.  See the License for the\n specific language governing permissions and limitations\n under the License.\n\n-->\n<div class=\"container\">\n<div class=\"row\">\n    <div id=\"a\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"b\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"c\" class=\"col-md-12 ues-component-box\"></div>\n</div>\n</div>\n"
+        "content": {
+          "loggedIn": {
+            "blocks": [
+              {
+                "id": "a",
+                "col": 1,
+                "row": 1,
+                "size_x": 12,
+                "size_y": 1,
+                "banner": false
+              },
+              {
+                "id": "b",
+                "col": 1,
+                "row": 2,
+                "size_x": 12,
+                "size_y": 9,
+                "banner": false
+              }
+            ]
+          }
+        },
+        "fluidLayout": false
       },
       "isanon": false,
       "content": {
         "default": {
           "a": [
             {
-              "id": "8zgl65uoackgldi",
+              "id": "rio4byw7i0qlqiygsdp1fw29",
               "content": {
                 "id": "Member_Details_Filter",
                 "title": "",
@@ -162,10 +214,10 @@
                   "url": "store://gadget/Member_Details_Filter/index.xml"
                 },
                 "styles": {
-                  "title": "",
                   "height": "100",
                   "borders": false,
-                  "titlePosition": "left"
+                  "titlePosition": "left",
+                  "title": ""
                 },
                 "notify": {
                   "member-details-filter": {
@@ -177,13 +229,17 @@
                   "type": "boolean",
                   "description": "This notifies cancellation of state selection"
                 },
+                "options": {},
+                "locale_titles": {
+                  "en-US": ""
+                },
                 "settings": {}
               }
             }
           ],
           "b": [
             {
-              "id": "hoqfz4b6z91nstt9",
+              "id": "31avp60ninmk9mno08eh2xogvi",
               "content": {
                 "id": "Member_Details",
                 "title": "Member Details",
@@ -198,7 +254,7 @@
                     "description": "Used to filter based on state",
                     "on": [
                       {
-                        "from": "8zgl65uoackgldi",
+                        "from": "rio4byw7i0qlqiygsdp1fw29",
                         "event": "member-details-filter"
                       }
                     ]
@@ -209,10 +265,13 @@
                   }
                 },
                 "styles": {
-                  "title": "",
-                  "height": "800",
+                  "height": "1200",
                   "borders": true,
-                  "titlePosition": "left"
+                  "titlePosition": "left",
+                  "title": "Member Details"
+                },
+                "locale_titles": {
+                  "en-US": "Member Details"
                 },
                 "settings": {}
               }
@@ -226,19 +285,36 @@
       "id": "tenant-metering",
       "title": "Tenant Metering",
       "layout": {
-        "id": "single-column",
-        "title": "Single Column",
-        "description": "This is a layout generated through single-column.io",
-        "thumbnail": "store://layout/single-column/index.png",
-        "url": "store://layout/single-column/index.hbs",
-        "content": "<div class=\"container\">\n<div class=\"row\">\n    <div id=\"a\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"b\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"c\" class=\"col-md-12 ues-component-box\"></div>\n</div>\n</div>\n"
+        "content": {
+          "loggedIn": {
+            "blocks": [
+              {
+                "id": "a",
+                "col": 1,
+                "row": 1,
+                "size_x": 12,
+                "size_y": 1,
+                "banner": false
+              },
+              {
+                "id": "b",
+                "col": 1,
+                "row": 2,
+                "size_x": 12,
+                "size_y": 7,
+                "banner": false
+              }
+            ]
+          }
+        },
+        "fluidLayout": false
       },
       "isanon": false,
       "content": {
         "default": {
           "a": [
             {
-              "id": "n0dcwgx88xe0zfr",
+              "id": "2p064k6c1rkcoy68zprzggmn29",
               "content": {
                 "id": "Application_Signups_Filter",
                 "title": "",
@@ -263,13 +339,17 @@
                   "type": "boolean",
                   "description": "This notifies cancellation of state selection"
                 },
+                "options": {},
+                "locale_titles": {
+                  "en-US": ""
+                },
                 "settings": {}
               }
             }
           ],
           "b": [
             {
-              "id": "2s1fvjnbib4t2o6r",
+              "id": "izak0xb74cpja530r4kg9zfr",
               "content": {
                 "id": "Application_Signups",
                 "title": "Tenant Metering",
@@ -284,7 +364,7 @@
                     "description": "Used to filter based on state",
                     "on": [
                       {
-                        "from": "n0dcwgx88xe0zfr",
+                        "from": "2p064k6c1rkcoy68zprzggmn29",
                         "event": "application-signups-filter"
                       }
                     ]
@@ -298,7 +378,10 @@
                   "height": "800",
                   "borders": true,
                   "titlePosition": "left",
-                  "title": "Application Signups"
+                  "title": "Tenant Metering"
+                },
+                "locale_titles": {
+                  "en-US": "Tenant Metering"
                 },
                 "settings": {}
               }
@@ -309,7 +392,15 @@
       }
     }
   ],
-  "landing": "member-status",
+  "identityServerUrl": "",
+  "accessTokenUrl": "",
+  "apiKey": "",
+  "apiSecret": "",
+  "banner": {
+    "globalBannerExists": null,
+    "customBannerExists": null
+  },
+  "landing": "landing",
   "isanon": false,
   "isUserCustom": false
 }

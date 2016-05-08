@@ -22,10 +22,10 @@
 // https://github.com/umdjs/umd/blob/master/amdWeb.js
 
 (function (factory) {
-    if (typeof define === 'function' && define.amd) {
+    if (typeof defineMember_Count === 'function' && define.amd) {
         // Support AMD. Register as an anonymous module.
         // NOTE: List all dependencies in AMD style
-        define(['d3.min', 'topojson'], factory);
+        define(['d3', 'topojson'], factory);
     } else {
         // No AMD. Set module as a global variable
         // NOTE: Pass dependencies to factory function
@@ -2753,8 +2753,8 @@
                     stop.enter().append("stop");
                     stop.exit().remove();
                     stop.attr("offset", function (d) {
-                        return d.offset;
-                    })
+                            return d.offset;
+                        })
                         .attr("stop-color", function (d) {
                             return d.color;
                         });
@@ -4300,9 +4300,9 @@
         };
         vg.data.treemap = function () {
             var layout = d3.layout.treemap()
-                    .children(function (d) {
-                        return d.values;
-                    }),
+                .children(function (d) {
+                    return d.values;
+                }),
                 value = vg.accessor("data"),
                 size = ["width", "height"],
                 params = ["round", "sticky", "ratio", "padding"],
@@ -4879,9 +4879,9 @@
 
             function legend(def, index, legend, scales) {
                 // legend scales
-                legend.size(def.size ? scales[def.size] : null);
-                legend.shape(def.shape ? scales[def.shape] : null);
-                legend.fill(def.fill ? scales[def.fill] : null);
+                legend.size  (def.size ? scales[def.size] : null);
+                legend.shape (def.shape ? scales[def.shape] : null);
+                legend.fill  (def.fill ? scales[def.fill] : null);
                 legend.stroke(def.stroke ? scales[def.stroke] : null);
 
                 // legend orientation
@@ -6010,7 +6010,7 @@
                         item.status = UPDATE;
                     }
 
-                    // update set      
+                    // update set
                     if (item.status !== EXIT && update) {
                         update.call(vg, item, group, trans);
                     }
@@ -7623,10 +7623,10 @@
 
                 if (opt.hover !== false) {
                     v.on("mouseover", function (evt, item) {
-                        if (item.hasPropertySet("hover")) {
-                            this.update({props: "hover", items: item});
-                        }
-                    })
+                            if (item.hasPropertySet("hover")) {
+                                this.update({props: "hover", items: item});
+                            }
+                        })
                         .on("mouseout", function (evt, item) {
                             if (item.hasPropertySet("hover")) {
                                 this.update({props: "update", items: item});

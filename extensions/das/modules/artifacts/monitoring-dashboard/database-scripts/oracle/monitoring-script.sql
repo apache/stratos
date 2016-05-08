@@ -18,6 +18,7 @@
  *
  */
 
+CREATE TABLE MEMBER_LIST(ClusterId VARCHAR2(150), MemberId VARCHAR2(150), MemberStatus VARCHAR2(50));
 CREATE TABLE AVG_MEMORY_CONSUMPTION_STATS(Time NUMBER(20), ClusterId VARCHAR2(150), ClusterInstanceId VARCHAR2(150),
 NetworkPartitionId VARCHAR2(150), Value NUMERIC);
 CREATE TABLE M_AVG_MEMORY_CONSUMPTION_STATS(Time NUMBER(20), MemberId VARCHAR2(150), ClusterId VARCHAR2(150),
@@ -32,4 +33,3 @@ CREATE TABLE SCALING_DETAILS(Time NUMBER(20), ScalingDecisionId VARCHAR2(150), C
 MinInstanceCount INT, MaxInstanceCount INT, RIFPredicted INT, RIFThreshold INT, RIFRequiredInstances INT, MCPredicted
  INT, MCThreshold INT, MCRequiredInstances INT, LAPredicted INT, LAThreshold INT,LARequiredInstances INT,
  RequiredInstanceCount INT, ActiveInstanceCount INT, AdditionalInstanceCount INT, ScalingReason VARCHAR2(150));
-

@@ -24,7 +24,7 @@ include('metering-authentication.jag');
     var db = new Database("WSO2_ANALYTICS_PROCESSED_DATA_STORE_DB");
 
     try {
-        var result = db.query("SELECT DISTINCT ApplicationId \"ApplicationId\" FROM MEMBER_COUNT");
+        var result = db.query("SELECT DISTINCT ApplicationId \"ApplicationId\" FROM MEMBER_STATUS");
 
         if (result != null) {
             print(result);

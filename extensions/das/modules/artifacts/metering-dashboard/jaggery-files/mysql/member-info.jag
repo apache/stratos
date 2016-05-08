@@ -21,17 +21,8 @@
 include('metering-authentication.jag');
 
 (function () {
-    var log = new Log();
-    var ALL_CLUSTERS = 'All Clusters';
 
-    var content = request.getContent();
-    var contentAsString = null;
-    if (content != '' && content != null) {
-        contentAsString = stringify(content);
-        if (log.isDebugEnabled()) {
-            log.debug("Value of content: " + contentAsString);
-        }
-    }
+    var ALL_CLUSTERS = 'All Clusters';
 
     var db = new Database("WSO2_ANALYTICS_PROCESSED_DATA_STORE_DB");
 
@@ -41,9 +32,11 @@ include('metering-authentication.jag');
         var clusterId = request.getParameter("clusterId");
 
         if (clusterId == ALL_CLUSTERS) {
-            result = db.query("SELECT * FROM MEMBER_INFORMATION WHERE MemberId IN (SELECT DISTINCT MemberId FROM ANALYTICS_PROCESSED_DATA_STORE.MEMBER_STATUS WHERE ApplicationId= ?)", applicationId);
+            result = db.query("SELECT * FROM MEMBER_INFORMATION WHERE MemberId IN (SELECT DISTINCT MemberId FROM " +
+                    "MEMBER_STATUS WHERE ApplicationId= ?)", applicationId);
         } else {
-            result = db.query("SELECT * FROM MEMBER_INFORMATION WHERE MemberId IN (SELECT DISTINCT MemberId FROM ANALYTICS_PROCESSED_DATA_STORE.MEMBER_STATUS WHERE ApplicationId= ? AND ClusterAlias= ?)", applicationId, clusterId);
+            result = db.query("SELECT * FROM MEMBER_INFORMATION WHERE MemberId IN (SELECT DISTINCT MemberId FROM " +
+                    "MEMBER_STATUS WHERE ApplicationId= ? AND ClusterAlias= ?)", applicationId, clusterId);
         }
         print(result);
     }

@@ -21,22 +21,14 @@
 include("monitoring-authentication.jag");
 
 (function () {
-    var log = new Log();
 
     var TIME_INTERVAL_1 = '30 Min';
     var TIME_INTERVAL_2 = '1 Hour';
     var TIME_INTERVAL_3 = '1 Day';
     var TIME_INTERVAL_4 = '1 Week';
     var TIME_INTERVAL_5 = '1 Month';
-
-    var content = request.getContent();
-    var contentAsString = null;
-    if (content != '' && content != null) {
-        contentAsString = stringify(content);
-        if (log.isDebugEnabled()) {
-            log.debug("Value of content: " + contentAsString);
-        }
-    }
+    var TIME_INTERVAL_6 = '6 Month';
+    var TIME_INTERVAL_7 = '1 Year';
 
     var db = new Database("WSO2_ANALYTICS_EVENT_STORE_DB");
 
@@ -66,6 +58,14 @@ include("monitoring-authentication.jag");
         } else if (timeInterval === TIME_INTERVAL_5) {
             interval = 2419200;
             x_axis_interval = 80640;
+            time_format = 'yyyy-mm-dd';
+        } else if (timeInterval === TIME_INTERVAL_6) {
+            interval = 2419200 * 6;
+            x_axis_interval = 80640 * 6;
+            time_format = 'yyyy-mm-dd';
+        } else if (timeInterval === TIME_INTERVAL_7) {
+            interval = 2419200*12;
+            x_axis_interval = 80640*12;
             time_format = 'yyyy-mm-dd';
         }
 

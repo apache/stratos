@@ -31,5 +31,5 @@
 
         INSERT OVERWRITE TABLE average_in_flight_requests_new select * from average_in_flight_requests;
     </Script>
-    <CronExpression>0/15 * * * * ?</CronExpression>
+    <CronExpression>0 0/15 * 1/1 * ? *</CronExpression>
 </Analytics>

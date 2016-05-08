@@ -26,8 +26,9 @@ include("monitoring-authentication.jag");
 
     try {
         var clusterId = request.getParameter('clusterId');
-        var result = db.query("SELECT DISTINCT MemberId \"MemberId\" FROM M_AVG_MEMORY_CONSUMPTION_STATS WHERE " +
-                "ClusterId=?", clusterId);
+        var result = db.query("SELECT DISTINCT MemberId \"MemberId\" FROM MEMBER_LIST WHERE ClusterId=? AND " +
+                "MemberStatus='Active' AND MemberId NOT IN (SELECT MemberId FROM MEMBER_LIST WHERE " +
+                "MemberStatus='Terminated')", clusterId);
 
         if (result != null) {
             print(result);

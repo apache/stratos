@@ -17,11 +17,8 @@
 * under the License.
 */
 
-CREATE TABLE MEMBER_STATUS(Time NUMBER(20), ApplicationId VARCHAR2(150), ClusterAlias VARCHAR2(150), MemberId VARCHAR2
-(150), MemberStatus VARCHAR2(50));
-CREATE TABLE MEMBER_COUNT(Time NUMBER(20), ApplicationId VARCHAR2(150), ClusterAlias VARCHAR2(150),
-CreatedInstanceCount NUMBER(10), InitializedInstanceCount NUMBER(10), ActiveInstanceCount NUMBER(10),
-TerminatedInstanceCount NUMBER(10));
+CREATE TABLE MEMBER_STATUS(Time NUMBER(20), ApplicationId VARCHAR2(150), ClusterAlias VARCHAR2(150), MemberId
+VARCHAR2(150), MemberStatus VARCHAR2(50));
 CREATE TABLE MEMBER_INFORMATION(MemberId VARCHAR2(150), InstanceType VARCHAR2(150), ImageId VARCHAR2(150), HostName
 VARCHAR2(150), PrivateIPAddresses VARCHAR2(150), PublicIPAddresses VARCHAR2(150), Hypervisor VARCHAR2(150), CPU
 VARCHAR2(10), RAM VARCHAR2(10), OSName VARCHAR2(150), OSVersion VARCHAR2(150));

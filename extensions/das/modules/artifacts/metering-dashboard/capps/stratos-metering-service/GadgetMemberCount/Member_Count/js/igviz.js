@@ -78,7 +78,6 @@
         divId = chartObj.canvas;
         chartConfig = chartObj.config;
         dataTable = chartObj.dataTable;
-        // table=setData(dataTable,chartConfig)
 
         xString = "data." + createAttributeNames(dataTable.metadata.names[chartConfig.xAxis])
         yStrings = [];
@@ -87,6 +86,11 @@
 
         }
 
+        //When there are multiple values for Y axis, it cannot started by minimum value
+        var zeroConfig = false;
+        if (yStrings.length > 1) {
+            zeroConfig = true;
+        }
 
         xScaleConfig = {
             "index": chartConfig.xAxis,
@@ -104,6 +108,7 @@
             "schema": dataTable.metadata,
             "name": "y",
             "range": "height",
+            "zero": zeroConfig,
             "nice": true,
             "field": yStrings[0]
         }
@@ -114,7 +119,6 @@
                 yDomain.push(row[columnIndex]);
             });
         });
-
         yDomain.sort(function (a, b) {
             return a - b;
         });
@@ -134,7 +138,7 @@
             "type": "x",
             "scale": "x",
             "angle": -35,
-            "title": dataTable.metadata.names[chartConfig.xAxis],
+            "title": "Time",
             "grid": true,
             "dx": -10,
             "dy": 10,
@@ -264,7 +268,7 @@
         chartObj.toolTipFunction = [];
         chartObj.toolTipFunction[0] = function (event, item) {
 
-            console.log(tool, event, item);
+            //console.log(tool,event,item);
             if (item.mark.marktype == 'symbol') {
                 xVar = dataTable.metadata.names[chartConfig.xAxis]
                 yVar = dataTable.metadata.names[chartConfig.yAxis]
@@ -289,8 +293,6 @@
 
         chartObj.spec = spec;
         chartObj.toolTip = true;
-        chartObj.spec = spec;
-
     }
 
 
@@ -307,9 +309,9 @@
 
             }
             if (format == "grouped") {
-                console.log("groupedDFJSDFKSD:JFKDJF");
+                //console.log("groupedDFJSDFKSD:JFKDJF");
                 if (chartConfig.orientation == 'H') {
-                    console.log('horizontal');
+                    //console.log('horizontal');
                     return this.drawGroupedBarChart(mychart);
 
                 }
@@ -338,6 +340,7 @@
             "schema": dataTable.metadata,
             "name": "y",
             "range": "height",
+            "zero": true,
             "nice": true,
             "field": yString
         }
@@ -1026,6 +1029,7 @@
             "schema": dataTable.metadata,
             "name": "y",
             "range": "height",
+            "zero": true,
             "field": yStrings
         }
 
@@ -1468,6 +1472,7 @@
             "name": "val",
             "range": "height",
             "dataFrom": "stats",
+            "zero": true,
             "field": "sum",
             "nice": true
         }
@@ -1923,6 +1928,7 @@
             "schema": dataTable.metadata,
             "name": "y",
             "range": "height",
+            "zero": false,
             "nice": true,
             "field": yString
         }
@@ -2066,7 +2072,7 @@
         }
         chartObj.toolTipFunction = [];
         chartObj.toolTipFunction[0] = function (event, item) {
-            console.log(tool, event, item);
+            //console.log(tool,event,item);
             xVar = dataTable.metadata.names[chartConfig.xAxis]
             yVar = dataTable.metadata.names[chartConfig.yAxis]
             pSize = dataTable.metadata.names[chartConfig.pointSize]
@@ -2294,9 +2300,9 @@
             }
             if (isFound) {
                 tempData[j][1] += currentYvalue;
-                console.log(name, currentYvalue, tempData[j][1]);
+                //console.log(name, currentYvalue, tempData[j][1]);
             } else {
-                console.log("create", name, currentYvalue);
+                //console.log("create", name, currentYvalue);
                 tempData.push([name, currentYvalue])
             }
         }
@@ -2322,7 +2328,7 @@
 
                 filtersList = filters.data();
 
-                console.log(filtersList)
+                //console.log(filtersList)
                 var filterdDataset = [];
                 var selectionObj = JSON.parse(JSON.stringify(originaltable));
                 itr = 0;
@@ -2357,7 +2363,7 @@
 
 
             if (index < chartConfig.xAxis.length) {
-                console.log(x);
+                //console.log(x);
                 d3.select(x.chart._el).selectAll('g.type-rect rect').on('click', function (d, i) {
                     // console.log(d, i, this);
                     console.log(d, i);
@@ -2409,7 +2415,7 @@
     function setScale(scaleConfig) {
         var scale = {"name": scaleConfig.name};
 
-        console.log(scaleConfig.schema, scaleConfig.index);
+        //console.log(scaleConfig.schema,scaleConfig.index);
 
         dataFrom = "table";
 
@@ -2473,14 +2479,13 @@
         if (scaleConfig.hasOwnProperty("zero")) {
             scale["zero"] = scaleConfig.zero;
         }
-        console.log(scale);
         return scale;
 
     }
 
     function setAxis(axisConfig) {
 
-        console.log("Axis", axisConfig);
+        //console.log("Axis",axisConfig);
 
         axis = {
             "type": axisConfig.type,
@@ -2528,7 +2533,7 @@
             axis["tickPadding"] = axisConfig.tickPadding;
         }
 
-        console.log("SpecAxis", axis);
+        //console.log("SpecAxis",axis);
         return axis;
     }
 
@@ -2545,8 +2550,11 @@
             for (j = 0; j < namesArray.length; j++) {
                 if (schema.types[j] == 'T') {
                     ptObj[createAttributeNames(namesArray[j])] = new Date(dataTableObj[i][j]);
-                } else
+                } else if (schema.types[j] == 'N') {
+                    ptObj[createAttributeNames(namesArray[j])] = parseFloat(dataTableObj[i][j]);
+                } else {
                     ptObj[createAttributeNames(namesArray[j])] = dataTableObj[i][j];
+                }
             }
 
             table[i] = ptObj;
@@ -2587,7 +2595,7 @@
         MappingObj["tickWidth"] = "ticks.strokeWidth";
 
 
-        console.log("previous Axis", spec)
+        //console.log("previous Axis",spec)
         for (var propt in axisConfig) {
 
             if (propt == "tickSize" || propt == "tickPadding")
@@ -2608,7 +2616,7 @@
             }
         }
 
-        console.log("NEW SPEC", spec);
+        //console.log("NEW SPEC",spec);
     }
 
     function createScales(dataset, chartConfig, dataTable) {
@@ -2853,7 +2861,7 @@
     };
 
     igviz.DataTable.prototype.toJSON = function () {
-        console.log(this);
+        //console.log(this);
     };
 
 
@@ -3005,7 +3013,7 @@
     }
 
     Chart.prototype.update = function (pointObj) {
-        console.log("+++ Inside update");
+        //console.log("+++ Inside update");
 
         if (this.config.chartType == "map") {
             config = this.config;
@@ -3032,7 +3040,7 @@
                 this.dataTable.data.push(pointObj);
                 this.table.push(newTable[0]);
 
-                if (this.config.chartType == "tabular" || this.config.chartType == "singleNumber") {
+                if (this.config.chartType == "tabular" || this.config.chartType == "singleNumber" || this.config.chartType == "bar") {
                     this.plot(persistedData, maxValueForUpdate);
                 } else {
                     this.chart.data(this.data).update({"duration": 500});
@@ -3045,7 +3053,7 @@
     }
 
     Chart.prototype.updateList = function (dataList, callback) {
-        console.log("+++ Inside updateList");
+        //console.log("+++ Inside updateList");
 
         for (i = 0; i < dataList.length; i++) {
             this.dataTable.data.shift();
@@ -3059,7 +3067,7 @@
             this.table.push(newTable[i]);
         }
 
-        //     console.log(point,this.chart,this.data);
+        //     //console.log(point,this.chart,this.data);
         this.chart.data(this.data).update();
 
     }
@@ -3068,7 +3076,7 @@
         var ref = this;
         var newH = document.getElementById(ref.canvas.replace('#', '')).offsetHeight
         var newW = document.getElementById(ref.canvas.replace('#', '')).offsetWidth
-        console.log("Resized", newH, newW, ref)
+        //console.log("Resized",newH,newW,ref)
 
         var left = 0, top = 0, right = 0, bottom = 0;
 
@@ -3103,7 +3111,7 @@
         //    h=newH-top-bottom;
         //
         //}
-        console.log(w, h);
+        //console.log(w,h);
         ref.chart.width(w).height(h).renderer('svg').update({props: 'enter'}).update();
 
     }
@@ -3364,7 +3372,7 @@
 
             var colorRows = d3.scale.linear()
                 .domain([2.5, 4])
-                .range(['#F5BFE8', '#E305AF']);
+                .range(['#EFF5FA', '#5D9DC9']);
 
             var fontSize = d3.scale.linear()
                 .domain([0, 100])
@@ -3395,8 +3403,8 @@
                     .append("td");
 
                 cells.text(function (d, i) {
-                    return d;
-                })
+                        return d;
+                    })
                     .style("font-size", function (d, i) {
                         fontSize.domain([
                             d3.min(parseColumnFrom2DArray(tableData, i)),
@@ -3428,8 +3436,8 @@
                     .append("td");
 
                 cells.text(function (d, i) {
-                    return d;
-                })
+                        return d;
+                    })
                     .style('background-color', function (d, i) {
 
                         //This is where the color is decided for the cell
@@ -3458,8 +3466,8 @@
                     .append("td");
 
                 cells.text(function (d, i) {
-                    return d;
-                })
+                        return d;
+                    })
                     .style("font-size", function (d, i) {
                         fontSize.domain([
                             d3.min(parseColumnFrom2DArray(tableData, i)),
@@ -3472,12 +3480,12 @@
                 //appending the rows inside the table body
                 rows.style('background-color', function (d, i) {
 
-                    colorRows.domain([
-                        d3.min(parseColumnFrom2DArray(tableData, config.xAxis)),
-                        d3.max(parseColumnFrom2DArray(tableData, config.xAxis))
-                    ]);
-                    return colorRows(d[config.xAxis]);
-                })
+                        colorRows.domain([
+                            d3.min(parseColumnFrom2DArray(tableData, config.xAxis)),
+                            d3.max(parseColumnFrom2DArray(tableData, config.xAxis))
+                        ]);
+                        return colorRows(d[config.xAxis]);
+                    })
                     .style("font-size", function (d, i) {
 
                         fontSize.domain([
@@ -3575,7 +3583,7 @@
                     callback.call(ref);
                 }
             });
-            console.log(this);
+            //console.log(this);
         }
 
 

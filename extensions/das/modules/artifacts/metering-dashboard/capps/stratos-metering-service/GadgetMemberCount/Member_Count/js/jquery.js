@@ -1126,18 +1126,18 @@
                                     fn = fns[i];
                                 // deferred[ done | fail | progress ] for forwarding actions to newDefer
                                 deferred[tuple[1]](jQuery.isFunction(fn) ?
-                                        function () {
-                                            var returned = fn.apply(this, arguments);
-                                            if (returned && jQuery.isFunction(returned.promise)) {
-                                                returned.promise()
-                                                    .done(newDefer.resolve)
-                                                    .fail(newDefer.reject)
-                                                    .progress(newDefer.notify);
-                                            } else {
-                                                newDefer[action + "With"](this === deferred ? newDefer : this, [returned]);
-                                            }
-                                        } :
-                                        newDefer[action]
+                                    function () {
+                                        var returned = fn.apply(this, arguments);
+                                        if (returned && jQuery.isFunction(returned.promise)) {
+                                            returned.promise()
+                                                .done(newDefer.resolve)
+                                                .fail(newDefer.reject)
+                                                .progress(newDefer.notify);
+                                        } else {
+                                            newDefer[action + "With"](this === deferred ? newDefer : this, [returned]);
+                                        }
+                                    } :
+                                    newDefer[action]
                                 );
                             });
                             fns = null;
@@ -5502,7 +5502,7 @@
 
         addBack: function (selector) {
             return this.add(selector == null ?
-                    this.prevObject : this.prevObject.filter(selector)
+                this.prevObject : this.prevObject.filter(selector)
             );
         }
     });
@@ -7062,12 +7062,12 @@
 
             set: function (elem, value, extra) {
                 return setPositiveNumber(elem, value, extra ?
-                        augmentWidthOrHeight(
-                            elem,
-                            name,
-                            extra,
-                            jQuery.support.boxSizing && jQuery.css(elem, "boxSizing") === "border-box"
-                        ) : 0
+                    augmentWidthOrHeight(
+                        elem,
+                        name,
+                        extra,
+                        jQuery.support.boxSizing && jQuery.css(elem, "boxSizing") === "border-box"
+                    ) : 0
                 );
             }
         };
@@ -7200,8 +7200,8 @@
         },
         serializeArray: function () {
             return this.map(function () {
-                return this.elements ? jQuery.makeArray(this.elements) : this;
-            })
+                    return this.elements ? jQuery.makeArray(this.elements) : this;
+                })
                 .filter(function () {
                     return this.name && !this.disabled &&
                         ( this.checked || rselectTextarea.test(this.nodeName) ||
@@ -7490,8 +7490,8 @@
                 // Create a dummy div to hold the results
                 jQuery("<div>")
 
-                    // inject the contents of the document in, removing the scripts
-                    // to avoid any 'Permission Denied' errors in IE
+                // inject the contents of the document in, removing the scripts
+                // to avoid any 'Permission Denied' errors in IE
                     .append(responseText.replace(rscript, ""))
 
                     // Locate the specified elements

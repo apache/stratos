@@ -14,6 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<artifact name="SparkscriptsMemberLifecycle" version="1.0.0" type="analytics/spark" serverRole="DataAnalyticsServer">
-    <file>member_lifecycle.xml</file>
+<artifact name="ExecutionplanMemberCount" version="1.0.0" type="event/execution-plan" serverRole="DataAnalyticsServer">
+    <file>MemberCount.siddhiql</file>
 </artifact>

@@ -67,6 +67,8 @@
                          <input type="button" class="button" value="1 Day" onClick="publish(this.value)">
                          <input type="button" class="button" value="1 Week" onClick="publish(this.value)">
                          <input type="button" class="button" value="1 Month" onClick="publish(this.value)">
+                         <input type="button" class="button" value="6 Month" onClick="publish(this.value)">
+                         <input type="button" class="button" value="1 Year" onClick="publish(this.value)">
                     </div>
                 </div>
             </div>

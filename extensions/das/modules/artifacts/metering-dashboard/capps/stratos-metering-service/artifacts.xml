@@ -38,6 +38,9 @@
         <dependency artifact="EventreceiverMemberLifecycle" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
 
+        <dependency artifact="ExecutionplanMemberCount" version="1.0.0" include="true"
+                    serverRole="DataAnalyticsServer"/>
+
         <dependency artifact="SparkscriptsApplicationSignUps" version="1.0.0" include="true"
                     serverRole="DataAnalyticsServer"/>
         <dependency artifact="SparkscriptsMemberInfo" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>

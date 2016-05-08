@@ -102,26 +102,29 @@
     //Initializing OpenAjax ManagedHub
     var hub = new OpenAjax.hub.ManagedHub({
         onSubscribe: function (topic, container) {
-	    readRequestParam();
-        if(topic.indexOf("token-channel") !=-1){
-            if(username){
-                ues.hub.publish("token-channel", username);
-            }else{
-
-                jQuery.ajax({
-                    url: '/portal/apis/user',
-                    type: 'get',
-                    dataType: "json",
-                    success: function (data) {
-                        username = data.username;
-                        ues.hub.publish("token-channel", username);
-                    },
-                    error: function (msg) {
-                        ues.hub.publish("token-channel", null);
-                    }
-                });
+            readRequestParam();
+            if (topic.indexOf("token-channel") != -1) {
+                fetchAccessToken();
             }
-        }
+            if(topic.indexOf("user-channel") !=-1){
+                if(username){
+                    ues.hub.publish("user-channel", username);
+                }else{
+
+                    jQuery.ajax({
+                        url: '/portal/apis/user',
+                        type: 'get',
+                        dataType: "json",
+                        success: function (data) {
+                            username = data.username;
+                            ues.hub.publish("user-channel", username);
+                        },
+                        error: function (msg) {
+                            ues.hub.publish("user-channel", null);
+                        }
+                    });
+                }
+            }
             var fn = configs(ues.configs, ['hub', 'subscribe']);
             return fn ? fn(topic, container) : true;
         },

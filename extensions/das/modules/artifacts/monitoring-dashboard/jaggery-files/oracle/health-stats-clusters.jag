@@ -26,7 +26,7 @@ include("monitoring-authentication.jag");
 
     try {
         var clusterInstanceId = request.getParameter('clusterInstanceId');
-        var result = db.query("SELECT DISTINCT ClusterId \"ClusterId\" FROM AVG_MEMORY_CONSUMPTION_STATS");
+        var result = db.query("SELECT DISTINCT ClusterId \"ClusterId\" FROM MEMBER_LIST");
 
         if (result != null) {
             print(result);

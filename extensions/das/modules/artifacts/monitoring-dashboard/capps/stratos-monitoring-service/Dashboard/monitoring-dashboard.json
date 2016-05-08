@@ -12,22 +12,63 @@
   },
   "pages": [
     {
-      "id": "health-stats",
+      "id": "landing",
       "title": "Health Stats",
       "layout": {
-        "id": "single-column",
-        "title": "Single Column",
-        "description": "This is a layout generated through single-column.io",
-        "thumbnail": "store://layout/single-column/index.png",
-        "url": "store://layout/single-column/index.hbs",
-        "content": "<div class=\"container\">\n<div class=\"row\">\n    <div id=\"a\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"b\" class=\"col-md-12 ues-component-box\"></div>\n    <div id=\"c\" class=\"col-md-12 ues-component-box\"></div>\n</div>\n</div>\n"
+        "content": {
+          "loggedIn": {
+            "blocks": [
+              {
+                "id": "a",
+                "col": 1,
+                "row": 8,
+                "size_x": 12,
+                "size_y": 5,
+                "banner": false
+              },
+              {
+                "id": "b",
+                "col": 1,
+                "row": 13,
+                "size_x": 12,
+                "size_y": 5,
+                "banner": false
+              },
+              {
+                "id": "c",
+                "col": 1,
+                "row": 18,
+                "size_x": 12,
+                "size_y": 6,
+                "banner": false
+              },
+              {
+                "id": "2fc411045d01a5d664ce2ffc1ce4b9fe",
+                "col": 1,
+                "row": 3,
+                "size_x": 12,
+                "size_y": 5,
+                "banner": false
+              },
+              {
+                "id": "fdb364d08b52e0729822fe8b8cf2ee83",
+                "col": 1,
+                "row": 1,
+                "size_x": 12,
+                "size_y": 2,
+                "banner": false
+              }
+            ]
+          }
+        },
+        "fluidLayout": false
       },
       "isanon": false,
       "content": {
         "default": {
-          "a": [
+          "fdb364d08b52e0729822fe8b8cf2ee83": [
             {
-              "id": "8nfqbaxvjc8cwhfr",
+              "id": "rrwtvabbaz3lqibxncfgh9f6r",
               "content": {
                 "id": "Health_Stats_Filter",
                 "title": "",
@@ -52,14 +93,17 @@
                     "description": "This notifies cancellation of state selection"
                   }
                 },
+                "options": {},
                 "locale_titles": {
                   "en-US": ""
                 },
                 "settings": {}
               }
-            },
+            }
+          ],
+          "2fc411045d01a5d664ce2ffc1ce4b9fe": [
             {
-              "id": "8wnyg587eaznz5mi",
+              "id": "zzotld9irni34dzx3lczhncdi",
               "content": {
                 "id": "Memory_Usage",
                 "title": "Memory Usage",
@@ -74,7 +118,7 @@
                     "description": "Used to filter based on state",
                     "on": [
                       {
-                        "from": "8nfqbaxvjc8cwhfr",
+                        "from": "rrwtvabbaz3lqibxncfgh9f6r",
                         "event": "health-stats-filter"
                       }
                     ]
@@ -91,16 +135,16 @@
                   "titlePosition": "left",
                   "title": "Memory Usage"
                 },
-                "settings": {},
                 "locale_titles": {
                   "en-US": "Memory Usage"
-                }
+                },
+                "settings": {}
               }
             }
           ],
-          "b": [
+          "a": [
             {
-              "id": "hhy2fj8wgu1bgldi",
+              "id": "0dlxzn1hstk1p3jo2rm6etgldi",
               "content": {
                 "id": "Load_Average",
                 "title": "Load Average",
@@ -115,7 +159,7 @@
                     "description": "Used to filter based on state",
                     "on": [
                       {
-                        "from": "8nfqbaxvjc8cwhfr",
+                        "from": "rrwtvabbaz3lqibxncfgh9f6r",
                         "event": "health-stats-filter"
                       }
                     ]
@@ -132,17 +176,19 @@
                   "titlePosition": "left",
                   "title": "Load Average"
                 },
-                "settings": {},
                 "locale_titles": {
                   "en-US": "Load Average"
-                }
+                },
+                "settings": {}
               }
-            },
+            }
+          ],
+          "b": [
             {
-              "id": "3rlgpdhg2e29",
+              "id": "6zcemtxm80p77vey017lrqkt9",
               "content": {
                 "id": "In_Flight_Request",
-                "title": "In Flight Request",
+                "title": "In-Flight Request",
                 "type": "gadget",
                 "thumbnail": "local://images/gadgetIcon.png",
                 "data": {
@@ -154,7 +200,7 @@
                     "description": "Used to filter based on state",
                     "on": [
                       {
-                        "from": "8nfqbaxvjc8cwhfr",
+                        "from": "rrwtvabbaz3lqibxncfgh9f6r",
                         "event": "health-stats-filter"
                       }
                     ]
@@ -171,19 +217,19 @@
                   "titlePosition": "left",
                   "title": "In-Flight Request"
                 },
-                "settings": {},
                 "locale_titles": {
                   "en-US": "In-Flight Request"
-                }
+                },
+                "settings": {}
               }
             }
           ],
           "c": [
             {
-              "id": "a7jevl0wisc680k9",
+              "id": "7xb1k0zbnjena6bzpd190be29",
               "content": {
                 "id": "Scaling_Details",
-                "title": "Scaling Details",
+                "title": "Cluster Instances",
                 "type": "gadget",
                 "thumbnail": "local://images/gadgetIcon.png",
                 "data": {
@@ -195,7 +241,7 @@
                     "description": "Used to filter based on state",
                     "on": [
                       {
-                        "from": "8nfqbaxvjc8cwhfr",
+                        "from": "rrwtvabbaz3lqibxncfgh9f6r",
                         "event": "health-stats-filter"
                       }
                     ]
@@ -212,10 +258,10 @@
                   "titlePosition": "left",
                   "title": "Cluster Instances"
                 },
-                "settings": {},
                 "locale_titles": {
                   "en-US": "Cluster Instances"
-                }
+                },
+                "settings": {}
               }
             }
           ]
@@ -224,7 +270,15 @@
       }
     }
   ],
-  "landing": "health-stats",
+  "identityServerUrl": "",
+  "accessTokenUrl": "",
+  "apiKey": "",
+  "apiSecret": "",
+  "banner": {
+    "globalBannerExists": null,
+    "customBannerExists": null
+  },
+  "landing": "landing",
   "isanon": false,
   "isUserCustom": false
 }

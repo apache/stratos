@@ -47,6 +47,6 @@ port offset.
 
 
 Please refer below link for more information on WSO2 DAS.
-https://docs.wso2.com/display/DAS300/WSO2+Data+Analytics+Server+Documentation
+https://docs.wso2.com/display/DAS301/WSO2+Data+Analytics+Server+Documentation
 
 Thank you for using Apache Stratos!

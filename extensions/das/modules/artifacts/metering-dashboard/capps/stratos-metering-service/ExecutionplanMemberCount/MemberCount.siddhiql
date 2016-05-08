@@ -1,0 +1,42 @@
+/* Enter a unique ExecutionPlan */
+@Plan:name('MemberCount')
+
+/* Enter a unique description for ExecutionPlan */
+-- @Plan:description('ExecutionPlan')
+
+/* define streams/tables and write queries here ... */
+
+@Plan:trace('false')
+
+@Import('member_lifecycle:1.0.0')
+define stream member_lifecycle (timestamp long, application_id string, cluster_id string, cluster_alias string, cluster_instance_id string, service_name string, network_partition_id string, partition_id string, member_id string, member_status string);
+
+define stream temp_app_member_count (application_id string, active_instances long, member_status string);
+
+define stream temp_cluster_member_count (application_id string, cluster_alias string, active_instances long, member_status string);
+
+@From(eventtable='rdbms', datasource.name='WSO2_ANALYTICS_PROCESSED_DATA_STORE_DB', table.name='APP_ACTIVE_MEMBER_COUNT')
+define table APPLICATION_ACTIVE_MEMBER_COUNT (timestamp long, application_id string, active_instances long);
+
+@From(eventtable='rdbms', datasource.name='WSO2_ANALYTICS_PROCESSED_DATA_STORE_DB', table.name='CLUSTER_ACTIVE_MEMBER_COUNT')
+define table CLUSTER_ACTIVE_MEMBER_COUNT (timestamp long, application_id string, cluster_alias string, active_instances long);
+
+from member_lifecycle #window.unique(member_id)
+select application_id, count() as active_instances, member_status
+group by application_id, member_status
+having member_status == 'Active'
+insert all events into temp_app_member_count;
+
+from member_lifecycle #window.unique(member_id)
+select application_id, cluster_alias, count() as active_instances, member_status
+group by application_id, cluster_alias, member_status
+having member_status == 'Active'
+insert all events into temp_cluster_member_count;
+
+from temp_app_member_count [member_status=='Active']
+select time:timestampInMilliseconds() as timestamp, application_id, active_instances
+insert into APPLICATION_ACTIVE_MEMBER_COUNT;
+
+from temp_cluster_member_count [member_status=='Active']
+select time:timestampInMilliseconds() as timestamp, application_id, cluster_alias, active_instances
+insert into CLUSTER_ACTIVE_MEMBER_COUNT;

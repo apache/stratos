@@ -20,7 +20,8 @@
  */
 var gadgetConfig = {
     "id": "Member_Count",
-    "title": "Member_Count",
+    "title": "Member Count",
+    "datasource": "ACTIVE_MEMBER_COUNT",
     "type": "batch",
     "columns": [
         {
@@ -28,26 +29,14 @@ var gadgetConfig = {
             "DATA_TYPE": "varchar"
         },
         {
-            "COLUMN_NAME": "CreatedInstanceCount",
-            "DATA_TYPE": "int"
-        },
-        {
-            "COLUMN_NAME": "InitializedInstanceCount",
-            "DATA_TYPE": "int"
-        },
-        {
-            "COLUMN_NAME": "ActiveInstanceCount",
-            "DATA_TYPE": "int"
-        },
-        {
-            "COLUMN_NAME": "TerminatedInstanceCount",
-            "DATA_TYPE": "int"
+            "COLUMN_NAME": "ActiveInstances",
+            "DATA_TYPE": "LONG"
         }
     ],
     "maxUpdateValue": 10,
     "chartConfig": {
         "chartType": "line",
-        "yAxis": [1, 2, 3, 4],
+        "yAxis": [1],
         "xAxis": 0,
         "interpolationMode": "line"
     },

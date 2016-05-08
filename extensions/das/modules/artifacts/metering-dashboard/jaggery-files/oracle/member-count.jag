@@ -21,86 +21,56 @@
 include('metering-authentication.jag');
 
 (function () {
-    var log = new Log();
 
     var TIME_INTERVAL_1 = '30 Min';
     var TIME_INTERVAL_2 = '1 Hour';
     var TIME_INTERVAL_3 = '1 Day';
     var TIME_INTERVAL_4 = '1 Week';
     var TIME_INTERVAL_5 = '1 Month';
+    var TIME_INTERVAL_6 = '6 Month';
+    var TIME_INTERVAL_7 = '1 Year';
     var ALL_CLUSTERS = 'All Clusters';
-
-    var content = request.getContent();
-    var contentAsString = null;
-    if (content != '' && content != null) {
-        contentAsString = stringify(content);
-        if (log.isDebugEnabled()) {
-            log.debug("Value of content: " + contentAsString);
-        }
-    }
 
     var db = new Database("WSO2_ANALYTICS_PROCESSED_DATA_STORE_DB");
 
     try {
         var result;
+
         var timeInterval = request.getParameter("time");
         var interval = 1800;
-        var x_axis_interval;
-        var time_format;
         if (timeInterval === TIME_INTERVAL_1) {
             interval = 1800;
-            x_axis_interval = 60;
-            time_format = 'hh24:mi';
         } else if (timeInterval === TIME_INTERVAL_2) {
             interval = 3600;
-            x_axis_interval = 120;
-            time_format = 'hh24:mi';
         } else if (timeInterval === TIME_INTERVAL_3) {
             interval = 86400;
-            x_axis_interval = 2880;
-            time_format = 'yyyy-mm-dd hh24:mi';
         } else if (timeInterval === TIME_INTERVAL_4) {
             interval = 604800;
-            x_axis_interval = 20160;
-            time_format = 'yyyy-mm-dd hh24:mi';
         } else if (timeInterval === TIME_INTERVAL_5) {
             interval = 2419200;
-            x_axis_interval = 80640;
-            time_format = 'yyyy-mm-dd';
+        } else if (timeInterval === TIME_INTERVAL_6) {
+            interval = 2419200 * 6;
+        } else if (timeInterval === TIME_INTERVAL_7) {
+            interval = 2419200 * 12;
         }
 
         var applicationId = request.getParameter("applicationId");
         var clusterId = request.getParameter("clusterId");
 
         if (clusterId == ALL_CLUSTERS) {
-            result = db.query("SELECT TO_CHAR((TIMESTAMP '1970-01-01 00:00:00' AT TIME ZONE 'UTC' + NUMTODSINTERVAL" +
-                    "(CEIL(Time/(" + x_axis_interval + " * 1000)) * " + x_axis_interval + ", 'second')) AT LOCAL, '"
-                    + time_format + "') \"Time\", SUM(CreatedInstanceCount) AS \"CreatedInstanceCount\", SUM" +
-                    "(InitializedInstanceCount) AS \"InitializedInstanceCount\", SUM(ActiveInstanceCount) AS " +
-                    "\"ActiveInstanceCount\", SUM(TerminatedInstanceCount) AS \"TerminatedInstanceCount\" FROM " +
-                    "MEMBER_COUNT WHERE ApplicationId=? AND TO_CHAR((TIMESTAMP '1970-01-01 00:00:00' AT TIME ZONE " +
-                    "'UTC' + NUMTODSINTERVAL(Time/1000,'second')) AT LOCAL, 'yyyy-mm-dd hh24:mi') BETWEEN TO_CHAR" +
-                    "(LOCALTIMESTAMP - NUMTODSINTERVAL(" +  interval + ", 'second'),'yyyy-mm-dd hh24:mi') AND TO_CHAR" +
-                    "(LOCALTIMESTAMP,'yyyy-mm-dd hh24:mi') GROUP BY TO_CHAR((TIMESTAMP '1970-01-01 00:00:00' AT TIME " +
-                    "ZONE 'UTC' + NUMTODSINTERVAL(CEIL(Time/(" + x_axis_interval + " * 1000)) * " + x_axis_interval +
-                    ", 'second')) AT LOCAL, '" + time_format + "'), ApplicationId ORDER BY TO_CHAR((TIMESTAMP " +
-                    "'1970-01-01 00:00:00' AT TIME ZONE 'UTC'  + NUMTODSINTERVAL(CEIL(Time/(" + x_axis_interval + " *" +
-                    " 1000)) * " + x_axis_interval + ", 'second')) AT LOCAL, '" + time_format + "')", applicationId);
+            result = db.query("SELECT timestamp as \"Time\", active_instances as \"ActiveInstances\" FROM " +
+                    "APP_ACTIVE_MEMBER_COUNT WHERE APPLICATION_ID=? AND TO_CHAR(TIMESTAMP '1970-01-01 00:00:00' " +
+                    "AT TIME ZONE 'UTC' + NUMTODSINTERVAL(timestamp/1000,'second'), 'yyyy-mm-dd hh24:mi:ss') BETWEEN " +
+                    "TO_CHAR(SYSTIMESTAMP AT TIME ZONE 'UTC' - NUMTODSINTERVAL(" +  interval + ", 'second')," +
+                    "'yyyy-mm-dd hh24:mi:ss') AND TO_CHAR(SYSTIMESTAMP AT TIME ZONE 'UTC','yyyy-mm-dd hh24:mi:ss')",
+                    applicationId);
         } else {
-            result = db.query("SELECT TO_CHAR((TIMESTAMP '1970-01-01 00:00:00' AT TIME ZONE 'UTC' + NUMTODSINTERVAL" +
-                    "(CEIL(Time/(" + x_axis_interval + " * 1000)) * " + x_axis_interval + ", 'second')) AT LOCAL, '"
-                    + time_format + "')  \"Time\", SUM(CreatedInstanceCount) AS \"CreatedInstanceCount\", SUM" +
-                    "(InitializedInstanceCount) AS \"InitializedInstanceCount\", SUM(ActiveInstanceCount) AS " +
-                    "\"ActiveInstanceCount\", SUM(TerminatedInstanceCount) AS \"TerminatedInstanceCount\" FROM " +
-                    "MEMBER_COUNT WHERE ApplicationId=? AND ClusterAlias=? AND TO_CHAR((TIMESTAMP '1970-01-01 " +
-                    "00:00:00' AT TIME ZONE 'UTC' + NUMTODSINTERVAL(Time/1000,'second')) AT LOCAL, 'yyyy-mm-dd " +
-                    "hh24:mi') BETWEEN TO_CHAR(LOCALTIMESTAMP - NUMTODSINTERVAL(" +  interval + ", 'second')," +
-                    "'yyyy-mm-dd hh24:mi') AND TO_CHAR(LOCALTIMESTAMP,'yyyy-mm-dd hh24:mi') GROUP BY TO_CHAR(" +
-                    "(TIMESTAMP '1970-01-01 00:00:00' AT TIME ZONE 'UTC' + NUMTODSINTERVAL(CEIL(Time/(" +
-                    x_axis_interval + " * 1000)) * " + x_axis_interval + ", 'second')) AT LOCAL, '" + time_format +
-                    "'), ApplicationId ORDER BY TO_CHAR((TIMESTAMP '1970-01-01 00:00:00' AT TIME ZONE 'UTC'  + " +
-                    "NUMTODSINTERVAL(CEIL(Time/(" + x_axis_interval + " * 1000)) * " + x_axis_interval + ", 'second')" +
-                    ") AT LOCAL, '" + time_format + "')", applicationId, clusterId);
+            result = db.query("SELECT timestamp as \"Time\", active_instances as \"ActiveInstances\" FROM " +
+                    "CLUSTER_ACTIVE_MEMBER_COUNT WHERE APPLICATION_ID=? AND CLUSTER_ALIAS=? AND TO_CHAR(TIMESTAMP " +
+                    "'1970-01-01 00:00:00' AT TIME ZONE 'UTC' + NUMTODSINTERVAL(timestamp/1000,'second'), " +
+                    "'yyyy-mm-dd hh24:mi:ss') BETWEEN TO_CHAR(SYSTIMESTAMP AT TIME ZONE 'UTC' - NUMTODSINTERVAL(" +
+                    interval + ", 'second'),'yyyy-mm-dd hh24:mi:ss') AND TO_CHAR(SYSTIMESTAMP AT TIME ZONE 'UTC', " +
+                    "'yyyy-mm-dd hh24:mi:ss')", applicationId, clusterId);
         }
         print(result);
 

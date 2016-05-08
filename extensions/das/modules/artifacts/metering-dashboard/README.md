@@ -3,7 +3,7 @@
 ## This directory contains following artifacts:
 
 (1) capps - Includes stratos-metering-service car file which bundles all Event Stream, Event receiver, Even Store,
-            Gadgets, SparkScripts and Dashboard artifacts.
+            Execution plan, Gadgets, SparkScripts and Dashboard artifacts.
 
 (2) jaggery-files
 
