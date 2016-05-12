@@ -7,6 +7,10 @@
     "privateIPAddress": "172.17.8.101",
     "publicIPAddress": "172.17.8.101",
     "property": [
+      {
+        "name": "KUBERNETES_MASTER_PORT",
+        "value": "8080"
+      }
     ]
   },
   "portRange": {

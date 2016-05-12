@@ -72,12 +72,14 @@ public class CompleteApplicationSignUpsMessageProcessor extends MessageProcessor
                 }
             }
 
-            if(!DomainMappingManager.getInstance().isInitialized()) {
+            if (!DomainMappingManager.getInstance().isInitialized()) {
                 try {
                     DomainMappingManager.acquireWriteLock();
                     for (ApplicationSignUp applicationSignUp : event.getApplicationSignUps()) {
-                        DomainMappingManager.getInstance().addDomainMappings(
-                                Arrays.asList(applicationSignUp.getDomainMappings()));
+                        if (applicationSignUp.getDomainMappings() != null) {
+                            DomainMappingManager.getInstance().addDomainMappings(
+                                    Arrays.asList(applicationSignUp.getDomainMappings()));
+                        }
                     }
                     DomainMappingManager.getInstance().setInitialized(true);
                     log.info("Domain mappings initialized");

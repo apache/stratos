@@ -48,8 +48,8 @@ public interface KubernetesAPIClientInterface {
      */
     public void createPod(String podId, String podName, Map<String, String> podLabels, Map<String, String> annotations,
                           String dockerImage, String cpu, String memory, List<ContainerPort> ports,
-                          List<EnvVar> environmentVariables)
-            throws KubernetesClientException;
+                          List<EnvVar> environmentVariables, List<String> imagePullSecrets, String imagePullPolicy)
+            throws KubernetesClientException ;
 
     /**
      * Get information of a Pod given the PodID

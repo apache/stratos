@@ -1,6 +1,6 @@
 {
-  "clusterId": "kubernetes-cluster-1",
-  "description": "Kubernetes Cluster 1",
+  "clusterId": "kubernetes-cluster-3",
+  "description": "Kubernetes Cluster 3",
   "kubernetesMaster": {
     "hostId": "master",
     "hostname": "master.dev.kubernetes.org",
@@ -10,6 +10,10 @@
       {
         "name": "KUBERNETES_MASTER_PORT",
         "value": "8080"
+      },
+      {
+        "name": "KUBERNETES_NAMESPACE",
+        "value": "namespace-1"
       }
     ]
   },
@@ -23,14 +27,6 @@
       "hostname": "minion-1.dev.kubernetes.org",
       "privateIPAddress": "172.17.8.102",
       "publicIPAddress": "172.17.8.102",
-      "property": [
-      ]
-    },
-    {
-      "hostId": "minion-2",
-      "hostname": "minion-2.dev.kubernetes.org",
-      "privateIPAddress": "172.17.8.103",
-      "publicIPAddress": "172.17.8.103",
       "property": [
       ]
     }

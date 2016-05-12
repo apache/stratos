@@ -18,13 +18,24 @@
  */
 package org.apache.stratos.cloud.controller.util;
 
-import com.google.common.net.InetAddresses;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.domain.*;
+import org.apache.stratos.cloud.controller.domain.Cartridge;
+import org.apache.stratos.cloud.controller.domain.IaasConfig;
+import org.apache.stratos.cloud.controller.domain.IaasProvider;
+import org.apache.stratos.cloud.controller.domain.NetworkInterface;
+import org.apache.stratos.cloud.controller.domain.NetworkInterfaces;
+import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
@@ -36,14 +47,8 @@ import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
+import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.messaging.domain.topology.Topology;
-
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 public class CloudControllerUtil {
     private static final Log log = LogFactory.getLog(CloudControllerUtil.class);
@@ -213,7 +218,7 @@ public class CloudControllerUtil {
         try {
             validateKubernetesMaster(kubernetesCluster.getKubernetesMaster());
             validateKubernetesHosts(kubernetesCluster.getKubernetesHosts());
-
+            validateNameSpace(kubernetesCluster);
             // Check for duplicate hostIds
             if (kubernetesCluster.getKubernetesHosts() != null) {
                 List<String> hostIds = new ArrayList<>();
@@ -274,6 +279,37 @@ public class CloudControllerUtil {
                     "endpoint has been set. Please set either endpoint or private ip.");
         }
 
+    }
+
+    public static void validateNameSpace(KubernetesCluster kubernetesCluster) throws InvalidKubernetesMasterException {
+        // validate namespace
+        KubernetesCluster[] kubernetesClusters = CloudControllerContext.getInstance().getKubernetesClusters();
+        String namespace = CloudControllerUtil.getProperty(kubernetesCluster.getKubernetesMaster().getProperties(),
+                KubernetesConstants.KUBERNETES_NAMESPACE, KubernetesConstants.DEFAULT_NAMESPACE);
+        for (KubernetesCluster kubCluster : kubernetesClusters) {
+            if (!kubCluster.getClusterId().equals(kubernetesCluster.getClusterId()) &&
+                    CloudControllerUtil.getProperty(kubCluster.getKubernetesMaster().getProperties(),
+                            KubernetesConstants.KUBERNETES_NAMESPACE).equals(namespace)) {
+                //check the same namespace is used in a different kubernetes cluster
+                if (StringUtils.isNotEmpty(kubCluster.getKubernetesMaster().getEndpoint()) &&
+                        StringUtils.isNotEmpty(kubernetesCluster.getKubernetesMaster().getEndpoint()) &&
+                        kubernetesCluster.getKubernetesMaster().getEndpoint().equals
+                                (kubCluster.getKubernetesMaster().getEndpoint())) {
+                    //Another Kuberenetes cluster with similar endpoint use the same namespace
+                    throw new InvalidKubernetesMasterException(" Namespace [namespace] " + namespace + " is already " +
+                            "used in another kubernetes cluster [kubernetes-cluster-id] " + kubCluster.getClusterId());
+
+                } else if (StringUtils.isNotEmpty(kubCluster.getKubernetesMaster().getPrivateIPAddress()) &&
+                        StringUtils.isNotEmpty(kubernetesCluster.getKubernetesMaster().getPrivateIPAddress()) &&
+                        kubernetesCluster.getKubernetesMaster().getPrivateIPAddress().equals
+                                (kubCluster.getKubernetesMaster().getPrivateIPAddress())) {
+                    //Another Kuberenetes cluster with similar private IP address use the same namespace
+                    throw new InvalidKubernetesMasterException(" Namespace [namespace] " + namespace + " is already " +
+                            "used in another kubernetes cluster [kubernetes-cluster-id] " + kubCluster.getClusterId());
+                }
+            }
+
+        }
     }
 
     public static LoadBalancingIPType getLoadBalancingIPTypeEnumFromString(String loadBalancingIPType) {

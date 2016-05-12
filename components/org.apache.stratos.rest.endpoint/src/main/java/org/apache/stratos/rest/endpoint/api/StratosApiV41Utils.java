@@ -28,6 +28,9 @@ import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
+import org.apache.stratos.cloud.controller.stub.Property;
+import org.apache.stratos.cloud.controller.stub.domain.NetworkPartition;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.beans.IaasProviderInfoBean;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
@@ -2101,11 +2104,50 @@ public class StratosApiV41Utils {
                     = ObjectConverter.convertToCCKubernetesClusterPojo(kubernetesClusterBean);
 
             try {
+                ApplicationContext[] applicationContexts = AutoscalerServiceClient.getInstance().getApplications();
+                if (applicationContexts != null) {
+                    for (ApplicationContext applicationContext : applicationContexts) {
+                        if (applicationContext != null && applicationContext.getStatus().
+                                equals(APPLICATION_STATUS_DEPLOYED)) {
+                            String[] networkPartitions = AutoscalerServiceClient.getInstance().
+                                    getApplicationNetworkPartitions(applicationContext.getApplicationId());
+                            if (isKubernetesClusterUsedInNetworkPartition(networkPartitions,
+                                    kubernetesCluster.getClusterId())) {
+                                throw new RestAPIException("Kubernetes cluster cannot be updated." +
+                                        "Kubernetes cluster already in use by running application [applicationid]" +
+                                        applicationContext.getApplicationId() + ". Please undeploy the application to " +
+                                        "update Kubernetes cluster.");
+                            }
+                        }
+                    }
+                }
                 return cloudControllerServiceClient.deployKubernetesCluster(kubernetesCluster);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
+            } catch (AutoscalerServiceAutoScalerExceptionException e) {
+                log.error(e.getMessage(), e);
+                throw new RestAPIException(e.getMessage(), e);
             }
+        }
+        return false;
+    }
+
+    public static boolean isKubernetesClusterUsedInNetworkPartition(String networkPartitions[], String kubernetesClusterID)
+            throws RemoteException {
+        for (String networkPartition : networkPartitions) {
+            NetworkPartition networkPartitionsContext
+                    = CloudControllerServiceClient.getInstance().getNetworkPartition(networkPartition);
+            Partition partitions[] = networkPartitionsContext.getPartitions();
+            for (Partition partition : partitions) {
+                Property[] properties = partition.getProperties().getProperties();
+                for (Property property : properties) {
+                    if (property.getValue().equals(kubernetesClusterID)) {
+                        return true;
+                    }
+                }
+            }
+
         }
         return false;
     }

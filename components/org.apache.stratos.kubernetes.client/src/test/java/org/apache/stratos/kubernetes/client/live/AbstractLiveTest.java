@@ -71,14 +71,14 @@ public class AbstractLiveTest extends TestCase {
     protected List<String> serviceIdList = new CopyOnWriteArrayList<String>();
 
     @BeforeClass
-    public void setUp() {
+    public void setUp() throws KubernetesClientException {
         log.info("Setting up live test...");
         endpoint = System.getProperty(KUBERNETES_API_ENDPOINT);
         if (endpoint == null) {
             endpoint = "http://" + DEFAULT_KUBERNETES_MASTER_IP + ":" + KUBERNETES_API_PORT;
         }
         log.info(KUBERNETES_API_ENDPOINT + ": " + endpoint);
-        client = new KubernetesApiClient(endpoint);
+        client = new KubernetesApiClient(endpoint,"default");
 
         dockerImage = System.getProperty(DOCKER_IMAGE);
         if (dockerImage == null) {
@@ -125,12 +125,13 @@ public class AbstractLiveTest extends TestCase {
     }
 
     protected void createPod(String podId, String podName, Map<String, String> labelMap, Map<String, String>
-            annotations, String containerPortName, String cpu, String memory)
+            annotations, String containerPortName, String cpu, String memory, List<String> imagePullSecrets,
+                             String imagePullPolicy)
             throws KubernetesClientException {
 
         log.info("Creating pod: [pod] " + podId);
         List<ContainerPort> ports = createPorts(containerPortName);
-        client.createPod(podId, podName, annotations, labelMap, dockerImage, cpu, memory, ports, null);
+        client.createPod(podId, podName, annotations, labelMap, dockerImage, cpu, memory, ports, null, imagePullSecrets, imagePullPolicy);
         podIdList.add(podId);
 
         sleep(2000);

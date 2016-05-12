@@ -18,10 +18,6 @@
  */
 package org.apache.stratos.cloud.controller.domain.kubernetes;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.kubernetes.client.KubernetesApiClient;
-
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,6 +28,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.kubernetes.client.KubernetesApiClient;
+import org.apache.stratos.kubernetes.client.KubernetesConstants;
+import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
 
 /**
  * Holds information about a Kubernetes Cluster.
@@ -46,6 +45,7 @@ public class KubernetesClusterContext implements Serializable {
     private String masterIp;
     private String masterPort;
     private String endpoint;
+    private String namespace;
     private List<Integer> servicePortSequence;
 
     private AtomicLong serviceSeqNo;
@@ -55,7 +55,7 @@ public class KubernetesClusterContext implements Serializable {
     public static final long MAX_SERVICE_ID = 99999999999999L;
 
     public KubernetesClusterContext(String id, String masterIp, String masterPort, int lowerPort, int upperPort,
-                                    String endpoint) {
+                                    String endpoint, String namespace) throws KubernetesClientException {
         this.servicePortSequence = new ArrayList<>();
         serviceSeqNo = new AtomicLong(0);
         podSeqNo = new AtomicLong(0);
@@ -68,7 +68,8 @@ public class KubernetesClusterContext implements Serializable {
         this.masterIp = masterIp;
         this.masterPort = masterPort;
         this.endpoint = endpoint;
-        this.setKubApi(new KubernetesApiClient(prepareEndpoint()));
+        this.namespace = namespace;
+        this.setKubApi(new KubernetesApiClient(prepareEndpoint(), namespace));
     }
 
     private String prepareEndpoint() {
@@ -148,9 +149,9 @@ public class KubernetesClusterContext implements Serializable {
         this.masterIp = masterIp;
     }
 
-    public KubernetesApiClient getKubApi() {
+    public KubernetesApiClient getKubApi() throws KubernetesClientException {
         if (kubApi == null) {
-            kubApi = new KubernetesApiClient(prepareEndpoint());
+            kubApi = new KubernetesApiClient(prepareEndpoint(), namespace);
         }
         return kubApi;
     }
@@ -191,13 +192,15 @@ public class KubernetesClusterContext implements Serializable {
         return podSeqNo.incrementAndGet();
     }
 
-    public void updateKubClusterContextParams(KubernetesCluster kubernetesCluster) {
+    public void updateKubClusterContextParams(KubernetesCluster kubernetesCluster) throws KubernetesClientException {
         this.masterIp = kubernetesCluster.getKubernetesMaster().getPrivateIPAddress();
         this.masterPort = CloudControllerUtil
                 .getProperty(kubernetesCluster.getKubernetesMaster().getProperties(),
                         StratosConstants.KUBERNETES_MASTER_PORT);
+        this.namespace = CloudControllerUtil.getProperty(kubernetesCluster.getKubernetesMaster().getProperties(),
+                KubernetesConstants.KUBERNETES_NAMESPACE, KubernetesConstants.DEFAULT_NAMESPACE);
         this.endpoint = kubernetesCluster.getKubernetesMaster().getEndpoint();
-        this.kubApi = new KubernetesApiClient(prepareEndpoint());
+        this.kubApi = new KubernetesApiClient(prepareEndpoint(), this.namespace);
     }
 
     @Override

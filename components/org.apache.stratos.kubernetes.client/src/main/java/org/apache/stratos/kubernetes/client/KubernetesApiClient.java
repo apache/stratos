@@ -38,8 +38,19 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
     private KubernetesClient kubernetesClient;
 
-    public KubernetesApiClient(String endpointUrl) {
+    public KubernetesApiClient(String endpointUrl, String namespace) throws KubernetesClientException {
         kubernetesClient = new KubernetesClient(endpointUrl);
+        if (!namespace.equals(KubernetesConstants.DEFAULT_NAMESPACE)) {
+            try {
+                setNamespace(namespace);
+            } catch (Exception e) {
+                throw new KubernetesClientException(e);
+            }
+        }
+    }
+
+    private void setNamespace(String namespace) throws Exception {
+        kubernetesClient.setNamespace(namespace);
     }
 
     /**
@@ -54,12 +65,14 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * @param memory               Memory allocation in megabytes
      * @param ports                Ports exposed by the pod
      * @param environmentVariables Environment variables to be passed to the pod
+     * @param imagePullSecrets     Image Pull Secret to be passed to the pod
+     * @param imagePullPolicy      Image Pull policy to be passed to the pod
      * @throws KubernetesClientException
      */
     @Override
     public void createPod(String podId, String podName, Map<String, String> podLabels, Map<String, String> annotations,
-                          String dockerImage, String cpu,
-                          String memory, List<ContainerPort> ports, List<EnvVar> environmentVariables)
+                          String dockerImage, String cpu, String memory, List<ContainerPort> ports,
+                          List<EnvVar> environmentVariables, List<String> imagePullSecrets, String imagePullPolicy)
             throws KubernetesClientException {
 
         try {
@@ -84,20 +97,47 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             containerTemplate.setName(podName);
             containerTemplate.setImage(dockerImage);
             containerTemplate.setEnv(environmentVariables);
-            List<Container> containerTemplates = new ArrayList<Container>();
+            List<Container> containerTemplates = new ArrayList<>();
             containerTemplates.add(containerTemplate);
             pod.getSpec().setContainers(containerTemplates);
 
+            // set imagePullSecrets
+            if ((imagePullSecrets != null) && (imagePullSecrets.size() > 0)) {
+                List<LocalObjectReference> imagePullSecretsRefs = new ArrayList<>();
+                for (String pullSecret : imagePullSecrets) {
+                    if (pullSecret != null) {
+                        imagePullSecretsRefs.add(new LocalObjectReference(pullSecret));
+                    }
+                }
+                if (imagePullSecretsRefs.size() > 0) {
+                    pod.getSpec().setImagePullSecrets(imagePullSecretsRefs);
+                }
+            }
+
             // Set resource limits
             ResourceRequirements resources = new ResourceRequirements();
-            Map<String, Quantity> limits = new HashMap<String, Quantity>();
+            Map<String, Quantity> limits = new HashMap<>();
             limits.put(KubernetesConstants.RESOURCE_CPU, new Quantity(cpu));
             limits.put(KubernetesConstants.RESOURCE_MEMORY, new Quantity(memory));
             resources.setLimits(limits);
             containerTemplate.setResources(resources);
 
             containerTemplate.setPorts(ports);
-            containerTemplate.setImagePullPolicy(KubernetesConstants.POLICY_PULL_IF_NOT_PRESENT);
+
+            if (imagePullPolicy == null) {
+                // default pull policy
+                imagePullPolicy = KubernetesConstants.POLICY_PULL_IF_NOT_PRESENT;
+            } else if (
+                    !imagePullPolicy.equals(KubernetesConstants.POLICY_PULL_ALWAYS) &&
+                            !imagePullPolicy.equals(KubernetesConstants.POLICY_PULL_NEVER) &&
+                            !imagePullPolicy.equals(KubernetesConstants.POLICY_PULL_IF_NOT_PRESENT)) {
+
+                // pull policy validation failed
+                throw new KubernetesClientException("Invalid Image Pull Policy defined : " + imagePullPolicy);
+            }
+
+            containerTemplate.setImagePullPolicy(imagePullPolicy);
+
             if (environmentVariables != null) {
                 containerTemplate.setEnv(environmentVariables);
             }
@@ -108,8 +148,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Kubernetes pod created successfully: [pod-id] %s", podId));
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = String.format("Could not create kubernetes pod: [pod-id] %s", podId);
             log.error(msg, e);
             throw new KubernetesClientException(msg, e);
@@ -120,8 +159,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     public Pod getPod(String podId) throws KubernetesClientException {
         try {
             return kubernetesClient.getPod(podId);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = String.format("Could not retrieve kubernetes pod: [pod-id] %s", podId);
             log.error(msg, e);
             throw new KubernetesClientException(msg, e);
@@ -132,8 +170,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     public List<Pod> getPods() throws KubernetesClientException {
         try {
             return kubernetesClient.getPods().getItems();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = "Error while retrieving kubernetes pods.";
             log.error(msg, e);
             throw new KubernetesClientException(msg, e);
@@ -144,8 +181,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     public void deletePod(String podId) throws KubernetesClientException {
         try {
             kubernetesClient.deletePod(podId);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String message = String.format("Could not delete kubernetes pod: [pod-id] %s", podId);
             log.error(message, e);
             throw new KubernetesClientException(message, e);
@@ -197,7 +233,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             }
 
             // Set port
-            List<ServicePort> ports = new ArrayList<ServicePort>();
+            List<ServicePort> ports = new ArrayList<>();
             ServicePort port = new ServicePort();
             port.setName(containerPortName);
             port.setPort(containerPort);
@@ -212,7 +248,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             service.getMetadata().setLabels(serviceLabels);
 
             // Set service selector
-            Map<String, String> selector = new HashMap<String, String>();
+            Map<String, String> selector = new HashMap<>();
             selector.put(KubernetesConstants.SERVICE_SELECTOR_LABEL, serviceName);
             service.getSpec().setSelector(selector);
 
@@ -224,8 +260,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
                                 "[node-port] %d [container-port-name] %s [container-port] %d", serviceId, serviceName,
                         servicePort, containerPortName, containerPort));
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String message = String.format("Could not create kubernetes service: [service-id] %s [service-name] %s " +
                             "[node-port] %d [container-port-name] %s [container-port] %d", serviceId, serviceName,
                     servicePort, containerPortName, containerPort);
@@ -239,8 +274,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throws KubernetesClientException {
         try {
             return kubernetesClient.getService(serviceId);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = String.format("Could not retrieve kubernetes service: [service-id] %s", serviceId);
             log.error(msg, e);
             throw new KubernetesClientException(msg, e);
@@ -251,8 +285,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     public List<Service> getServices() throws KubernetesClientException {
         try {
             return kubernetesClient.getServices().getItems();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = "Could not retrieve kubernetes services";
             log.error(msg, e);
             throw new KubernetesClientException(msg, e);
@@ -273,11 +306,11 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Kubernetes service deleted successfully: [service-id] %s", serviceId));
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = String.format("Could not delete kubernetes service: [service-id] %s", serviceId);
             log.error(msg, e);
             throw new KubernetesClientException(msg, e);
         }
     }
+
 }

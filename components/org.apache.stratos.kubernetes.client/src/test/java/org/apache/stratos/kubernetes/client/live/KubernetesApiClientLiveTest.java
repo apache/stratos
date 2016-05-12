@@ -52,13 +52,13 @@ public class KubernetesApiClientLiveTest extends AbstractLiveTest {
         podLabels1.put("applicationId", "my-application-1");
         Map<String, String> podAnnocations1 = new HashMap<>();
         podAnnocations1.put("test", "test");
-        createPod("stratos-test-pod-1", "stratos-test-pod", podLabels1, podAnnocations1, "http-1", "1", "512Mi");
+        createPod("stratos-test-pod-1", "stratos-test-pod", podLabels1, podAnnocations1, "http-1", "1", "512Mi", null, null);
 
         Map<String, String> podLabels2 = new HashMap<>();
         podLabels2.put("applicationId", "my-application-2");
         Map<String, String> podAnnocations2 = new HashMap<>();
         podAnnocations2.put("test", "test");
-        createPod("stratos-test-pod-2", "stratos-test-pod", podLabels2, podAnnocations2, "http-1", "2", "4Gi");
+        createPod("stratos-test-pod-2", "stratos-test-pod", podLabels2, podAnnocations2, "http-1", "2", "4Gi", null, null);
 
         deletePod("stratos-test-pod-1");
         deletePod("stratos-test-pod-2");
@@ -95,13 +95,13 @@ public class KubernetesApiClientLiveTest extends AbstractLiveTest {
         podLabels3.put("applicationId", "my-application-3");
         Map<String, String> podAnnocations3 = new HashMap<>();
         podAnnocations3.put("test", "test");
-        createPod("stratos-test-pod-3", serviceName, podLabels3, podAnnocations3, containerPortName, "1", "512");
+        createPod("stratos-test-pod-3", serviceName, podLabels3, podAnnocations3, containerPortName, "1", "512", null, null);
 
         Map<String, String> podLabels4 = new HashMap<>();
         podLabels4.put("applicationId", "my-application-4");
         Map<String, String> podAnnocations4 = new HashMap<>();
         podAnnocations4.put("test", "test");
-        createPod("stratos-test-pod-4", serviceName, podLabels4, podAnnocations4, containerPortName, "2", "512");
+        createPod("stratos-test-pod-4", serviceName, podLabels4, podAnnocations4, containerPortName, "2", "512", null, null);
 
         if (testServiceSocket) {
             // test service accessibility
