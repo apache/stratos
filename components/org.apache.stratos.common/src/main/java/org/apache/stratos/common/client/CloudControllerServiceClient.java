@@ -20,7 +20,13 @@
 package org.apache.stratos.common.client;
 
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.Constants;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,12 +41,20 @@ import java.rmi.RemoteException;
 
 public class CloudControllerServiceClient {
 
-    private CloudControllerServiceStub stub;
-
     private static final Log log = LogFactory.getLog(CloudControllerServiceClient.class);
     private static volatile CloudControllerServiceClient instance;
+    private CloudControllerServiceStub stub;
 
     private CloudControllerServiceClient(String epr) throws AxisFault {
+        MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager = new
+                MultiThreadedHttpConnectionManager();
+        HttpConnectionManagerParams params = new HttpConnectionManagerParams();
+        params.setDefaultMaxConnectionsPerHost(StratosConstants.CLOUD_CONTROLLER_CLIENT_MAX_CONNECTIONS_PER_HOST);
+        params.setMaxTotalConnections(StratosConstants.CLOUD_CONTROLLER_CLIENT_MAX_TOTAL_CONNECTIONS);
+        multiThreadedHttpConnectionManager.setParams(params);
+        HttpClient httpClient = new HttpClient(multiThreadedHttpConnectionManager);
+        ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
+        ctx.setProperty(HTTPConstants.CACHED_HTTP_CLIENT, httpClient);
 
         String ccSocketTimeout = System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_SOCKET_TIMEOUT) == null ?
                 StratosConstants.DEFAULT_CLIENT_SOCKET_TIMEOUT :
@@ -50,14 +64,15 @@ public class CloudControllerServiceClient {
                 System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_CONNECTION_TIMEOUT) == null ?
                         StratosConstants.DEFAULT_CLIENT_CONNECTION_TIMEOUT :
                         System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_CONNECTION_TIMEOUT);
-
         try {
-            stub = new CloudControllerServiceStub(epr);
+            stub = new CloudControllerServiceStub(ctx, epr);
             stub._getServiceClient().getOptions()
                     .setProperty(HTTPConstants.SO_TIMEOUT, Integer.valueOf(ccSocketTimeout));
             stub._getServiceClient().getOptions()
                     .setProperty(HTTPConstants.CONNECTION_TIMEOUT, new Integer(ccConnectionTimeout));
-
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, Constants.VALUE_FALSE);
+            stub._getServiceClient().getOptions().setProperty(Constants.Configuration.DISABLE_SOAP_ACTION, Boolean
+                    .TRUE);
         } catch (AxisFault axisFault) {
             String msg = "Could not initialize cloud controller service client";
             log.error(msg, axisFault);
@@ -84,15 +99,15 @@ public class CloudControllerServiceClient {
 
     public void addCartridge(Cartridge cartridgeConfig)
             throws RemoteException, CloudControllerServiceCartridgeAlreadyExistsExceptionException,
-                   CloudControllerServiceInvalidCartridgeDefinitionExceptionException,
-                   CloudControllerServiceInvalidIaasProviderExceptionException {
+            CloudControllerServiceInvalidCartridgeDefinitionExceptionException,
+            CloudControllerServiceInvalidIaasProviderExceptionException {
         stub.addCartridge(cartridgeConfig);
     }
 
     public void updateCartridge(Cartridge cartridgeConfig)
             throws RemoteException, CloudControllerServiceInvalidCartridgeDefinitionExceptionException,
-                   CloudControllerServiceInvalidIaasProviderExceptionException,
-                   CloudControllerServiceCartridgeDefinitionNotExistsExceptionException {
+            CloudControllerServiceInvalidIaasProviderExceptionException,
+            CloudControllerServiceCartridgeDefinitionNotExistsExceptionException {
         stub.updateCartridge(cartridgeConfig);
     }
 
@@ -142,20 +157,20 @@ public class CloudControllerServiceClient {
 
     public boolean deployKubernetesCluster(KubernetesCluster kubernetesCluster)
             throws RemoteException, CloudControllerServiceInvalidKubernetesClusterExceptionException,
-                   CloudControllerServiceKubernetesClusterAlreadyExistsExceptionException {
+            CloudControllerServiceKubernetesClusterAlreadyExistsExceptionException {
         return stub.addKubernetesCluster(kubernetesCluster);
     }
 
     public boolean addKubernetesHost(String kubernetesClusterId, KubernetesHost kubernetesHost)
             throws RemoteException, CloudControllerServiceInvalidKubernetesHostExceptionException,
-                   CloudControllerServiceNonExistingKubernetesClusterExceptionException {
+            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
 
         return stub.addKubernetesHost(kubernetesClusterId, kubernetesHost);
     }
 
     public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster)
             throws RemoteException, CloudControllerServiceInvalidKubernetesMasterExceptionException,
-                   CloudControllerServiceNonExistingKubernetesMasterExceptionException {
+            CloudControllerServiceNonExistingKubernetesMasterExceptionException {
         return stub.updateKubernetesMaster(kubernetesMaster);
     }
 
@@ -170,7 +185,7 @@ public class CloudControllerServiceClient {
 
     public void undeployKubernetesCluster(String kubernetesClusterId)
             throws RemoteException, CloudControllerServiceNonExistingKubernetesClusterExceptionException,
-                   CloudControllerServiceKubernetesClusterAlreadyUsedExceptionException {
+            CloudControllerServiceKubernetesClusterAlreadyUsedExceptionException {
         stub.removeKubernetesCluster(kubernetesClusterId);
     }
 
@@ -191,19 +206,19 @@ public class CloudControllerServiceClient {
 
     public boolean updateKubernetesHost(KubernetesHost kubernetesHost)
             throws RemoteException, CloudControllerServiceInvalidKubernetesHostExceptionException,
-                   CloudControllerServiceNonExistingKubernetesHostExceptionException {
+            CloudControllerServiceNonExistingKubernetesHostExceptionException {
         return stub.updateKubernetesHost(kubernetesHost);
     }
 
     public void validateNetworkPartitionOfDeploymentPolicy(String cartridgeType, String networkPartitionId)
             throws RemoteException, CloudControllerServiceInvalidPartitionExceptionException,
-                   CloudControllerServiceInvalidCartridgeTypeExceptionException {
+            CloudControllerServiceInvalidCartridgeTypeExceptionException {
         stub.validateDeploymentPolicyNetworkPartition(cartridgeType, networkPartitionId);
     }
 
     public void addNetworkPartition(NetworkPartition networkPartition)
             throws RemoteException, CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException,
-                   CloudControllerServiceInvalidNetworkPartitionExceptionException {
+            CloudControllerServiceInvalidNetworkPartitionExceptionException {
         stub.addNetworkPartition(networkPartition);
     }
 
@@ -226,7 +241,7 @@ public class CloudControllerServiceClient {
     }
 
     public void createClusterInstance(String serviceType, String clusterId, String alias, String instanceId,
-            String partitionId, String networkPartitionId) throws RemoteException {
+                                      String partitionId, String networkPartitionId) throws RemoteException {
         try {
             stub.createClusterInstance(serviceType, clusterId, alias, instanceId, partitionId, networkPartitionId);
 

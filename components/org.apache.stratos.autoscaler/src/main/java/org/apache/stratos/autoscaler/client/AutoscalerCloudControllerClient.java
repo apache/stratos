@@ -19,8 +19,14 @@
 
 package org.apache.stratos.autoscaler.client;
 
+import org.apache.axis2.Constants;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
@@ -47,23 +53,43 @@ import java.util.List;
  * This class will call cloud controller web service to take the action decided by Autoscaler
  */
 public class AutoscalerCloudControllerClient {
-
     private static final Log log = LogFactory.getLog(AutoscalerCloudControllerClient.class);
-
+    private static final String AS_CC_CLIENT_MAX_CONNECTIONS_PER_HOST_KEY =
+            "autoscaler.cloud.controller.client.max.connections.per.host";
+    private static final String AS_CC_CLIENT_MAX_TOTAL_CONNECTIONS_KEY =
+            "autoscaler.cloud.controller.client.max.total.connections";
+    private static final int AS_CC_CLIENT_MAX_CONNECTIONS_PER_HOST = Integer.getInteger
+            (AS_CC_CLIENT_MAX_CONNECTIONS_PER_HOST_KEY, 25);
+    private static final int AS_CC_CLIENT_MAX_TOTAL_CONNECTIONS = Integer.getInteger
+            (AS_CC_CLIENT_MAX_TOTAL_CONNECTIONS_KEY, 30);
     private static CloudControllerServiceStub stub;
 
     private AutoscalerCloudControllerClient() {
+        MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager = new
+                MultiThreadedHttpConnectionManager();
+        HttpConnectionManagerParams params = new HttpConnectionManagerParams();
+        params.setDefaultMaxConnectionsPerHost(AS_CC_CLIENT_MAX_CONNECTIONS_PER_HOST);
+        params.setMaxTotalConnections(AS_CC_CLIENT_MAX_TOTAL_CONNECTIONS);
+        multiThreadedHttpConnectionManager.setParams(params);
+        HttpClient httpClient = new HttpClient(multiThreadedHttpConnectionManager);
+
         try {
+            ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
+            ctx.setProperty(HTTPConstants.CACHED_HTTP_CLIENT, httpClient);
             XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-            int port = conf.getInt("autoscaler.cloudController.port", AutoscalerConstants.CLOUD_CONTROLLER_DEFAULT_PORT);
+            int port = conf.getInt("autoscaler.cloudController.port", AutoscalerConstants
+                    .CLOUD_CONTROLLER_DEFAULT_PORT);
             String hostname = conf.getString("autoscaler.cloudController.hostname", "localhost");
             String epr = "https://" + hostname + ":" + port + "/" + AutoscalerConstants.CLOUD_CONTROLLER_SERVICE_SFX;
             int cloudControllerClientTimeout = conf.getInt("autoscaler.cloudController.clientTimeout", 180000);
 
-            stub = new CloudControllerServiceStub(epr);
+            stub = new CloudControllerServiceStub(ctx, epr);
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, cloudControllerClientTimeout);
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT,
                     cloudControllerClientTimeout);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, Constants.VALUE_FALSE);
+            stub._getServiceClient().getOptions().setProperty(Constants.Configuration.DISABLE_SOAP_ACTION, Boolean
+                    .TRUE);
         } catch (Exception e) {
             log.error("Could not initialize cloud controller client", e);
         }
@@ -217,7 +243,8 @@ public class AutoscalerCloudControllerClient {
     public void terminateAllInstances(String clusterId) throws RemoteException,
             CloudControllerServiceInvalidClusterExceptionException {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s", clusterId));
+            log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s",
+                    clusterId));
         }
         long startTime = System.currentTimeMillis();
         stub.terminateInstances(clusterId);

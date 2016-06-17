@@ -48,13 +48,15 @@ public class StratosManagerServiceImpl implements StratosManagerService {
     }
 
     @Override
-    public void addApplicationSignUp(ApplicationSignUp applicationSignUp) throws ApplicationSignUpException {
+    public boolean addApplicationSignUp(ApplicationSignUp applicationSignUp) throws ApplicationSignUpException {
         signUpHandler.addApplicationSignUp(applicationSignUp);
+        return true;
     }
 
     @Override
-    public void removeApplicationSignUp(String applicationId, int tenantId) throws ApplicationSignUpException {
+    public boolean removeApplicationSignUp(String applicationId, int tenantId) throws ApplicationSignUpException {
         signUpHandler.removeApplicationSignUp(applicationId, tenantId);
+        return true;
     }
 
     @Override
@@ -83,8 +85,10 @@ public class StratosManagerServiceImpl implements StratosManagerService {
     }
 
     @Override
-    public void notifyArtifactUpdatedEventForRepository(String repoUrl) throws ArtifactDistributionCoordinatorException {
+    public boolean notifyArtifactUpdatedEventForRepository(String repoUrl) throws
+            ArtifactDistributionCoordinatorException {
         artifactDistributionCoordinator.notifyArtifactUpdatedEventForRepository(repoUrl);
+        return true;
     }
 
     @Override

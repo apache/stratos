@@ -20,7 +20,13 @@
 package org.apache.stratos.common.client;
 
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.Constants;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,27 +44,39 @@ import java.rmi.RemoteException;
  * Stratos manager service client.
  */
 public class StratosManagerServiceClient {
-
-    private StratosManagerServiceStub stub;
-
     private static final Log log = LogFactory.getLog(StratosManagerServiceClient.class);
     private static volatile StratosManagerServiceClient instance;
+    private StratosManagerServiceStub stub;
+
 
     private StratosManagerServiceClient(String epr) throws AxisFault {
+        MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager = new
+                MultiThreadedHttpConnectionManager();
+        HttpConnectionManagerParams params = new HttpConnectionManagerParams();
+        params.setDefaultMaxConnectionsPerHost(StratosConstants.STRATOS_MANAGER_CLIENT_MAX_CONNECTIONS_PER_HOST);
+        params.setMaxTotalConnections(StratosConstants.STRATOS_MANAGER_CLIENT_MAX_TOTAL_CONNECTIONS);
+        multiThreadedHttpConnectionManager.setParams(params);
+        HttpClient httpClient = new HttpClient(multiThreadedHttpConnectionManager);
+        ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
+        ctx.setProperty(HTTPConstants.CACHED_HTTP_CLIENT, httpClient);
 
         String ccSocketTimeout = System.getProperty(StratosConstants.STRATOS_MANAGER_CLIENT_SOCKET_TIMEOUT) == null ?
                 StratosConstants.DEFAULT_CLIENT_SOCKET_TIMEOUT :
                 System.getProperty(StratosConstants.STRATOS_MANAGER_CLIENT_SOCKET_TIMEOUT);
 
-        String ccConnectionTimeout = System.getProperty(StratosConstants.STRATOS_MANAGER_CLIENT_CONNECTION_TIMEOUT) == null ?
+        String ccConnectionTimeout = System.getProperty(StratosConstants.STRATOS_MANAGER_CLIENT_CONNECTION_TIMEOUT)
+                == null ?
                 StratosConstants.DEFAULT_CLIENT_CONNECTION_TIMEOUT :
                 System.getProperty(StratosConstants.STRATOS_MANAGER_CLIENT_CONNECTION_TIMEOUT);
-
         try {
-            stub = new StratosManagerServiceStub(epr);
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, Integer.valueOf(ccSocketTimeout));
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, Integer.valueOf(ccConnectionTimeout));
-
+            stub = new StratosManagerServiceStub(ctx, epr);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, Integer.valueOf
+                    (ccSocketTimeout));
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, Integer.valueOf
+                    (ccConnectionTimeout));
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, Constants.VALUE_FALSE);
+            stub._getServiceClient().getOptions().setProperty(Constants.Configuration.DISABLE_SOAP_ACTION, Boolean
+                    .TRUE);
         } catch (AxisFault axisFault) {
             String msg = "Could not initialize stratos manager service client";
             log.error(msg, axisFault);
@@ -87,7 +105,8 @@ public class StratosManagerServiceClient {
      *
      * @param applicationSignUp
      */
-    public void addApplicationSignUp(ApplicationSignUp applicationSignUp) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
+    public void addApplicationSignUp(ApplicationSignUp applicationSignUp) throws
+            StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
         stub.addApplicationSignUp(applicationSignUp);
     }
 
@@ -97,7 +116,8 @@ public class StratosManagerServiceClient {
      * @param applicationId
      * @param tenantId
      */
-    public void removeApplicationSignUp(String applicationId, int tenantId) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
+    public void removeApplicationSignUp(String applicationId, int tenantId) throws
+            StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
         stub.removeApplicationSignUp(applicationId, tenantId);
     }
 
@@ -108,30 +128,35 @@ public class StratosManagerServiceClient {
      * @param tenantId
      * @return
      */
-    public ApplicationSignUp getApplicationSignUp(String applicationId, int tenantId) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
+    public ApplicationSignUp getApplicationSignUp(String applicationId, int tenantId) throws
+            StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
         return stub.getApplicationSignUp(applicationId, tenantId);
     }
 
     /**
      * Check application signup availability
+     *
      * @param applicationId
      * @param tenantId
      * @return
      * @throws StratosManagerServiceApplicationSignUpExceptionException
      * @throws RemoteException
      */
-    public boolean applicationSignUpExist(String applicationId, int tenantId) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
+    public boolean applicationSignUpExist(String applicationId, int tenantId) throws
+            StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
         return stub.applicationSignUpExist(applicationId, tenantId);
     }
 
     /**
      * Check application signup availability
+     *
      * @param applicationId
      * @return
      * @throws StratosManagerServiceApplicationSignUpExceptionException
      * @throws RemoteException
      */
-    public boolean applicationSignUpsExist(String applicationId) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
+    public boolean applicationSignUpsExist(String applicationId) throws
+            StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
         return stub.applicationSignUpsExist(applicationId);
     }
 
@@ -140,7 +165,8 @@ public class StratosManagerServiceClient {
      *
      * @return
      */
-    public ApplicationSignUp[] getApplicationSignUps(String applicationId) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
+    public ApplicationSignUp[] getApplicationSignUps(String applicationId) throws
+            StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
         return stub.getApplicationSignUps(applicationId);
     }
 
@@ -152,7 +178,8 @@ public class StratosManagerServiceClient {
      * @throws StratosManagerServiceArtifactDistributionCoordinatorExceptionException
      * @throws RemoteException
      */
-    public void notifyArtifactUpdatedEventForSignUp(String applicationId, int tenantId) throws StratosManagerServiceArtifactDistributionCoordinatorExceptionException, RemoteException {
+    public void notifyArtifactUpdatedEventForSignUp(String applicationId, int tenantId) throws
+            StratosManagerServiceArtifactDistributionCoordinatorExceptionException, RemoteException {
         stub.notifyArtifactUpdatedEventForSignUp(applicationId, tenantId);
     }
 
@@ -163,19 +190,23 @@ public class StratosManagerServiceClient {
      * @throws StratosManagerServiceArtifactDistributionCoordinatorExceptionException
      * @throws RemoteException
      */
-    public void notifyArtifactUpdatedEventForRepository(String repoUrl) throws StratosManagerServiceArtifactDistributionCoordinatorExceptionException, RemoteException {
+    public void notifyArtifactUpdatedEventForRepository(String repoUrl) throws
+            StratosManagerServiceArtifactDistributionCoordinatorExceptionException, RemoteException {
         stub.notifyArtifactUpdatedEventForRepository(repoUrl);
     }
 
-    public void addDomainMapping(DomainMapping domainMapping) throws RemoteException, StratosManagerServiceDomainMappingExceptionException {
+    public void addDomainMapping(DomainMapping domainMapping) throws RemoteException,
+            StratosManagerServiceDomainMappingExceptionException {
         stub.addDomainMapping(domainMapping);
     }
 
-    public void removeDomainMapping(String applicationId, int tenantId, String domainName) throws RemoteException, StratosManagerServiceDomainMappingExceptionException {
+    public void removeDomainMapping(String applicationId, int tenantId, String domainName) throws RemoteException,
+            StratosManagerServiceDomainMappingExceptionException {
         stub.removeDomainMapping(applicationId, tenantId, domainName);
     }
 
-    public DomainMapping[] getDomainMappings(String applicationId, int tenantId) throws RemoteException, StratosManagerServiceDomainMappingExceptionException {
+    public DomainMapping[] getDomainMappings(String applicationId, int tenantId) throws RemoteException,
+            StratosManagerServiceDomainMappingExceptionException {
         return stub.getDomainMappings(applicationId, tenantId);
     }
 
@@ -186,7 +217,8 @@ public class StratosManagerServiceClient {
      * @param cartridgeNames     the cartridge names
      * @throws RemoteException the remote exception
      */
-    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupName, String[] cartridgeNames) throws RemoteException {
+    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupName, String[] cartridgeNames) throws
+            RemoteException {
         stub.addUsedCartridgesInCartridgeGroups(cartridgeGroupName, cartridgeNames);
     }
 
@@ -197,7 +229,8 @@ public class StratosManagerServiceClient {
      * @param cartridgeNames     the cartridge names
      * @throws RemoteException the remote exception
      */
-    public void removeUsedCartridgesInCartridgeGroups(String cartridgeGroupName, String[] cartridgeNames) throws RemoteException {
+    public void removeUsedCartridgesInCartridgeGroups(String cartridgeGroupName, String[] cartridgeNames) throws
+            RemoteException {
         stub.removeUsedCartridgesInCartridgeGroups(cartridgeGroupName, cartridgeNames);
     }
 
@@ -208,7 +241,8 @@ public class StratosManagerServiceClient {
      * @param cartridgeNames  the cartridge names
      * @throws RemoteException the remote exception
      */
-    public void addUsedCartridgesInApplications(String applicationName, String[] cartridgeNames) throws RemoteException {
+    public void addUsedCartridgesInApplications(String applicationName, String[] cartridgeNames) throws
+            RemoteException {
         stub.addUsedCartridgesInApplications(applicationName, cartridgeNames);
     }
 
@@ -219,7 +253,8 @@ public class StratosManagerServiceClient {
      * @param cartridgeNames  the cartridge names
      * @throws RemoteException the remote exception
      */
-    public void removeUsedCartridgesInApplications(String applicationName, String[] cartridgeNames) throws RemoteException {
+    public void removeUsedCartridgesInApplications(String applicationName, String[] cartridgeNames) throws
+            RemoteException {
         stub.removeUsedCartridgesInApplications(applicationName, cartridgeNames);
     }
 
@@ -241,7 +276,8 @@ public class StratosManagerServiceClient {
      * @param cartridgeGroupNames   the cartridge group names
      * @throws RemoteException the remote exception
      */
-    public void addUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName, String[] cartridgeGroupNames) throws RemoteException {
+    public void addUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName, String[]
+            cartridgeGroupNames) throws RemoteException {
         stub.addUsedCartridgeGroupsInCartridgeSubGroups(cartridgeSubGroupName, cartridgeGroupNames);
     }
 
@@ -252,7 +288,8 @@ public class StratosManagerServiceClient {
      * @param cartridgeGroupNames   the cartridge group names
      * @throws RemoteException the remote exception
      */
-    public void removeUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName, String[] cartridgeGroupNames) throws RemoteException {
+    public void removeUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName, String[]
+            cartridgeGroupNames) throws RemoteException {
         stub.removeUsedCartridgeGroupsInCartridgeSubGroups(cartridgeSubGroupName, cartridgeGroupNames);
     }
 
@@ -263,7 +300,8 @@ public class StratosManagerServiceClient {
      * @param cartridgeGroupNames the cartridge group names
      * @throws RemoteException the remote exception
      */
-    public void addUsedCartridgeGroupsInApplications(String applicationName, String[] cartridgeGroupNames) throws RemoteException {
+    public void addUsedCartridgeGroupsInApplications(String applicationName, String[] cartridgeGroupNames) throws
+            RemoteException {
         stub.addUsedCartridgeGroupsInApplications(applicationName, cartridgeGroupNames);
     }
 
@@ -274,7 +312,8 @@ public class StratosManagerServiceClient {
      * @param cartridgeGroupNames the cartridge group names
      * @throws RemoteException the remote exception
      */
-    public void removeUsedCartridgeGroupsInApplications(String applicationName, String[] cartridgeGroupNames) throws RemoteException {
+    public void removeUsedCartridgeGroupsInApplications(String applicationName, String[] cartridgeGroupNames) throws
+            RemoteException {
         stub.removeUsedCartridgeGroupsInApplications(applicationName, cartridgeGroupNames);
     }
 

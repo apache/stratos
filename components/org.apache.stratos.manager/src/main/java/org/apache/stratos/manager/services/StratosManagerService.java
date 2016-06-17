@@ -36,7 +36,7 @@ public interface StratosManagerService {
      * @param applicationSignUp
      * @throws ApplicationSignUpException
      */
-    public void addApplicationSignUp(ApplicationSignUp applicationSignUp) throws ApplicationSignUpException;
+    public boolean addApplicationSignUp(ApplicationSignUp applicationSignUp) throws ApplicationSignUpException;
 
     /**
      * Remove application signup.
@@ -44,7 +44,7 @@ public interface StratosManagerService {
      * @param applicationId
      * @param tenantId
      */
-    public void removeApplicationSignUp(String applicationId, int tenantId) throws ApplicationSignUpException;
+    public boolean removeApplicationSignUp(String applicationId, int tenantId) throws ApplicationSignUpException;
 
     /**
      * Get application signup.
@@ -96,7 +96,7 @@ public interface StratosManagerService {
      * @param repoUrl
      * @throws ArtifactDistributionCoordinatorException
      */
-    public void notifyArtifactUpdatedEventForRepository(String repoUrl) throws ArtifactDistributionCoordinatorException;
+    public boolean notifyArtifactUpdatedEventForRepository(String repoUrl) throws ArtifactDistributionCoordinatorException;
 
     /**
      * Add domain mapping

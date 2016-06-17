@@ -91,7 +91,8 @@ public class StratosConstants {
 
     // metering constants
     public static final String THROTTLING_ALL_ACTION = "all_actions";
-    public static final String THROTTLING_IN_DATA_ACTION = "in_data_action"; //this covers registry capacity + registry bandwidth
+    public static final String THROTTLING_IN_DATA_ACTION = "in_data_action"; //this covers registry capacity +
+    // registry bandwidth
     public static final String THROTTLING_OUT_DATA_ACTION = "out_data_action"; //this covers registry bandwidth
     public static final String THROTTLING_ADD_USER_ACTION = "add_user_action";
     public static final String THROTTLING_SERVICE_IN_BANDWIDTH_ACTION = "service_in_bandwith_action";
@@ -121,18 +122,16 @@ public class StratosConstants {
 
     // EULA location
     public static final String STRATOS_EULA = "eula.xml";
-
-    // EULA default text.
-    public static final String STRATOS_EULA_DEFAULT_TEXT =
-            "Please refer to: " + StratosConstants.STRATOS_TERMS_OF_USAGE +
-                    " for terms and usage and " + StratosConstants.STRATOS_PRIVACY_POLICY +
-                    " for privacy policy of WSO2 Stratos.";
-
     // Web location of Terms of Usage and privacy policy
     public static final String STRATOS_TERMS_OF_USAGE =
             "http://wso2.com/cloud/services/terms-of-use/";
     public static final String STRATOS_PRIVACY_POLICY =
             "http://wso2.com/cloud/services/privacy-policy/";
+    // EULA default text.
+    public static final String STRATOS_EULA_DEFAULT_TEXT =
+            "Please refer to: " + StratosConstants.STRATOS_TERMS_OF_USAGE +
+                    " for terms and usage and " + StratosConstants.STRATOS_PRIVACY_POLICY +
+                    " for privacy policy of WSO2 Stratos.";
     public static final String MULTITENANCY_FREE_PLAN = "Demo";
     public static final String MULTITENANCY_SMALL_PLAN = "SMB";
     public static final String MULTITENANCY_MEDIUM_PLAN = "Professional";
@@ -167,7 +166,8 @@ public class StratosConstants {
     public static final String PENDING_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingMemberExpiryTimeout";
     public static final String SPIN_TERMINATE_PARALLEL = "autoscaler.member.spinAfterTerminate";
     public static final String OBSOLETED_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.obsoletedMemberExpiryTimeout";
-    public static final String PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingTerminationMemberExpiryTimeout";
+    public static final String PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT =
+            "autoscaler.member.pendingTerminationMemberExpiryTimeout";
 
     public static final String FILTER_VALUE_SEPARATOR = ",";
     public static final String TOPOLOGY_APPLICATION_FILTER = "stratos.topology.application.filter";
@@ -196,6 +196,36 @@ public class StratosConstants {
     public static final String STRATOS_MANAGER_CLIENT_SOCKET_TIMEOUT = "stratos.manager.socket.timeout";
     public static final String STRATOS_MANAGER_CLIENT_CONNECTION_TIMEOUT = "stratos.manager.connection.timeout";
 
+    // Axis2 HTTP client max connections per host
+    public static final String STRATOS_MANAGER_CLIENT_MAX_CONNECTIONS_PER_HOST_KEY =
+            "stratos.manager.client.max.connections.per.host";
+    public static final String AUTOSCALER_CLIENT_MAX_CONNECTIONS_PER_HOST_KEY =
+            "autoscaler.client.max.connections.per.host";
+    public static final String CLOUD_CONTROLLER_CLIENT_MAX_CONNECTIONS_PER_HOST_KEY =
+            "cloud.controller.client.max.connections.per.host";
+
+    public static final int STRATOS_MANAGER_CLIENT_MAX_CONNECTIONS_PER_HOST = Integer.getInteger
+            (STRATOS_MANAGER_CLIENT_MAX_CONNECTIONS_PER_HOST_KEY, 20);
+    public static final int AUTOSCALER_CLIENT_MAX_CONNECTIONS_PER_HOST = Integer.getInteger
+            (AUTOSCALER_CLIENT_MAX_CONNECTIONS_PER_HOST_KEY, 20);
+    public static final int CLOUD_CONTROLLER_CLIENT_MAX_CONNECTIONS_PER_HOST = Integer.getInteger
+            (CLOUD_CONTROLLER_CLIENT_MAX_CONNECTIONS_PER_HOST_KEY, 25);
+
+    // Axis2 HTTP client max total connections
+    public static final String STRATOS_MANAGER_CLIENT_MAX_TOTAL_CONNECTIONS_KEY =
+            "stratos.manager.client.max.total.connections";
+    public static final String AUTOSCALER_CLIENT_MAX_TOTAL_CONNECTIONS_KEY = "autoscaler.client.max.total.connections";
+    public static final String CLOUD_CONTROLLER_CLIENT_MAX_TOTAL_CONNECTIONS_KEY =
+            "cloud.controller.client.max.total.connections";
+
+    public static final int STRATOS_MANAGER_CLIENT_MAX_TOTAL_CONNECTIONS = Integer.getInteger
+            (STRATOS_MANAGER_CLIENT_MAX_TOTAL_CONNECTIONS_KEY, 30);
+    public static final int AUTOSCALER_CLIENT_MAX_TOTAL_CONNECTIONS = Integer.getInteger
+            (AUTOSCALER_CLIENT_MAX_TOTAL_CONNECTIONS_KEY, 30);
+    public static final int CLOUD_CONTROLLER_CLIENT_MAX_TOTAL_CONNECTIONS = Integer.getInteger
+            (CLOUD_CONTROLLER_CLIENT_MAX_TOTAL_CONNECTIONS_KEY, 30);
+
+    // service clients default socket timeout
     public static final String DEFAULT_CLIENT_SOCKET_TIMEOUT = "300000";
     public static final String DEFAULT_CLIENT_CONNECTION_TIMEOUT = "300000";
 

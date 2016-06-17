@@ -20,7 +20,13 @@
 package org.apache.stratos.common.client;
 
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.Constants;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
@@ -34,13 +40,20 @@ import org.apache.stratos.common.constants.StratosConstants;
 import java.rmi.RemoteException;
 
 public class AutoscalerServiceClient {
-
-    private AutoscalerServiceStub stub;
-
     private static final Log log = LogFactory.getLog(AutoscalerServiceClient.class);
     private static volatile AutoscalerServiceClient instance;
+    private AutoscalerServiceStub stub;
 
     private AutoscalerServiceClient(String epr) throws AxisFault {
+        MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager = new
+                MultiThreadedHttpConnectionManager();
+        HttpConnectionManagerParams params = new HttpConnectionManagerParams();
+        params.setDefaultMaxConnectionsPerHost(StratosConstants.AUTOSCALER_CLIENT_MAX_CONNECTIONS_PER_HOST);
+        params.setMaxTotalConnections(StratosConstants.AUTOSCALER_CLIENT_MAX_TOTAL_CONNECTIONS);
+        multiThreadedHttpConnectionManager.setParams(params);
+        HttpClient httpClient = new HttpClient(multiThreadedHttpConnectionManager);
+        ConfigurationContext ctx = ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
+        ctx.setProperty(HTTPConstants.CACHED_HTTP_CLIENT, httpClient);
 
         String autosclaerSocketTimeout = System.getProperty(StratosConstants.AUTOSCALER_CLIENT_SOCKET_TIMEOUT) == null ?
                 StratosConstants.DEFAULT_CLIENT_SOCKET_TIMEOUT :
@@ -49,14 +62,15 @@ public class AutoscalerServiceClient {
         String autosclaerConnectionTimeout = System.getProperty(StratosConstants.AUTOSCALER_CLIENT_CONNECTION_TIMEOUT)
                 == null ? StratosConstants.DEFAULT_CLIENT_CONNECTION_TIMEOUT :
                 System.getProperty(StratosConstants.AUTOSCALER_CLIENT_CONNECTION_TIMEOUT);
-
         try {
-            stub = new AutoscalerServiceStub(epr);
+            stub = new AutoscalerServiceStub(ctx, epr);
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT,
                     Integer.valueOf(autosclaerSocketTimeout));
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT,
                     Integer.valueOf(autosclaerConnectionTimeout));
-
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, Constants.VALUE_FALSE);
+            stub._getServiceClient().getOptions().setProperty(Constants.Configuration.DISABLE_SOAP_ACTION, Boolean
+                    .TRUE);
         } catch (AxisFault axisFault) {
             String msg = "Could not initialize autoscaler service client";
             log.error(msg, axisFault);
@@ -176,7 +190,8 @@ public class AutoscalerServiceClient {
     }
 
     public boolean removeAutoscalingPolicy(String autoScalePolicyId) throws RemoteException,
-            AutoscalerServicePolicyDoesNotExistExceptionException, AutoscalerServiceUnremovablePolicyExceptionException {
+            AutoscalerServicePolicyDoesNotExistExceptionException,
+            AutoscalerServiceUnremovablePolicyExceptionException {
         return stub.removeAutoScalingPolicy(autoScalePolicyId);
     }
 
@@ -188,7 +203,8 @@ public class AutoscalerServiceClient {
         return stub.getServiceGroups();
     }
 
-    public void addServiceGroup(ServiceGroup serviceGroup) throws AutoscalerServiceInvalidServiceGroupExceptionException,
+    public void addServiceGroup(ServiceGroup serviceGroup) throws
+            AutoscalerServiceInvalidServiceGroupExceptionException,
             RemoteException {
         stub.addServiceGroup(serviceGroup);
     }
