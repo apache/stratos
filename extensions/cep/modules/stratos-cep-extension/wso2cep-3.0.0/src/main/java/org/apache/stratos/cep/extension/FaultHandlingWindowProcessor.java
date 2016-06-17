@@ -20,7 +20,6 @@ package org.apache.stratos.cep.extension;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -45,26 +44,26 @@ import org.wso2.siddhi.query.api.expression.constant.IntConstant;
 import org.wso2.siddhi.query.api.expression.constant.LongConstant;
 import org.wso2.siddhi.query.api.extension.annotation.SiddhiExtension;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * CEP window processor to handle faulty member instances. This window processor is responsible for
  * publishing MemberFault event if health stats are not received within a given time window.
  */
-@SiddhiExtension(namespace = "stratos",
-                 function = "faultHandling")
+@SiddhiExtension(namespace = "stratos", function = "faultHandling")
 public class FaultHandlingWindowProcessor extends WindowProcessor implements RunnableWindowProcessor {
-
     private static final Logger log = Logger.getLogger(FaultHandlingWindowProcessor.class);
-
+    private static final String ACTIVATE_TIMEOUT_KEY = "cep.fault.handler.extension.activate.timeout";
+    private static final int ACTIVATE_TIMEOUT =
+            Integer.getInteger(ACTIVATE_TIMEOUT_KEY, 60 * 1000 * 15);
     private static final int TIME_OUT = 60 * 1000;
-    public static final String CEP_EXTENSION_THREAD_POOL_KEY = "cep.extension.thread.pool";
-    public static final int CEP_EXTENSION_THREAD_POOL_SIZE = 10;
-
-    private ExecutorService executorService;
     private ScheduledExecutorService faultHandleScheduler;
     private ScheduledFuture<?> lastSchedule;
     private ThreadBarrier threadBarrier;
@@ -77,6 +76,9 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
 
     // Map of member id's to their last received health event time stamp
     private ConcurrentHashMap<String, Long> memberTimeStampMap = new ConcurrentHashMap<String, Long>();
+    private volatile boolean isActive;
+    private volatile boolean hasMemberTimeStampMapInitialized;
+    private long startTime = System.currentTimeMillis();
 
     // Event receiver to receive topology events published by cloud-controller
     private CEPTopologyEventReceiver cepTopologyEventReceiver = new CEPTopologyEventReceiver(this);
@@ -101,7 +103,11 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
      *
      * @param event Event received by Siddhi.
      */
-    protected void addDataToMap(InEvent event) {
+    private void addDataToMap(InEvent event) {
+        if (!isActive) {
+            log.info("Received first event. Marking fault handling window processor as active");
+            isActive = true;
+        }
         String id = (String) event.getData()[memberIdAttrIndex];
         //checking whether this member is the topology.
         //sometimes there can be a delay between publishing member terminated events
@@ -143,7 +149,6 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
      * @param topology Topology model object
      */
     boolean loadTimeStampMapFromTopology(Topology topology) {
-
         long currentTimeStamp = System.currentTimeMillis();
         if (topology == null || topology.getServices() == null) {
             return false;
@@ -164,10 +169,10 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
                 }
             }
         }
-
-        if (log.isDebugEnabled()) {
-            log.debug(
-                    "Member timestamps were successfully loaded from the topology: [timestamps] " + memberTimeStampMap);
+        hasMemberTimeStampMapInitialized = true;
+        if (log.isInfoEnabled()) {
+            log.info("Member timestamps were successfully loaded from the topology: [timestamps] " +
+                    Arrays.toString(memberTimeStampMap.entrySet().toArray()));
         }
         return true;
     }
@@ -222,7 +227,19 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
     @Override
     public void run() {
         try {
+            // wait until the first event OR given timeout to expire in order to activate this window processor
+            // this is to prevent false positives at the CEP startup
+            if (!isActive && System.currentTimeMillis() - startTime > ACTIVATE_TIMEOUT) {
+                log.info("Activation wait timeout has expired. Marking fault handling window processor as active");
+                isActive = true;
+            }
+            // do not process events until memberTimeStampMap is initialized and window processor is activated
+            // memberTimeStampMap will be initialized only after receiving the complete topology event
+            if (!(isActive && hasMemberTimeStampMapInitialized)) {
+                return;
+            }
             threadBarrier.pass();
+
             for (Object o : memberTimeStampMap.entrySet()) {
                 Map.Entry pair = (Map.Entry) o;
                 long currentTime = System.currentTimeMillis();
@@ -255,7 +272,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
 
     @Override
     protected Object[] currentState() {
-        return new Object[] { window.currentState() };
+        return new Object[]{window.currentState()};
     }
 
     @Override
@@ -267,8 +284,8 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
 
     @Override
     protected void init(Expression[] parameters, QueryPostProcessingElement nextProcessor,
-            AbstractDefinition streamDefinition, String elementId, boolean async, SiddhiContext siddhiContext) {
-
+                        AbstractDefinition streamDefinition, String elementId, boolean async, SiddhiContext
+                                siddhiContext) {
         if (parameters[0] instanceof IntConstant) {
             timeToKeep = ((IntConstant) parameters[0]).getValue();
         } else {
@@ -286,17 +303,13 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         MemberFaultEventMap
                 .put("org.apache.stratos.messaging.event.health.stat.MemberFaultEvent", memberFaultEventMessageMap);
 
-//        executorService = StratosThreadPool
-//                .getExecutorService(CEP_EXTENSION_THREAD_POOL_KEY, CEP_EXTENSION_THREAD_POOL_SIZE);
-//        cepTopologyEventReceiver.setExecutorService(executorService);
-//        cepTopologyEventReceiver.execute();
-
         //Ordinary scheduling
         window.schedule();
-        if (log.isDebugEnabled()) {
-            log.debug("Fault handling window processor initialized with [timeToKeep] " + timeToKeep +
-                    ", [memberIdAttrName] " + memberIdAttrName + ", [memberIdAttrIndex] " + memberIdAttrIndex +
-                    ", [distributed-enabled] " + this.siddhiContext.isDistributedProcessingEnabled());
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Fault handling window processor initialized with [timeToKeep] %s, " +
+                            "[memberIdAttrName] %s, [memberIdAttrIndex] %s, [distributed-enabled] %s, " +
+                            "[activate-timeout] %d", timeToKeep, memberIdAttrName, memberIdAttrIndex,
+                    siddhiContext.isDistributedProcessingEnabled(), ACTIVATE_TIMEOUT));
         }
     }
 
@@ -329,20 +342,11 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
     @Override
     public void destroy() {
         // terminate topology listener thread
-//        cepTopologyEventReceiver.terminate();
+        cepTopologyEventReceiver.destroy();
         window = null;
-
-        // Shutdown executor service
-        if (executorService != null) {
-            try {
-                executorService.shutdownNow();
-            } catch (Exception e) {
-                log.warn("An error occurred while shutting down cep extension executor service", e);
-            }
-        }
     }
 
-    public ConcurrentHashMap<String, Long> getMemberTimeStampMap() {
+    ConcurrentHashMap<String, Long> getMemberTimeStampMap() {
         return memberTimeStampMap;
     }
 }

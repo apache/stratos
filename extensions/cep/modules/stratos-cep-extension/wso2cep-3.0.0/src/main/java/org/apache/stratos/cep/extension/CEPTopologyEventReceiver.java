@@ -35,23 +35,15 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
  * CEP Topology Receiver for Fault Handling Window Processor.
  */
 public class CEPTopologyEventReceiver {
-
     private static final Log log = LogFactory.getLog(CEPTopologyEventReceiver.class);
-
     private FaultHandlingWindowProcessor faultHandler;
     private TopologyEventReceiver topologyEventReceiver;
 
-    public CEPTopologyEventReceiver(FaultHandlingWindowProcessor faultHandler) {
+    CEPTopologyEventReceiver(FaultHandlingWindowProcessor faultHandler) {
         this.faultHandler = faultHandler;
         this.topologyEventReceiver = TopologyEventReceiver.getInstance();
         addEventListeners();
     }
-
-//    @Override
-//    public void execute() {
-//        super.execute();
-//        log.info("CEP topology event receiver thread started");
-//    }
 
     private void addEventListeners() {
         // Load member time stamp map from the topology as a one time task
@@ -63,7 +55,7 @@ public class CEPTopologyEventReceiver {
                 if (!initialized) {
                     try {
                         TopologyManager.acquireReadLock();
-                        log.debug("Complete topology event received to fault handling window processor.");
+                        log.info("Complete topology event received to fault handling window processor.");
                         CompleteTopologyEvent completeTopologyEvent = (CompleteTopologyEvent) event;
                         initialized = faultHandler.loadTimeStampMapFromTopology(completeTopologyEvent.getTopology());
                     } catch (Exception e) {
@@ -81,7 +73,11 @@ public class CEPTopologyEventReceiver {
             protected void onEvent(Event event) {
                 MemberTerminatedEvent memberTerminatedEvent = (MemberTerminatedEvent) event;
                 faultHandler.getMemberTimeStampMap().remove(memberTerminatedEvent.getMemberId());
-                log.debug("Member was removed from the timestamp map: [member] " + memberTerminatedEvent.getMemberId());
+                if (log.isDebugEnabled()) {
+                    log.debug("Member was removed from the timestamp map: [member] " + memberTerminatedEvent
+                            .getMemberId());
+
+                }
             }
         });
 
@@ -94,8 +90,14 @@ public class CEPTopologyEventReceiver {
                 // do not put this member if we have already received a health event
                 faultHandler.getMemberTimeStampMap().putIfAbsent(memberActivatedEvent.getMemberId(),
                         System.currentTimeMillis());
-                log.debug("Member was added to the timestamp map: [member] " + memberActivatedEvent.getMemberId());
+                if (log.isDebugEnabled()) {
+                    log.debug("Member was added to the timestamp map: [member] " + memberActivatedEvent.getMemberId());
+                }
             }
         });
+    }
+
+    void destroy() {
+        topologyEventReceiver.terminate();
     }
 }
