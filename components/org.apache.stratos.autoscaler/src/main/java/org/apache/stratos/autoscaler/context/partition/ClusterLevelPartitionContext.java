@@ -747,7 +747,9 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                     if (obsoleteMember == null) {
                         continue;
                     }
-                    long obsoleteTime = System.currentTimeMillis() - obsoleteMember.getInitTime();
+                    long obsoleteStartTime = (obsoleteMember.getObsoleteInitTime() == 0) ?
+                            obsoleteMember.getInitTime() : obsoleteMember.getObsoleteInitTime();
+                    long obsoleteTime = System.currentTimeMillis() - obsoleteStartTime;
                     if (obsoleteTime >= obsoletedMemberExpiryTime) {
 
                         String obsoleteMemberId = obsoleteMember.getMemberId();
