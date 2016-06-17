@@ -34,7 +34,6 @@
             <run>
                 <exclude name="failed"/>
                 <exclude name="disabled"/>
-                <include name="policies"/>
             </run>
         </groups>
 
