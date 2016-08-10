@@ -22,7 +22,7 @@
 FROM debian:7.8
 MAINTAINER dev@stratos.apache.org
 
-ENV PCA_DISTRIBUTION_NAME apache-stratos-python-cartridge-agent-4.1.6-SNAPSHOT
+ENV PCA_DISTRIBUTION_NAME apache-stratos-python-cartridge-agent-4.1.7-SNAPSHOT
 # ------------------
 # Setup ssh server
 # ------------------
