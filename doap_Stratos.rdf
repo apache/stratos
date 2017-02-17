@@ -26,7 +26,7 @@
     <license rdf:resource="http://spdx.org/licenses/Apache-2.0" />
     <name>Apache Stratos</name>
     <homepage rdf:resource="http://stratos.apache.org/" />
-    <asfext:pmc rdf:resource="http://stratos.apache.org" />
+    <asfext:pmc rdf:resource="http://attic.apache.org" />
     <shortdesc>Apache Stratos is a highly-extensible Platform-as-a-Service (PaaS) framework that helps run Apache Tomcat, PHP, and MySQL applications and can be extended to support many more environments on all major cloud infrastructures. </shortdesc>
     <description>Apache Stratos is a highly-extensible Platform-as-a-Service (PaaS) framework that helps run Apache Tomcat, PHP, and MySQL applications and can be extended to support many more environments on all major cloud infrastructures. For developers, Stratos provides a cloud-based environment for developing, testing, and running scalable applications. IT providers benefit from high utilization rates, automated resource management, and platform-wide insight including monitoring and billing.</description>
     <bug-database rdf:resource="https://issues.apache.org/jira/browse/stratos" />
@@ -34,6 +34,7 @@
     <download-page rdf:resource="http://stratos.apache.org/releases/index.html" />
     <programming-language>Java</programming-language>
     <category rdf:resource="http://projects.apache.org/category/cloud" />
+    <category rdf:resource="http://projects.apache.org/category/retired" />
     <release>
       <Version>
         <name>Apache Stratos 3.0.0-incubating</name>
